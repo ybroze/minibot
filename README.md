@@ -24,15 +24,15 @@ Log out of your current account and log in as the `openclaw` user.
 ```bash
 # Clone or download this repository
 cd ~/Downloads
-# (extract the openclaw-setup files here)
+# (extract the minibot files here)
 
 # Run the directory setup script
-bash openclaw-setup/setup-openclaw-dirs.sh
+bash minibot/setup-openclaw-dirs.sh
 
 # Copy the scripts to the appropriate locations
-cp -r openclaw-setup/bin/* ~/openclaw/bin/
-cp -r openclaw-setup/docker/* ~/openclaw/docker/
-cp -r openclaw-setup/scripts/* ~/openclaw/scripts/
+cp -r minibot/bin/* ~/openclaw/bin/
+cp -r minibot/docker/* ~/openclaw/docker/
+cp -r minibot/scripts/* ~/openclaw/scripts/
 
 # Make scripts executable
 chmod +x ~/openclaw/bin/*.sh
@@ -43,7 +43,7 @@ chmod +x ~/openclaw/scripts/*.sh
 
 ```bash
 # Add the shell configuration
-cat openclaw-setup/zshrc-additions.sh >> ~/.zshrc
+cat minibot/zshrc-additions.sh >> ~/.zshrc
 source ~/.zshrc
 ```
 
