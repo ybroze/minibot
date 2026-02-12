@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: openclaw-postgres
+    environment:
+      POSTGRES_DB: openclaw
+      POSTGRES_USER: openclaw
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - openclaw-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: openclaw-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - ../data/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - openclaw-net
+    restart: unless-stopped
+
+  # OpenClaw orchestrator (placeholder - adjust based on actual OpenClaw setup)
+  # Uncomment and configure once you have the actual OpenClaw images/builds
+  # orchestrator:
+  #   build:
+  #     context: ../
+  #     dockerfile: docker/Dockerfiles/orchestrator.Dockerfile
+  #   container_name: openclaw-orchestrator
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   volumes:
+  #     - ../config:/app/config:ro
+  #     - ../data/logs:/app/logs
+  #   environment:
+  #     - DATABASE_URL=postgresql://openclaw:${POSTGRES_PASSWORD:-changeme}@postgres:5432/openclaw
+  #     - REDIS_URL=redis://redis:6379
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - openclaw-net
+  #   restart: unless-stopped
+
+networks:
+  openclaw-net:
+    driver: bridge
