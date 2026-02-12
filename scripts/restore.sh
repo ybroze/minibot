@@ -1,6 +1,6 @@
 #!/bin/bash
 # restore.sh
-# Restore OpenClaw from a backup
+# Restore Minibot from a backup
 
 set -e
 
@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
     echo "Usage: $0 <backup-directory>"
     echo ""
     echo "Available backups:"
-    ls -1 "$HOME/openclaw-backups/" 2>/dev/null || echo "  (none found)"
+    ls -1 "$HOME/minibot-backups/" 2>/dev/null || echo "  (none found)"
     exit 1
 fi
 
@@ -31,32 +31,32 @@ fi
 
 # Stop services
 echo "Stopping services..."
-~/openclaw/bin/openclaw-stop.sh
+~/minibot/bin/minibot-stop.sh
 
 # Restore data
 if [ -d "$BACKUP_DIR/data" ]; then
     echo "Restoring data..."
-    rm -rf ~/openclaw/data
-    cp -r "$BACKUP_DIR/data" ~/openclaw/
+    rm -rf ~/minibot/data
+    cp -r "$BACKUP_DIR/data" ~/minibot/
 fi
 
 # Restore config
 if [ -d "$BACKUP_DIR/config" ]; then
     echo "Restoring configuration..."
-    rm -rf ~/openclaw/config
-    cp -r "$BACKUP_DIR/config" ~/openclaw/
+    rm -rf ~/minibot/config
+    cp -r "$BACKUP_DIR/config" ~/minibot/
 fi
 
 # Restore docker configs
 if [ -d "$BACKUP_DIR/docker" ]; then
     echo "Restoring Docker configurations..."
-    rm -rf ~/openclaw/docker
-    cp -r "$BACKUP_DIR/docker" ~/openclaw/
+    rm -rf ~/minibot/docker
+    cp -r "$BACKUP_DIR/docker" ~/minibot/
 fi
 
 # Restart services
 echo "Restarting services..."
-~/openclaw/bin/openclaw-start.sh
+~/minibot/bin/minibot-start.sh
 
 echo ""
 echo "✓ Restore completed successfully."

@@ -1,10 +1,10 @@
 #!/bin/bash
-# setup-openclaw-dirs.sh
-# Run this script as the openclaw user to create the directory structure
+# setup-minibot-dirs.sh
+# Run this script as the minibot user to create the directory structure
 
-BASE_DIR="$HOME/openclaw"
+BASE_DIR="$HOME/minibot"
 
-echo "Creating OpenClaw directory structure at: $BASE_DIR"
+echo "Creating Minibot directory structure at: $BASE_DIR"
 
 # Create main directories
 mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,experiments,docs,tmp}

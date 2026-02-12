@@ -1,26 +1,26 @@
-# OpenClaw macOS Environment Setup Guide
+# Minibot macOS Environment Setup Guide
 
 ## Part 1: macOS User-Level Environment Segregation
 
-### Creating a Dedicated `openclaw` User
+### Creating a Dedicated `minibot` User
 
 ```bash
 # 1. Create the user account via System Settings or command line
 # Via GUI: System Settings > Users & Groups > Add Account...
 # - Account type: Standard
-# - Full name: OpenClaw Experiments
-# - Account name: openclaw
+# - Full name: Minibot Experiments
+# - Account name: minibot
 # - Password: [your choice]
 
 # Via command line (requires admin):
-sudo sysadminctl -addUser openclaw -fullName "OpenClaw Experiments" -password -admin
+sudo sysadminctl -addUser minibot -fullName "Minibot Experiments" -password -admin
 # Note: Omit -admin flag if you want a standard (non-admin) user
 ```
 
 ### User Account Configuration
 
 ```bash
-# After creating the user, log into the openclaw account and:
+# After creating the user, log into the minibot account and:
 
 # 1. Disable iCloud integration
 # System Settings > Apple ID > iCloud > Turn off all sync services
@@ -46,9 +46,9 @@ chsh -s /bin/zsh
 
 # Create isolated shell profile
 cat > ~/.zshrc << 'EOF'
-# OpenClaw Experimental Environment
-export OPENCLAW_HOME="$HOME/openclaw"
-export PATH="$OPENCLAW_HOME/bin:$HOME/.local/bin:$PATH"
+# Minibot Experimental Environment
+export MINIBOT_HOME="$HOME/minibot"
+export PATH="$MINIBOT_HOME/bin:$HOME/.local/bin:$PATH"
 
 # Prevent accidental system modifications
 export HOMEBREW_NO_AUTO_UPDATE=1
@@ -57,7 +57,7 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 unset HISTFILE  # Optional: disable shell history
 
 # Prompt indicator
-export PS1="%F{cyan}[openclaw]%f %~ %# "
+export PS1="%F{cyan}[minibot]%f %~ %# "
 EOF
 
 source ~/.zshrc
@@ -127,7 +127,7 @@ sudo rm -rf /Applications/GarageBand.app
 
 ```bash
 # Disable Spotlight indexing for specific directories
-sudo mdutil -i off /Users/openclaw/openclaw/data
+sudo mdutil -i off /Users/minibot/minibot/data
 
 # Disable automatic updates for Mac App Store apps
 defaults write com.apple.commerce AutoUpdate -bool false
@@ -151,17 +151,17 @@ rm -rf Movies/ Music/ Public/
 
 ---
 
-## Part 3: OpenClaw Directory Structure
+## Part 3: Minibot Directory Structure
 
 ### Recommended Directory Layout
 
 ```
-/Users/openclaw/
-├── openclaw/                          # Main OpenClaw installation root
+/Users/minibot/
+├── minibot/                           # Main Minibot installation root
 │   ├── bin/                           # User scripts, utilities
-│   │   ├── openclaw-start.sh
-│   │   ├── openclaw-stop.sh
-│   │   └── openclaw-logs.sh
+│   │   ├── minibot-start.sh
+│   │   ├── minibot-stop.sh
+│   │   └── minibot-logs.sh
 │   ├── config/                        # Configuration files
 │   │   ├── agents/                    # Agent definitions
 │   │   │   ├── agent-1.yaml
@@ -172,7 +172,7 @@ rm -rf Movies/ Music/ Public/
 │   │   │   ├── dev.env
 │   │   │   ├── staging.env
 │   │   │   └── prod.env
-│   │   └── openclaw.yaml              # Main config
+│   │   └── minibot.yaml               # Main config
 │   ├── data/                          # Persistent data
 │   │   ├── postgres/                  # Database files
 │   │   ├── redis/                     # Redis persistence
@@ -218,9 +218,9 @@ rm -rf Movies/ Music/ Public/
 
 ```bash
 #!/bin/bash
-# setup-openclaw-dirs.sh
+# setup-minibot-dirs.sh
 
-BASE_DIR="$HOME/openclaw"
+BASE_DIR="$HOME/minibot"
 
 # Create main directories
 mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,experiments,docs,tmp}
@@ -262,12 +262,12 @@ tmp/
 .DS_Store
 EOF
 
-echo "OpenClaw directory structure created at: $BASE_DIR"
+echo "Minibot directory structure created at: $BASE_DIR"
 ```
 
 ### Initial Configuration Templates
 
-#### `~/openclaw/docker/docker-compose.yml`
+#### `~/minibot/docker/docker-compose.yml`
 
 ```yaml
 version: '3.8'
@@ -275,34 +275,34 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: openclaw-postgres
+    container_name: minibot-postgres
     environment:
-      POSTGRES_DB: openclaw
-      POSTGRES_USER: openclaw
+      POSTGRES_DB: minibot
+      POSTGRES_USER: minibot
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
       - ../data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - openclaw-net
+      - minibot-net
 
   redis:
     image: redis:7-alpine
-    container_name: openclaw-redis
+    container_name: minibot-redis
     volumes:
       - ../data/redis:/data
     ports:
       - "6379:6379"
     networks:
-      - openclaw-net
+      - minibot-net
 
-  # OpenClaw orchestrator (placeholder - adjust based on actual OpenClaw setup)
+  # Agent orchestrator (placeholder - adjust based on actual setup)
   orchestrator:
     build:
       context: ../
       dockerfile: docker/Dockerfiles/orchestrator.Dockerfile
-    container_name: openclaw-orchestrator
+    container_name: minibot-orchestrator
     depends_on:
       - postgres
       - redis
@@ -310,17 +310,17 @@ services:
       - ../config:/app/config:ro
       - ../data/logs:/app/logs
     environment:
-      - DATABASE_URL=postgresql://openclaw:${POSTGRES_PASSWORD:-changeme}@postgres:5432/openclaw
+      - DATABASE_URL=postgresql://minibot:${POSTGRES_PASSWORD:-changeme}@postgres:5432/minibot
       - REDIS_URL=redis://redis:6379
     networks:
-      - openclaw-net
+      - minibot-net
 
 networks:
-  openclaw-net:
+  minibot-net:
     driver: bridge
 ```
 
-#### `~/openclaw/bin/openclaw-start.sh`
+#### `~/minibot/bin/minibot-start.sh`
 
 ```bash
 #!/bin/bash
@@ -328,13 +328,13 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "Starting OpenClaw services..."
+echo "Starting Minibot services..."
 docker-compose -f docker/docker-compose.yml up -d
 
 echo "Services started. Check status with: docker-compose -f docker/docker-compose.yml ps"
 ```
 
-#### `~/openclaw/bin/openclaw-stop.sh`
+#### `~/minibot/bin/minibot-stop.sh`
 
 ```bash
 #!/bin/bash
@@ -342,13 +342,13 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "Stopping OpenClaw services..."
+echo "Stopping Minibot services..."
 docker-compose -f docker/docker-compose.yml down
 
 echo "Services stopped."
 ```
 
-#### `~/openclaw/bin/openclaw-logs.sh`
+#### `~/minibot/bin/minibot-logs.sh`
 
 ```bash
 #!/bin/bash
@@ -361,14 +361,14 @@ docker-compose -f docker/docker-compose.yml logs -f "$@"
 ### Make Scripts Executable
 
 ```bash
-chmod +x ~/openclaw/bin/*.sh
+chmod +x ~/minibot/bin/*.sh
 ```
 
 ---
 
 ## Part 4: Development Environment Setup
 
-### Install Homebrew (as openclaw user)
+### Install Homebrew (as minibot user)
 
 ```bash
 # Install Homebrew
@@ -407,8 +407,8 @@ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 pyenv install 3.11.7
 pyenv global 3.11.7
 
-# Create virtual environment for OpenClaw
-cd ~/openclaw
+# Create virtual environment for Minibot
+cd ~/minibot
 python -m venv venv
 source venv/bin/activate
 pip install --upgrade pip setuptools wheel
@@ -430,25 +430,24 @@ npm --version
 ## Part 5: Quick Start Checklist
 
 ```bash
-# 1. Create openclaw user (System Settings)
-# 2. Log in as openclaw user
+# 1. Create minibot user (System Settings)
+# 2. Log in as minibot user
 # 3. Run initial setup
-curl -O [this-script-url] && bash setup-openclaw-dirs.sh
+curl -O [this-script-url] && bash setup-minibot-dirs.sh
 
 # 4. Install Homebrew + dependencies
 # (see Part 4)
 
-# 5. Clone OpenClaw (adjust URL)
-cd ~/openclaw
-git clone https://github.com/openclaw/openclaw.git src
-# Or download and extract to src/
+# 5. Set up your agent code/configuration
+cd ~/minibot
+# Add your agent implementations, configs, etc.
 
-# 6. Configure
-cp config/environments/dev.env.example config/environments/dev.env
-# Edit config files as needed
+# 6. Configure environment
+cp docker/.env.example docker/.env
+# Edit .env file with your settings
 
 # 7. Start services
-~/openclaw/bin/openclaw-start.sh
+~/minibot/bin/minibot-start.sh
 
 # 8. Verify
 docker ps
@@ -463,20 +462,20 @@ curl http://localhost:8080/health  # Adjust port based on actual setup
 
 ```bash
 #!/bin/bash
-# ~/openclaw/scripts/backup.sh
+# ~/minibot/scripts/backup.sh
 
-BACKUP_DIR="$HOME/openclaw-backups/$(date +%Y%m%d-%H%M%S)"
+BACKUP_DIR="$HOME/minibot-backups/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
 # Stop services
-~/openclaw/bin/openclaw-stop.sh
+~/minibot/bin/minibot-stop.sh
 
 # Backup data
-cp -r ~/openclaw/data "$BACKUP_DIR/"
-cp -r ~/openclaw/config "$BACKUP_DIR/"
+cp -r ~/minibot/data "$BACKUP_DIR/"
+cp -r ~/minibot/config "$BACKUP_DIR/"
 
 # Restart services
-~/openclaw/bin/openclaw-start.sh
+~/minibot/bin/minibot-start.sh
 
 echo "Backup created at: $BACKUP_DIR"
 ```
@@ -485,9 +484,9 @@ echo "Backup created at: $BACKUP_DIR"
 
 ```bash
 # Nuclear option: completely reset
-~/openclaw/bin/openclaw-stop.sh
-rm -rf ~/openclaw/data/*
-docker-compose -f ~/openclaw/docker/docker-compose.yml down -v
+~/minibot/bin/minibot-stop.sh
+rm -rf ~/minibot/data/*
+docker-compose -f ~/minibot/docker/docker-compose.yml down -v
 # Recreate from scratch
 ```
 
@@ -495,9 +494,9 @@ docker-compose -f ~/openclaw/docker/docker-compose.yml down -v
 
 ## Notes
 
-- This setup assumes you're using OpenClaw from source or a distribution that supports Docker
-- Adjust paths and configurations based on actual OpenClaw documentation
+- This setup creates an isolated environment for agent experimentation
 - The directory structure follows XDG Base Directory conventions where appropriate
-- Consider setting up log rotation for `~/openclaw/data/logs/`
-- Use version control (git) for `~/openclaw/config/` and `~/openclaw/experiments/`
+- Consider setting up log rotation for `~/minibot/data/logs/`
+- Use version control (git) for `~/minibot/config/` and `~/minibot/experiments/`
+- Adjust configurations based on your specific agent implementations and requirements
 

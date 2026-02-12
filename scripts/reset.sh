@@ -1,11 +1,11 @@
 #!/bin/bash
 # reset.sh
-# Nuclear option: completely reset OpenClaw environment
+# Nuclear option: completely reset Minibot environment
 # WARNING: This deletes ALL data and containers!
 
 set -e
 
-echo "=== OpenClaw Environment Reset ==="
+echo "=== Minibot Environment Reset ==="
 echo ""
 echo "WARNING: This will:"
 echo "  - Stop all services"
@@ -21,18 +21,18 @@ fi
 
 echo ""
 echo "Stopping services..."
-~/openclaw/bin/openclaw-stop.sh
+~/minibot/bin/minibot-stop.sh
 
 echo "Removing containers and volumes..."
-docker-compose -f ~/openclaw/docker/docker-compose.yml down -v
+docker-compose -f ~/minibot/docker/docker-compose.yml down -v
 
 echo "Deleting data directories..."
-rm -rf ~/openclaw/data/*
+rm -rf ~/minibot/data/*
 
 echo "Recreating data structure..."
-mkdir -p ~/openclaw/data/{postgres,redis,logs/{agents,orchestrator,system}}
+mkdir -p ~/minibot/data/{postgres,redis,logs/{agents,orchestrator,system}}
 
 echo ""
 echo "✓ Environment reset complete."
 echo ""
-echo "To start fresh, run: ~/openclaw/bin/openclaw-start.sh"
+echo "To start fresh, run: ~/minibot/bin/minibot-start.sh"

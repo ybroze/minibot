@@ -1,12 +1,12 @@
 #!/bin/bash
-# openclaw-stop.sh
-# Stop all OpenClaw services
+# minibot-stop.sh
+# Stop all Minibot services
 
 set -e
 
 cd "$(dirname "$0")/.."
 
-echo "Stopping OpenClaw services..."
+echo "Stopping Minibot services..."
 docker-compose -f docker/docker-compose.yml down
 
 echo "✓ Services stopped."

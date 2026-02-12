@@ -1,5 +1,5 @@
-# OpenClaw .gitignore
-# This will be created by setup-openclaw-dirs.sh
+# Minibot .gitignore
+# This will be created by setup-minibot-dirs.sh
 
 # Data & logs
 data/

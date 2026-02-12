@@ -3,38 +3,38 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: openclaw-postgres
+    container_name: minibot-postgres
     environment:
-      POSTGRES_DB: openclaw
-      POSTGRES_USER: openclaw
+      POSTGRES_DB: minibot
+      POSTGRES_USER: minibot
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
       - ../data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - openclaw-net
+      - minibot-net
     restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    container_name: openclaw-redis
+    container_name: minibot-redis
     command: redis-server --appendonly yes
     volumes:
       - ../data/redis:/data
     ports:
       - "6379:6379"
     networks:
-      - openclaw-net
+      - minibot-net
     restart: unless-stopped
 
-  # OpenClaw orchestrator (placeholder - adjust based on actual OpenClaw setup)
-  # Uncomment and configure once you have the actual OpenClaw images/builds
+  # Agent orchestrator (placeholder - adjust based on actual requirements)
+  # Uncomment and configure once you have the actual images/builds
   # orchestrator:
   #   build:
   #     context: ../
   #     dockerfile: docker/Dockerfiles/orchestrator.Dockerfile
-  #   container_name: openclaw-orchestrator
+  #   container_name: minibot-orchestrator
   #   depends_on:
   #     - postgres
   #     - redis
@@ -42,14 +42,14 @@ services:
   #     - ../config:/app/config:ro
   #     - ../data/logs:/app/logs
   #   environment:
-  #     - DATABASE_URL=postgresql://openclaw:${POSTGRES_PASSWORD:-changeme}@postgres:5432/openclaw
+  #     - DATABASE_URL=postgresql://minibot:${POSTGRES_PASSWORD:-changeme}@postgres:5432/minibot
   #     - REDIS_URL=redis://redis:6379
   #   ports:
   #     - "8080:8080"
   #   networks:
-  #     - openclaw-net
+  #     - minibot-net
   #   restart: unless-stopped
 
 networks:
-  openclaw-net:
+  minibot-net:
     driver: bridge

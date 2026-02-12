@@ -1,7 +1,7 @@
 #!/bin/bash
-# openclaw-logs.sh
+# minibot-logs.sh
 # Follow logs for all services or a specific service
-# Usage: openclaw-logs.sh [service-name]
+# Usage: minibot-logs.sh [service-name]
 
 cd "$(dirname "$0")/.."
 

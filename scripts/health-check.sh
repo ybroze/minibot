@@ -1,10 +1,10 @@
 #!/bin/bash
 # health-check.sh
-# Check the health of OpenClaw services
+# Check the health of Minibot services
 
-cd ~/openclaw
+cd ~/minibot
 
-echo "=== OpenClaw Health Check ==="
+echo "=== Minibot Health Check ==="
 echo ""
 
 # Check Docker
@@ -24,7 +24,7 @@ echo ""
 
 # Check PostgreSQL
 echo "PostgreSQL:"
-if docker exec openclaw-postgres pg_isready -U openclaw &> /dev/null; then
+if docker exec minibot-postgres pg_isready -U minibot &> /dev/null; then
     echo "✓ PostgreSQL is ready"
 else
     echo "✗ PostgreSQL is not responding"
@@ -33,7 +33,7 @@ echo ""
 
 # Check Redis
 echo "Redis:"
-if docker exec openclaw-redis redis-cli ping &> /dev/null; then
+if docker exec minibot-redis redis-cli ping &> /dev/null; then
     echo "✓ Redis is responding"
 else
     echo "✗ Redis is not responding"
@@ -41,14 +41,14 @@ fi
 echo ""
 
 # Check disk space
-echo "Disk Usage (~/openclaw):"
-du -sh ~/openclaw/data/* 2>/dev/null || echo "  (no data yet)"
+echo "Disk Usage (~/minibot):"
+du -sh ~/minibot/data/* 2>/dev/null || echo "  (no data yet)"
 echo ""
 
 # Check logs
 echo "Recent Errors in Logs:"
-if [ -d ~/openclaw/data/logs ]; then
-    grep -i "error" ~/openclaw/data/logs/**/*.log 2>/dev/null | tail -n 5 || echo "  (none found)"
+if [ -d ~/minibot/data/logs ]; then
+    grep -i "error" ~/minibot/data/logs/**/*.log 2>/dev/null | tail -n 5 || echo "  (none found)"
 else
     echo "  (no logs directory)"
 fi

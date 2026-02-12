@@ -1,23 +1,23 @@
-# OpenClaw macOS Setup Scripts
+# Minibot macOS Setup Scripts
 
-This repository contains all the scripts and configuration files needed to set up a clean, isolated OpenClaw experimentation environment on macOS.
+This repository contains all the scripts and configuration files needed to set up a clean, isolated Minibot experimentation environment on macOS.
 
 ## Quick Start
 
-### 1. Create the `openclaw` User
+### 1. Create the `minibot` User
 
 Via System Settings:
 - Go to **System Settings > Users & Groups**
 - Click the lock icon to make changes
 - Click **Add Account...**
 - Select **Standard** account type
-- Full name: `OpenClaw Experiments`
-- Account name: `openclaw`
+- Full name: `Minibot Experiments`
+- Account name: `minibot`
 - Set a password
 
-### 2. Log in as `openclaw` User
+### 2. Log in as `minibot` User
 
-Log out of your current account and log in as the `openclaw` user.
+Log out of your current account and log in as the `minibot` user.
 
 ### 3. Run the Setup Script
 
@@ -27,16 +27,16 @@ cd ~/Downloads
 # (extract the minibot files here)
 
 # Run the directory setup script
-bash minibot/setup-openclaw-dirs.sh
+bash minibot/setup-minibot-dirs.sh
 
 # Copy the scripts to the appropriate locations
-cp -r minibot/bin/* ~/openclaw/bin/
-cp -r minibot/docker/* ~/openclaw/docker/
-cp -r minibot/scripts/* ~/openclaw/scripts/
+cp -r minibot/bin/* ~/minibot/bin/
+cp -r minibot/docker/* ~/minibot/docker/
+cp -r minibot/scripts/* ~/minibot/scripts/
 
 # Make scripts executable
-chmod +x ~/openclaw/bin/*.sh
-chmod +x ~/openclaw/scripts/*.sh
+chmod +x ~/minibot/bin/*.sh
+chmod +x ~/minibot/scripts/*.sh
 ```
 
 ### 4. Configure Shell Environment
@@ -67,7 +67,7 @@ brew install jq yq tree htop
 
 ```bash
 # Copy and edit the environment file
-cd ~/openclaw/docker
+cd ~/minibot/docker
 cp .env.example .env
 # Edit .env and set POSTGRES_PASSWORD
 ```
@@ -76,10 +76,10 @@ cp .env.example .env
 
 ```bash
 # Start the base infrastructure
-~/openclaw/bin/openclaw-start.sh
+~/minibot/bin/minibot-start.sh
 
 # Check status
-~/openclaw/bin/openclaw-logs.sh
+~/minibot/bin/minibot-logs.sh
 ```
 
 ## Directory Structure
@@ -87,11 +87,11 @@ cp .env.example .env
 After running the setup script, you'll have:
 
 ```
-~/openclaw/
+~/minibot/
 ├── bin/                    # User scripts
-│   ├── openclaw-start.sh
-│   ├── openclaw-stop.sh
-│   └── openclaw-logs.sh
+│   ├── minibot-start.sh
+│   ├── minibot-stop.sh
+│   └── minibot-logs.sh
 ├── config/                 # Configuration files
 │   ├── agents/
 │   ├── orchestration/
@@ -117,13 +117,13 @@ After running the setup script, you'll have:
 
 ## Available Scripts
 
-### Operational Scripts (in `~/openclaw/bin/`)
+### Operational Scripts (in `~/minibot/bin/`)
 
-- **openclaw-start.sh** - Start all services
-- **openclaw-stop.sh** - Stop all services
-- **openclaw-logs.sh** - View logs (optionally pass service name)
+- **minibot-start.sh** - Start all services
+- **minibot-stop.sh** - Stop all services
+- **minibot-logs.sh** - View logs (optionally pass service name)
 
-### Maintenance Scripts (in `~/openclaw/scripts/`)
+### Maintenance Scripts (in `~/minibot/scripts/`)
 
 - **backup.sh** - Backup data and configuration
 - **restore.sh** - Restore from a backup
@@ -134,35 +134,35 @@ After running the setup script, you'll have:
 
 ### View Service Status
 ```bash
-docker-compose -f ~/openclaw/docker/docker-compose.yml ps
+docker-compose -f ~/minibot/docker/docker-compose.yml ps
 # Or use the alias:
-oc-status
+mb-status
 ```
 
 ### Follow Logs for a Specific Service
 ```bash
-~/openclaw/bin/openclaw-logs.sh postgres
-~/openclaw/bin/openclaw-logs.sh redis
+~/minibot/bin/minibot-logs.sh postgres
+~/minibot/bin/minibot-logs.sh redis
 ```
 
 ### Create a Backup
 ```bash
-~/openclaw/scripts/backup.sh
+~/minibot/scripts/backup.sh
 ```
 
 ### Restore from Backup
 ```bash
-~/openclaw/scripts/restore.sh ~/openclaw-backups/20250212-143022
+~/minibot/scripts/restore.sh ~/minibot-backups/20250212-143022
 ```
 
 ### Check System Health
 ```bash
-~/openclaw/scripts/health-check.sh
+~/minibot/scripts/health-check.sh
 ```
 
 ### Reset Everything
 ```bash
-~/openclaw/scripts/reset.sh
+~/minibot/scripts/reset.sh
 # WARNING: This deletes all data!
 ```
 
@@ -170,10 +170,10 @@ oc-status
 
 The following aliases are available after sourcing `~/.zshrc`:
 
-- `oc-start` - Start services
-- `oc-stop` - Stop services
-- `oc-logs` - View logs
-- `oc-status` - Check container status
+- `mb-start` - Start services
+- `mb-stop` - Stop services
+- `mb-logs` - View logs
+- `mb-status` - Check container status
 
 ## Environment Cleanup
 
@@ -197,7 +197,7 @@ For a dedicated experimentation machine, you can remove these apps:
 
 ```bash
 # Disable Spotlight indexing for data directory
-sudo mdutil -i off ~/openclaw/data
+sudo mdutil -i off ~/minibot/data
 
 # Disable automatic App Store updates
 defaults write com.apple.commerce AutoUpdate -bool false
@@ -205,10 +205,11 @@ defaults write com.apple.commerce AutoUpdate -bool false
 
 ## Next Steps
 
-1. Install the actual OpenClaw software (follow their documentation)
-2. Configure your first agent in `~/openclaw/config/agents/`
-3. Start experimenting with multi-agent setups in `~/openclaw/experiments/`
-4. Version control your configurations with git
+1. Add your agent implementations to `~/minibot/agents/`
+2. Configure your agents in `~/minibot/config/agents/`
+3. Set up orchestration rules in `~/minibot/config/orchestration/`
+4. Start experimenting with multi-agent setups in `~/minibot/experiments/`
+5. Version control your configurations with git
 
 ## Troubleshooting
 
@@ -218,13 +219,13 @@ defaults write com.apple.commerce AutoUpdate -bool false
 open -a Docker
 
 # Wait for Docker to fully start, then retry
-~/openclaw/bin/openclaw-start.sh
+~/minibot/bin/minibot-start.sh
 ```
 
 ### Database connection errors
 ```bash
 # Check PostgreSQL logs
-docker logs openclaw-postgres
+docker logs minibot-postgres
 
 # Verify password in .env matches docker-compose.yml
 ```
@@ -232,7 +233,7 @@ docker logs openclaw-postgres
 ### Disk space issues
 ```bash
 # Check disk usage
-du -sh ~/openclaw/data/*
+du -sh ~/minibot/data/*
 
 # Clean old Docker images
 docker system prune -a
@@ -243,20 +244,20 @@ docker system prune -a
 It's recommended to track your configuration in git:
 
 ```bash
-cd ~/openclaw
+cd ~/minibot
 git init
 git add config/ experiments/ docker/docker-compose.yml
-git commit -m "Initial OpenClaw configuration"
+git commit -m "Initial Minibot configuration"
 ```
 
 Note: The `.gitignore` file automatically excludes data, logs, and sensitive files.
 
-## Support
+## Additional Resources
 
-- OpenClaw Documentation: [openclaw.ai](https://openclaw.ai)
-- This setup is based on the comprehensive guide in `openclaw-macos-setup.md`
+- Comprehensive setup guide: `minibot-macos-setup.md`
+- Example configurations in `docker/` and `config/` directories
 
 ---
 
 **Created:** February 2025  
-**For:** OpenClaw macOS Experimentation Environment
+**For:** Minibot macOS Experimentation Environment
