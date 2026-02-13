@@ -13,9 +13,15 @@ tmp/
 # IDE
 .vscode/
 .idea/
+
+# Vim
 *.swp
 *.swo
 *~
+*.un~
+Session.vim
+.netrwhist
+tags
 
 # OS
 .DS_Store

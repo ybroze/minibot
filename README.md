@@ -334,7 +334,7 @@ mb-secrets init
 
 ## Additional Resources
 
-- Comprehensive setup guide: `minibot-macos-setup.md`
+- Comprehensive setup guide: `docs/minibot-macos-setup.md`
 - Threat model: `docs/threat-model.md`
 - Emergency procedures: `docs/emergency.md`
 - Maintenance guide: `docs/maintenance.md`
