@@ -96,6 +96,17 @@ else
 fi
 echo ""
 
+# --- 5b. Umask --------------------------------------------------------------
+echo "Umask:"
+
+current_umask=$(umask)
+if [ "$current_umask" = "0077" ] || [ "$current_umask" = "077" ]; then
+    pass "umask is $current_umask (owner-only default)"
+else
+    warn "umask is $current_umask (should be 077 for owner-only file creation)"
+fi
+echo ""
+
 # --- 6. macOS Firewall -----------------------------------------------------
 echo "macOS Firewall:"
 

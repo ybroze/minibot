@@ -1,6 +1,9 @@
 # Minibot Experimental Environment
 # Add this to ~/.zshrc for the minibot user
 
+# Ensure all new files are owner-only by default (rwx------)
+umask 077
+
 export MINIBOT_HOME="$HOME/minibot"
 export PATH="$MINIBOT_HOME/bin:$HOME/.local/bin:$PATH"
 

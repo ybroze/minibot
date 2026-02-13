@@ -492,6 +492,119 @@ docker-compose -f ~/minibot/docker/docker-compose.yml down -v
 
 ---
 
+## Part 6b: 24/7 Operation (LaunchAgent)
+
+If the Minibot machine should run services continuously (e.g., a dedicated
+Mac Mini), you can install a macOS LaunchAgent that starts Minibot
+automatically when the user logs in.
+
+### How It Works
+
+macOS uses `launchd` as its init system. A **LaunchAgent** is a per-user
+service definition (a `.plist` file in `~/Library/LaunchAgents/`) that
+`launchd` loads at login time. This is different from a **LaunchDaemon**
+(system-wide, runs at boot regardless of login), which would require root
+and is more complex.
+
+The key implication: **the LaunchAgent only fires after the minibot user
+logs in.** If the machine reboots and nobody logs in (e.g., it's headless
+after a power outage), services won't start until a login occurs.
+
+### Install the LaunchAgent
+
+```bash
+~/minibot/scripts/install-launchagent.sh
+```
+
+This creates `~/Library/LaunchAgents/com.minibot.gateway.plist` with:
+- `RunAtLoad: true` — starts `minibot-start.sh` when the user logs in
+- Stdout/stderr routed to `~/minibot/data/logs/system/`
+- PATH set to include `/opt/homebrew/bin` (so `docker` is found)
+
+### Verify
+
+```bash
+# Check the plist exists
+ls ~/Library/LaunchAgents/ | grep minibot
+
+# Check it's loaded
+launchctl list | grep minibot
+```
+
+### Enable Auto-Login (for Headless Machines)
+
+For a truly headless Mac Mini (no monitor, no keyboard), enable auto-login
+so the LaunchAgent fires after a reboot without manual intervention:
+
+```bash
+# System Settings > Users & Groups > Automatic login > select "minibot"
+```
+
+**Security note:** Auto-login means anyone with physical access to the
+machine is logged in as the minibot user. This is acceptable for a dedicated
+machine in a physically secure location, but inappropriate for shared
+environments. FileVault will prompt for a password at boot regardless,
+providing a layer of protection.
+
+### Prevent Sleep
+
+For 24/7 operation, prevent the machine from sleeping:
+
+```bash
+# System Settings > Energy > Prevent automatic sleeping when display is off > ON
+```
+
+### Test
+
+```bash
+sudo reboot
+
+# After reboot, verify services came back:
+mb-status
+~/minibot/scripts/health-check.sh
+```
+
+### Uninstall
+
+```bash
+~/minibot/scripts/uninstall-launchagent.sh
+```
+
+---
+
+## Part 7: Remote Access
+
+If you need to access the Minibot machine remotely (e.g., from a laptop or
+phone), **never expose Docker ports to the public internet.** All ports in the
+`docker-compose.yml` are bound to `127.0.0.1` for this reason.
+
+### Recommended: Tailscale
+
+Tailscale creates a private mesh VPN between your devices. Install it on both
+the Minibot machine and your remote device:
+
+```bash
+brew install --cask tailscale
+# Open Tailscale from Applications and log in.
+# Install Tailscale on your phone/laptop and log in with the same account.
+# Access the machine via its Tailscale IP (100.x.x.x).
+```
+
+### Alternative: SSH Tunnel
+
+If you prefer not to use Tailscale, you can SSH into the machine and forward
+ports locally:
+
+```bash
+# From your remote machine, forward Postgres:
+ssh -L 5432:127.0.0.1:5432 minibot@<machine-ip>
+
+# Or forward multiple ports:
+ssh -L 5432:127.0.0.1:5432 -L 6379:127.0.0.1:6379 minibot@<machine-ip>
+```
+
+---
+
 ## Notes
 
 - This setup creates an isolated environment for agent experimentation

@@ -64,7 +64,26 @@ brew install --cask docker              # Docker Desktop (daemon + CLI + Compose
 brew install git python@3.11 node@20
 brew install --cask visual-studio-code iterm2
 brew install jq yq tree htop
+
+# Install Tailscale for secure remote access (optional but recommended)
+brew install --cask tailscale
 ```
+
+### 5b. Set Up Tailscale (Optional)
+
+Tailscale creates a private mesh VPN between your devices so you can reach
+the Minibot machine remotely without exposing any ports to the internet.
+
+1. Open Tailscale from Applications and log in (or create an account).
+2. Install Tailscale on any device you want remote access from (phone, laptop, etc.) and log in with the same account.
+3. Verify connectivity:
+   ```bash
+   tailscale status
+   ```
+   You should see all your devices listed with `100.x.x.x` addresses.
+
+Once connected, you can reach the Minibot machine from any device on your
+tailnet using its Tailscale IP — no port forwarding or firewall changes needed.
 
 ### 6. Store Secrets in the macOS Keychain
 
@@ -81,6 +100,25 @@ Minibot uses the macOS Keychain for secrets — no plaintext `.env` files.
 Secrets are stored in your login keychain under the service name `minibot`
 and are loaded just-in-time when you start services.
 
+### 6b. Configure API Spending Limits
+
+Before starting services that use external APIs (LLM providers, messaging
+platforms, etc.), set spending limits on each provider's dashboard. The
+keychain protects your keys at rest, but it can't prevent a runaway agent
+from burning through credits at runtime.
+
+For each API key you add:
+
+1. Log in to the provider's billing or usage dashboard.
+2. Set a **daily** and **monthly** spending cap.
+3. Enable **email or webhook alerts** at 50% and 80% of those caps.
+4. Where available, prefer **prepaid/credit-based** billing — it acts as a
+   natural spending ceiling (you can't spend what you haven't loaded).
+
+> **Note:** The `REQUIRED_SECRETS` array in `minibot-secrets.sh` has commented
+> placeholders for keys like `ANTHROPIC_API_KEY`. When you uncomment and store
+> one, configure the provider's spending limits *before* you start services.
+
 ### 7. Start Services
 
 ```bash
@@ -89,6 +127,34 @@ and are loaded just-in-time when you start services.
 
 # Check status
 ~/minibot/bin/minibot-logs.sh
+```
+
+> **Note:** PostgreSQL and Redis run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them separately: `brew install libpq redis`.
+
+### 8. Enable 24/7 Operation (Optional)
+
+If this is a dedicated machine that should run Minibot continuously:
+
+```bash
+# Install the LaunchAgent
+~/minibot/scripts/install-launchagent.sh
+
+# Verify it's installed and loaded
+launchctl list | grep minibot
+```
+
+Then configure the machine for unattended operation:
+
+1. **Prevent sleep:** System Settings > Energy > Prevent automatic sleeping when the display is off > **ON**
+2. **Enable auto-login** (for headless machines): System Settings > Users & Groups > Automatic login > select the `minibot` user. Without this, the LaunchAgent won't start after a reboot until someone logs in.
+
+Test by rebooting:
+
+```bash
+sudo reboot
+
+# After reboot, verify services came back:
+mb-status
 ```
 
 ## Directory Structure
@@ -208,6 +274,31 @@ mb-secrets get POSTGRES_PASSWORD
 # WARNING: This deletes all data!
 ```
 
+### Access Minibot Remotely (via Tailscale)
+```bash
+# Check your Mac Mini's Tailscale IP
+tailscale ip -4
+
+# From any device on your tailnet, connect using that IP:
+#   ssh minibot@100.x.x.x
+#   Or forward a port: ssh -L 5432:127.0.0.1:5432 minibot@100.x.x.x
+```
+
+### Manage the LaunchAgent (24/7 Operation)
+```bash
+# Check if the LaunchAgent is installed and loaded
+launchctl list | grep minibot
+
+# Install (or reinstall)
+~/minibot/scripts/install-launchagent.sh
+
+# Remove
+~/minibot/scripts/uninstall-launchagent.sh
+
+# View LaunchAgent logs
+tail -f ~/minibot/data/logs/system/launchagent-stderr.log
+```
+
 ## Shell Aliases
 
 The following aliases are available after sourcing `~/.zshrc`:
@@ -313,7 +404,9 @@ docker compose -f ~/minibot/docker/docker-compose.yml down -v
 mb-start
 ```
 
-Repeat for `REDIS_PASSWORD` and any future secrets.
+Repeat for `REDIS_PASSWORD` and any future secrets. When rotating an API
+key for an external provider, it's also a good time to review your spending
+limits on that provider's dashboard.
 
 ### Security Audit
 
@@ -331,6 +424,35 @@ After restoring on a new machine, you must re-initialize the keychain:
 ```bash
 mb-secrets init
 ```
+
+## File Permissions
+
+Minibot uses the macOS Keychain for secrets, so there are no plaintext
+passwords or API keys on disk. This is a deliberate improvement over the
+common `.env` file pattern, where a single `cat` or stray backup can expose
+everything.
+
+For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
+
+- **`umask 077`** is set in the shell profile (`zshrc-additions.sh`), so every
+  file the minibot user creates is owner-only (`rwx------`) by default. This
+  prevents loose permissions from being created in the first place.
+- **`config/`, `data/`, and `tmp/`** are set to `700` during install.
+- **`security-audit.sh`** checks for permission drift, including world-readable
+  files in `config/` and an incorrect umask.
+
+**Known limitation — `docker inspect`:** Anyone with access to the Docker socket
+on the host can run `docker inspect minibot-postgres` and see environment
+variables (including `POSTGRES_PASSWORD`) in the container's config. This is a
+Docker-wide issue with no clean fix short of Docker secrets (which require Swarm
+mode). On a single-user dedicated machine this is low risk, but be aware that
+Docker socket access is effectively root-equivalent.
+
+**Known limitation — log file ownership:** Files created inside Docker volumes
+may be owned by root or by the container's internal user, not the minibot host
+user. The `data/` directory is `700`, which prevents other host users from
+reading the logs, but the files inside may have looser permissions than
+expected. The `security-audit.sh` script checks for this.
 
 ## Additional Resources
 

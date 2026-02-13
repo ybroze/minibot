@@ -78,4 +78,19 @@ else
 fi
 echo ""
 
+# Check LaunchAgent
+PLIST_PATH="$HOME/Library/LaunchAgents/com.minibot.gateway.plist"
+echo "LaunchAgent (24/7 Operation):"
+if [ -f "$PLIST_PATH" ]; then
+    echo "✓ Plist installed at: $PLIST_PATH"
+    if launchctl list 2>/dev/null | grep -q "com.minibot.gateway"; then
+        echo "✓ LaunchAgent is loaded"
+    else
+        echo "⚠ Plist exists but LaunchAgent is not loaded (run: launchctl load \"$PLIST_PATH\")"
+    fi
+else
+    echo "  LaunchAgent not installed (optional — run install-launchagent.sh for 24/7 operation)"
+fi
+echo ""
+
 echo "=== Health Check Complete ==="

@@ -21,6 +21,21 @@ window could read `/proc/<pid>/environ` (on Linux) or equivalent. On macOS
 this is mitigated by SIP and per-user process isolation, but it is not zero
 risk.
 
+Additionally, Docker exposes container environment variables (including
+interpolated secrets like `POSTGRES_PASSWORD`) to anyone who can run
+`docker inspect` on the host. Docker socket access is effectively
+root-equivalent, so on a shared machine this is a real concern. On a
+single-user dedicated machine the risk is lower but worth documenting.
+
+**Mitigations in place:**
+- `umask 077` ensures all new files are owner-only by default.
+- `config/`, `data/`, and `tmp/` are set to `700` during install.
+- `security-audit.sh` checks for permission drift, world-readable config
+  files, and incorrect umask.
+- Files created inside Docker volumes (e.g., logs) may be owned by root or
+  the container's internal user. The `700` on the parent `data/` directory
+  prevents other host users from traversing into them.
+
 ---
 
 ## Threat 2: Network Exposure
