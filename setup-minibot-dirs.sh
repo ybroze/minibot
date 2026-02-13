@@ -46,6 +46,11 @@ tmp/
 .DS_Store
 EOF
 
+# Set restrictive permissions on sensitive directories
+chmod 700 "$BASE_DIR/config"
+chmod 700 "$BASE_DIR/data"
+chmod 700 "$BASE_DIR/tmp"
+
 echo "✓ Directory structure created at: $BASE_DIR"
 echo ""
 echo "Next steps:"

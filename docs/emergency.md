@@ -1,0 +1,122 @@
+# Emergency Procedures
+
+## If You Suspect Compromise
+
+### Step 1: Stop Everything Immediately
+
+```bash
+~/minibot/bin/minibot-stop.sh
+```
+
+If that fails or you don't trust the scripts:
+
+```bash
+docker kill minibot-postgres minibot-redis 2>/dev/null
+docker compose -f ~/minibot/docker/docker-compose.yml down 2>/dev/null
+```
+
+### Step 2: Rotate All Secrets
+
+Even if you're not sure the secrets were exfiltrated, rotate them
+preemptively. The cost of a false alarm is minutes; the cost of leaving
+compromised credentials active can be severe.
+
+```bash
+# Set new values in the keychain
+~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
+~/minibot/bin/minibot-secrets.sh set REDIS_PASSWORD
+
+# If you have API keys stored:
+# ~/minibot/bin/minibot-secrets.sh set ANTHROPIC_API_KEY
+# ~/minibot/bin/minibot-secrets.sh set TELEGRAM_BOT_TOKEN
+```
+
+Also revoke the old keys/tokens on the provider side (Anthropic console,
+Telegram @BotFather `/revoke`, etc.).
+
+### Step 3: Investigate
+
+```bash
+# Check for unauthorized processes
+ps aux | grep -i "minibot\|node\|python\|curl\|wget"
+
+# Check for recently modified scripts (should not change after install)
+find ~/minibot/bin ~/minibot/scripts -newer ~/minibot/install.sh -type f
+
+# Check Docker for unknown containers
+docker ps -a
+
+# Review recent session logs
+ls -lt ~/minibot/data/logs/**/*.log 2>/dev/null | head -20
+```
+
+### Step 4: Decide on Recovery
+
+**If the investigation is inconclusive:**
+- Restart services with the new secrets: `~/minibot/bin/minibot-start.sh`
+- Monitor closely for the next 24 hours.
+
+**If compromise is confirmed:**
+- Assume all data on the machine is exposed (database contents, config files,
+  any file the minibot user can read).
+- Change all passwords that may have been accessible (API keys, email, etc.).
+- Consider reformatting the machine and reinstalling from scratch.
+- Restore from a known-good backup: `~/minibot/scripts/restore.sh <backup-dir>`
+- Re-initialize secrets: `~/minibot/bin/minibot-secrets.sh init`
+
+---
+
+## If API Bills Are Unexpectedly High
+
+### Step 1: Stop services
+
+```bash
+~/minibot/bin/minibot-stop.sh
+```
+
+### Step 2: Check provider dashboards
+
+Check the usage and billing pages for each provider (Anthropic console,
+Moonshot platform, etc.) to identify which model or endpoint spiked.
+
+### Step 3: Review logs for loops
+
+Look for repeated tool calls or rapid-fire API requests in the agent
+session logs under `~/minibot/data/logs/`.
+
+### Step 4: Lower limits before restarting
+
+Adjust spending limits on the provider dashboard before bringing services
+back up.
+
+---
+
+## If an Agent Behaves Erratically
+
+### Soft reset: Clear the session
+
+If you have a messaging channel connected, send `/new` to reset the session.
+Or from the CLI:
+
+```bash
+# List active sessions
+# (replace with your actual orchestrator CLI once available)
+ls ~/minibot/data/logs/agents/
+```
+
+### Hard reset: Wipe agent state
+
+```bash
+~/minibot/bin/minibot-stop.sh
+rm -rf ~/minibot/data/logs/agents/*
+~/minibot/bin/minibot-start.sh
+```
+
+### Nuclear reset: Full environment reset
+
+```bash
+~/minibot/scripts/reset.sh
+```
+
+This destroys all data, containers, and volumes. You will need to
+`minibot-secrets.sh init` and reconfigure from scratch.

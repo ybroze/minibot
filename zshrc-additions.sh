@@ -17,4 +17,5 @@ export PS1="%F{cyan}[minibot]%f %~ %# "
 alias mb-start='~/minibot/bin/minibot-start.sh'
 alias mb-stop='~/minibot/bin/minibot-stop.sh'
 alias mb-logs='~/minibot/bin/minibot-logs.sh'
-alias mb-status='docker-compose -f ~/minibot/docker/docker-compose.yml ps'
+alias mb-status='docker compose -f ~/minibot/docker/docker-compose.yml ps'
+alias mb-secrets='~/minibot/bin/minibot-secrets.sh'

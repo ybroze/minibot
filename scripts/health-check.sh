@@ -7,6 +7,17 @@ cd ~/minibot
 echo "=== Minibot Health Check ==="
 echo ""
 
+# Check keychain secrets
+echo "Keychain Secrets:"
+for key in POSTGRES_PASSWORD REDIS_PASSWORD; do
+    if ~/minibot/bin/minibot-secrets.sh get "$key" &>/dev/null; then
+        echo "✓ $key is set"
+    else
+        echo "✗ $key is missing (run: minibot-secrets.sh init)"
+    fi
+done
+echo ""
+
 # Check Docker
 echo "Docker Status:"
 if command -v docker &> /dev/null; then
@@ -19,7 +30,7 @@ echo ""
 
 # Check running containers
 echo "Running Containers:"
-docker-compose -f docker/docker-compose.yml ps
+docker compose -f docker/docker-compose.yml ps
 echo ""
 
 # Check PostgreSQL
@@ -33,8 +44,11 @@ echo ""
 
 # Check Redis
 echo "Redis:"
-if docker exec minibot-redis redis-cli ping &> /dev/null; then
-    echo "✓ Redis is responding"
+REDIS_PASS=$(~/minibot/bin/minibot-secrets.sh get REDIS_PASSWORD 2>/dev/null || echo "")
+if [ -n "$REDIS_PASS" ] && docker exec minibot-redis redis-cli -a "$REDIS_PASS" ping &> /dev/null; then
+    echo "✓ Redis is responding (authenticated)"
+elif docker exec minibot-redis redis-cli ping &> /dev/null; then
+    echo "⚠ Redis is responding but WITHOUT authentication"
 else
     echo "✗ Redis is not responding"
 fi
@@ -45,10 +59,20 @@ echo "Disk Usage (~/minibot):"
 du -sh ~/minibot/data/* 2>/dev/null || echo "  (no data yet)"
 echo ""
 
+# Component versions
+echo "Component Versions:"
+echo "  Docker:         $(docker --version 2>/dev/null || echo 'not installed')"
+echo "  Docker Compose: $(docker compose version 2>/dev/null || echo 'not installed')"
+pg_image=$(docker inspect minibot-postgres --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
+echo "  PostgreSQL:     $pg_image"
+redis_image=$(docker inspect minibot-redis --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
+echo "  Redis:          $redis_image"
+echo ""
+
 # Check logs
 echo "Recent Errors in Logs:"
 if [ -d ~/minibot/data/logs ]; then
-    grep -i "error" ~/minibot/data/logs/**/*.log 2>/dev/null | tail -n 5 || echo "  (none found)"
+    find ~/minibot/data/logs -name "*.log" -exec grep -li "error" {} \; 2>/dev/null | head -5 || echo "  (none found)"
 else
     echo "  (no logs directory)"
 fi
