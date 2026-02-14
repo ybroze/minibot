@@ -13,6 +13,11 @@ services:
     networks:
       - minibot-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U minibot"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
@@ -30,6 +35,11 @@ services:
     networks:
       - minibot-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:
@@ -40,8 +50,10 @@ services:
     image: openclaw/openclaw:latest
     container_name: minibot-openclaw
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ../data/openclaw:/home/node/.openclaw
     ports:

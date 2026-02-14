@@ -7,9 +7,9 @@ single Linux VM (backed by Apple's Virtualization.framework). This means
 containers are isolated from each other via Linux namespaces and cgroups, but
 they share the same kernel within the VM.
 
-macOS native containerization (available since macOS 26) promises true
-per-container isolation, but the framework is still immature. This is the
-planned upgrade path when it stabilizes (expected mid-2027).
+If Apple ships native macOS containerization with true per-container
+isolation, that would be the natural upgrade path. Until then, Docker
+Desktop's VM-based approach is the most practical option.
 
 ### Why not Podman?
 

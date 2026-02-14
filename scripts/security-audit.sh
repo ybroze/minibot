@@ -120,7 +120,19 @@ else
 fi
 echo ""
 
-# --- 8. Version info -------------------------------------------------------
+# --- 8. Stray .env files ---------------------------------------------------
+echo "Stray .env Files:"
+
+env_files=$(find ~/minibot -name "*.env" ! -name "*.env.example" 2>/dev/null || true)
+if [ -n "$env_files" ]; then
+    warn "Found .env files (secrets should be in Keychain, not on disk):"
+    echo "$env_files" | while read -r f; do echo "       $f"; done
+else
+    pass "No .env files found"
+fi
+echo ""
+
+# --- 9. Version info -------------------------------------------------------
 echo "Component Versions:"
 
 echo "  Docker:          $(docker --version 2>/dev/null || echo 'not installed')"
