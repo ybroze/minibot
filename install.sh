@@ -51,7 +51,6 @@ chmod +x ~/minibot/scripts/*.sh
 echo ""
 echo "Step 3b: Setting file permissions..."
 chmod 700 ~/minibot/data
-chmod 700 ~/minibot/tmp
 
 echo ""
 echo "Step 4: Updating .gitignore..."

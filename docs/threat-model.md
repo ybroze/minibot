@@ -29,7 +29,7 @@ single-user dedicated machine the risk is lower but worth documenting.
 
 **Mitigations in place:**
 - `umask 077` ensures all new files are owner-only by default.
-- `config/`, `data/`, and `tmp/` are set to `700` during install.
+- `data/` is set to `700` during install.
 - `security-audit.sh` checks for permission drift, world-readable config
   files, and incorrect umask.
 - Files created inside Docker volumes (e.g., logs) may be owned by root or

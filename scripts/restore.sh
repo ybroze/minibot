@@ -56,9 +56,7 @@ fi
 
 # Re-apply restrictive permissions on sensitive directories
 echo "Restoring directory permissions..."
-chmod 700 ~/minibot/config 2>/dev/null || true
 chmod 700 ~/minibot/data 2>/dev/null || true
-chmod 700 ~/minibot/tmp 2>/dev/null || true
 
 # Restart services
 echo "Restarting services..."

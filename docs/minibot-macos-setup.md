@@ -178,7 +178,6 @@ rm -rf Movies/ Music/ Public/
 │   │   ├── architecture.md
 │   │   ├── agent-development.md
 │   │   └── troubleshooting.md
-│   └── tmp/                           # Temporary files
 │       └── .gitkeep
 ├── .config/                           # XDG config dir (optional)
 ├── .cache/                            # Cache directory
@@ -196,7 +195,7 @@ rm -rf Movies/ Music/ Public/
 BASE_DIR="$HOME/minibot"
 
 # Create main directories
-mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs,tmp}
+mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs}
 
 # Data subdirectories
 mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/system}
@@ -211,7 +210,6 @@ find "$BASE_DIR" -type d -empty -exec touch {}/.gitkeep \;
 cat > "$BASE_DIR/.gitignore" << 'EOF'
 # Data & logs
 data/
-tmp/
 *.log
 
 # Environment files

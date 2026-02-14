@@ -9,7 +9,7 @@ BASE_DIR="$HOME/minibot"
 echo "Creating Minibot directory structure at: $BASE_DIR"
 
 # Create main directories
-mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs,tmp}
+mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs}
 
 # Data subdirectories
 mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/system}
@@ -24,7 +24,6 @@ find "$BASE_DIR" -type d -empty -exec touch {}/.gitkeep \;
 cat > "$BASE_DIR/.gitignore" << 'EOF'
 # Data & logs
 data/
-tmp/
 *.log
 
 # Environment files
@@ -41,7 +40,6 @@ EOF
 
 # Set restrictive permissions on sensitive directories
 chmod 700 "$BASE_DIR/data"
-chmod 700 "$BASE_DIR/tmp"
 
 echo "✓ Directory structure created at: $BASE_DIR"
 echo ""

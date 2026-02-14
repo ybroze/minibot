@@ -75,7 +75,7 @@ echo ""
 # --- 5. File permissions ---------------------------------------------------
 echo "File Permissions:"
 
-for dir in ~/minibot/data ~/minibot/tmp; do
+for dir in ~/minibot/data; do
     if [ -d "$dir" ]; then
         perms=$(stat -f "%Lp" "$dir" 2>/dev/null || stat -c "%a" "$dir" 2>/dev/null)
         if [ "$perms" = "700" ]; then

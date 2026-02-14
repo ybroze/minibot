@@ -3,7 +3,6 @@
 
 # Data & logs
 data/
-tmp/
 *.log
 
 # Environment files (keep .env.example files)

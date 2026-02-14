@@ -230,7 +230,6 @@ After running the setup script, you'll have:
 │   ├── threat-model.md
 │   ├── emergency.md
 │   └── maintenance.md
-└── tmp/                    # Temporary files
 ```
 
 ## Available Scripts
@@ -468,7 +467,7 @@ For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
 - **`umask 077`** is set in the shell profile (`zshrc-additions.sh`), so every
   file the minibot user creates is owner-only (`rwx------`) by default. This
   prevents loose permissions from being created in the first place.
-- **`data/` and `tmp/`** are set to `700` during install.
+- **`data/`** is set to `700` during install.
 - **`security-audit.sh`** checks for permission drift and an incorrect umask.
 
 **Known limitation — `docker inspect`:** Anyone with access to the Docker socket
