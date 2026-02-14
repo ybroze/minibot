@@ -61,7 +61,7 @@ services:
     ports:
       - "127.0.0.1:18789:18789"
     environment:
-      DATABASE_URL: postgres://minibot:${POSTGRES_PASSWORD:?Set via minibot-secrets.sh init}@postgres:5432/minibot
+      POSTGRES_DB_URL: postgres://minibot:${POSTGRES_PASSWORD:?Set via minibot-secrets.sh init}@postgres:5432/minibot
       REDIS_URL: redis://:${REDIS_PASSWORD:?Set via minibot-secrets.sh init}@redis:6379
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:?Set via minibot-secrets.sh init}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?Set via minibot-secrets.sh init}
