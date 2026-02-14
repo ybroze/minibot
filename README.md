@@ -158,11 +158,12 @@ For each API key you add:
 ~/minibot/bin/minibot-logs.sh
 ```
 
-> **Note:** PostgreSQL and Redis run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
+> **Note:** PostgreSQL, Redis, and OpenClaw run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
 
 ### 6. Enable 24/7 Operation.
 
-If this is a dedicated machine that should run Minibot continuously:
+This is a dedicated machine that should run Minibot continuously. LaunchAgent
+is used at the system user level rather than machine-wide.
 
 ```bash
 # Install the LaunchAgent
@@ -175,8 +176,8 @@ launchctl list | grep minibot
 Then configure the machine for unattended operation:
 
 1. **Prevent sleep:** System Settings > Energy > Prevent automatic sleeping
-when the display is off > **ON**
-2. **Enable auto-login** (for headless machines): System Settings > Users & Groups > Automatic login > select the `minibot` user. Without this, the LaunchAgent won't start after a reboot until someone logs in.
+when the display is off > **ON**, and set "Turn display off after" to "Never."
+2. **Enable auto-login** (optional headless machines): System Settings > Users & Groups > Automatic login > select the `minibot` user. Without this, the LaunchAgent won't start after a reboot until someone logs in.
 
 Test by rebooting:
 
