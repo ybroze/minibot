@@ -36,27 +36,29 @@ services:
           memory: 256M
           cpus: '0.5'
 
-  # Agent orchestrator (placeholder - adjust based on actual requirements)
-  # Uncomment and configure once you have the actual images/builds
-  # orchestrator:
-  #   build:
-  #     context: ../
-  #     dockerfile: docker/Dockerfiles/orchestrator.Dockerfile
-  #   container_name: minibot-orchestrator
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   volumes:
-  #     - ../config:/app/config:ro
-  #     - ../data/logs:/app/logs
-  #   environment:
-  #     - DATABASE_URL=postgresql://minibot:${POSTGRES_PASSWORD}@postgres:5432/minibot
-  #     - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
-  #   ports:
-  #     - "127.0.0.1:8080:8080"
-  #   networks:
-  #     - minibot-net
-  #   restart: unless-stopped
+  openclaw:
+    image: openclaw/openclaw:latest
+    container_name: minibot-openclaw
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ../data/openclaw:/home/node/.openclaw
+    ports:
+      - "127.0.0.1:18789:18789"
+      - "127.0.0.1:18790:18790"
+    environment:
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:?Set via minibot-secrets.sh init}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?Set via minibot-secrets.sh init}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?Set via minibot-secrets.sh init}
+    networks:
+      - minibot-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '2.0'
 
 networks:
   minibot-net:

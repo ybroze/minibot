@@ -19,7 +19,7 @@ echo ""
 # --- 1. Keychain secrets ---------------------------------------------------
 echo "Keychain Secrets:"
 
-for key in POSTGRES_PASSWORD REDIS_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD ANTHROPIC_API_KEY TELEGRAM_BOT_TOKEN OPENCLAW_GATEWAY_TOKEN; do
     val=$(~/minibot/bin/minibot-secrets.sh get "$key" 2>/dev/null || true)
     if [ -z "$val" ]; then
         fail "$key is not set in the keychain"
@@ -140,6 +140,9 @@ echo "  PostgreSQL:      $pg_image"
 
 redis_image=$(docker inspect minibot-redis --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  Redis:           $redis_image"
+
+oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
+echo "  OpenClaw:        $oc_image"
 echo ""
 
 # --- Summary ----------------------------------------------------------------

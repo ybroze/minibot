@@ -15,7 +15,7 @@ mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,experiments,docs
 mkdir -p "$BASE_DIR/config"/{agents,orchestration,environments}
 
 # Data subdirectories
-mkdir -p "$BASE_DIR/data"/{postgres,redis,logs/{agents,orchestrator,system}}
+mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/{agents,orchestrator,system}}
 
 # Docker subdirectories
 mkdir -p "$BASE_DIR/docker/Dockerfiles"

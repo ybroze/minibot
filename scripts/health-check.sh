@@ -11,7 +11,7 @@ echo ""
 
 # Check keychain secrets
 echo "Keychain Secrets:"
-for key in POSTGRES_PASSWORD REDIS_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD ANTHROPIC_API_KEY TELEGRAM_BOT_TOKEN OPENCLAW_GATEWAY_TOKEN; do
     if ~/minibot/bin/minibot-secrets.sh get "$key" &>/dev/null; then
         echo "✓ $key is set"
     else
@@ -56,6 +56,17 @@ else
 fi
 echo ""
 
+# Check OpenClaw
+echo "OpenClaw:"
+if docker exec minibot-openclaw node -e "process.exit(0)" &> /dev/null; then
+    echo "✓ OpenClaw container is running"
+    oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "unknown")
+    echo "  Image: $oc_image"
+else
+    echo "✗ OpenClaw is not running"
+fi
+echo ""
+
 # Check disk space
 echo "Disk Usage (~/minibot):"
 du -sh ~/minibot/data/* 2>/dev/null || echo "  (no data yet)"
@@ -69,6 +80,8 @@ pg_image=$(docker inspect minibot-postgres --format='{{.Config.Image}}' 2>/dev/n
 echo "  PostgreSQL:     $pg_image"
 redis_image=$(docker inspect minibot-redis --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  Redis:          $redis_image"
+oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
+echo "  OpenClaw:       $oc_image"
 echo ""
 
 # Check logs
