@@ -265,6 +265,16 @@ After running the setup script, you'll have:
 - Secrets management: `docs/secrets.md`
 - Filesystem security: `docs/filesystem.md`
 
+## Shell Aliases
+
+The following aliases are available after sourcing `~/.zshrc`:
+
+- `mb-start` - Start services
+- `mb-stop` - Stop services
+- `mb-logs` - View logs
+- `mb-status` - Check container status
+- `mb-secrets` - Manage keychain secrets
+
 ## Common Tasks
 
 ### View Service Status
@@ -341,15 +351,6 @@ launchctl list | grep minibot
 tail -f ~/minibot/data/logs/system/launchagent-stderr.log
 ```
 
-## Shell Aliases
-
-The following aliases are available after sourcing `~/.zshrc`:
-
-- `mb-start` - Start services
-- `mb-stop` - Stop services
-- `mb-logs` - View logs
-- `mb-status` - Check container status
-- `mb-secrets` - Manage keychain secrets
 
 ## Environment Cleanup
 
