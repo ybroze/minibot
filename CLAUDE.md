@@ -12,7 +12,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 **Secrets flow:** `macOS Keychain → minibot-start.sh (exports env vars) → docker compose up → containers`
 
-**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), and OpenClaw (`127.0.0.1:18789` gateway, `127.0.0.1:18790` bridge) on a Docker bridge network (`minibot-net`). All are localhost-only.
+**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only.
 
 **Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
 
