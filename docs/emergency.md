@@ -45,8 +45,11 @@ find ~/minibot/bin ~/minibot/scripts -newer ~/minibot/install.sh -type f
 # Check Docker for unknown containers
 docker ps -a
 
-# Review recent session logs
-ls -lt ~/minibot/data/logs/**/*.log 2>/dev/null | head -20
+# Review recent OpenClaw session logs
+ls -lt ~/minibot/data/openclaw/agents/*/sessions/*.jsonl 2>/dev/null | head -20
+
+# Review LaunchAgent logs
+ls -lt ~/minibot/data/logs/system/*.log 2>/dev/null | head -20
 ```
 
 ### Step 4: Decide on Recovery
@@ -56,7 +59,7 @@ ls -lt ~/minibot/data/logs/**/*.log 2>/dev/null | head -20
 - Monitor closely for the next 24 hours.
 
 **If compromise is confirmed:**
-- Assume all data on the machine is exposed (database contents, config files,
+- Assume all data on the machine is exposed (database contents, OpenClaw state,
   any file the minibot user can read).
 - Change all passwords that may have been accessible (API keys, email, etc.).
 - Consider reformatting the machine and reinstalling from scratch.
@@ -76,12 +79,12 @@ ls -lt ~/minibot/data/logs/**/*.log 2>/dev/null | head -20
 ### Step 2: Check provider dashboards
 
 Check the usage and billing pages for each provider (Anthropic console,
-Moonshot platform, etc.) to identify which model or endpoint spiked.
+Telegram, etc.) to identify which model or endpoint spiked.
 
 ### Step 3: Review logs for loops
 
-Look for repeated tool calls or rapid-fire API requests in the agent
-session logs under `~/minibot/data/logs/`.
+Look for repeated tool calls or rapid-fire API requests in the OpenClaw
+session logs under `~/minibot/data/openclaw/`.
 
 ### Step 4: Lower limits before restarting
 

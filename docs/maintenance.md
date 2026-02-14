@@ -24,8 +24,9 @@ Verify all services are running and responsive.
 du -sh ~/minibot/data/*
 ```
 
-If PostgreSQL or Redis data is growing unexpectedly, investigate. Consider
-running `docker system prune` to clean up unused images and build cache.
+If PostgreSQL, Redis, or OpenClaw data is growing unexpectedly, investigate.
+Consider running `docker system prune` to clean up unused images and build
+cache.
 
 ### Quarterly: Rotate Credentials
 
@@ -47,7 +48,8 @@ Rotate all secrets every 3 months. The process:
    mb-start
    ```
    **Note:** `-v` removes Docker volumes. Back up first if you have data.
-4. If you have API keys or bot tokens, rotate them on the provider side too.
+4. Revoke the old keys/tokens on the provider side too (Anthropic console,
+   Telegram @BotFather `/revoke`, etc.).
 
 ### As Needed: Update Docker Images
 
@@ -107,16 +109,17 @@ ls -1d ~/minibot-backups/*/ | head -n -5 | xargs rm -rf
 
 ## Log Rotation
 
-Minibot does not currently rotate logs automatically. If logs in
-`~/minibot/data/logs/` grow large, either:
+Container logs are managed by Docker's logging driver. To check their size
+and prune if needed:
 
-1. Set up `newsyslog` or `logrotate` (via Homebrew):
-   ```bash
-   brew install logrotate
-   ```
+```bash
+# Check Docker log sizes
+docker system df -v
 
-2. Or periodically archive and clear old logs:
-   ```bash
-   tar czf ~/minibot-backups/logs-$(date +%Y%m%d).tar.gz ~/minibot/data/logs/
-   rm -rf ~/minibot/data/logs/**/*.log
-   ```
+# Truncate a specific container's log
+sudo truncate -s 0 $(docker inspect --format='{{.LogPath}}' minibot-openclaw)
+```
+
+LaunchAgent logs in `~/minibot/data/logs/system/` and OpenClaw session data
+in `~/minibot/data/openclaw/` may also grow over time. Periodically archive
+and clear old data as needed.
