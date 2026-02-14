@@ -389,10 +389,6 @@ sudo mdutil -i off ~/minibot/data
 defaults write com.apple.commerce AutoUpdate -bool false
 ```
 
-## Next Steps
-
-1. Version control your configurations with git
-
 ## Troubleshooting
 
 ### Docker not starting
