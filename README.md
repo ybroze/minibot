@@ -39,50 +39,10 @@ sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 
 ## Configuration
 
-### 1. Create the `minibot` User
+### 1. Install Dependencies (as admin user)
 
-Via System Settings:
-
-- Go to **System Settings > Users & Groups**
-- Click **Add Account...**
-- Select **Standard** account type
-- Full name: `Minibot`
-- Account name: `minibot`
-- Set a strong password and save it in a password manager, or print it out.
-
-### 2. Log in as `minibot` User
-
-Log out of your current account and log in as the `minibot` user.
-
-### 3. Run the Setup Script
-
-```bash
-# Clone or download this repository
-cd ~/Downloads
-# (extract the minibot files here)
-
-# Run the directory setup script
-bash minibot/setup-minibot-dirs.sh
-
-# Copy the scripts to the appropriate locations
-cp -r minibot/bin/* ~/minibot/bin/
-cp -r minibot/docker/* ~/minibot/docker/
-cp -r minibot/scripts/* ~/minibot/scripts/
-
-# Make scripts executable
-chmod +x ~/minibot/bin/*.sh
-chmod +x ~/minibot/scripts/*.sh
-```
-
-### 4. Configure Shell Environment
-
-```bash
-# Add the shell configuration
-cat minibot/zshrc-additions.sh >> ~/.zshrc
-source ~/.zshrc
-```
-
-### 5. Install Dependencies
+Homebrew and its packages require administrator privileges. Run these steps
+while logged in as your admin account — **not** the `minibot` user.
 
 ```bash
 # Install Xcode Command Line Tools (required by Homebrew and Git)
@@ -105,7 +65,7 @@ brew install jq yq tree htop
 brew install --cask tailscale
 ```
 
-### 5b. Set Up Tailscale (Optional)
+### 1b. Set Up Tailscale (Optional, as admin user)
 
 Tailscale creates a private mesh VPN between your devices so you can reach
 the Minibot machine remotely without exposing any ports to the internet.
@@ -120,6 +80,54 @@ the Minibot machine remotely without exposing any ports to the internet.
 
 Once connected, you can reach the Minibot machine from any device on your
 tailnet using its Tailscale IP — no port forwarding or firewall changes needed.
+
+### 2. Create the `minibot` User (as admin user)
+
+Via System Settings:
+
+- Go to **System Settings > Users & Groups**
+- Click **Add Account...**
+- Select **Standard** account type
+- Full name: `Minibot`
+- Account name: `minibot`
+- Set a strong password and save it in a password manager, or print it out.
+
+### 3. Log in as `minibot` User
+
+Log out of your admin account and log in as the `minibot` user. All remaining
+steps are performed as `minibot`.
+
+> **Note:** Homebrew and its packages (Docker, git, etc.) were installed
+> system-wide by the admin user and are accessible to all users via
+> `/opt/homebrew/bin`.
+
+### 4. Run the Setup Script
+
+```bash
+# Clone or download this repository
+cd ~/Downloads
+# (extract the minibot files here)
+
+# Run the directory setup script
+bash minibot/setup-minibot-dirs.sh
+
+# Copy the scripts to the appropriate locations
+cp -r minibot/bin/* ~/minibot/bin/
+cp -r minibot/docker/* ~/minibot/docker/
+cp -r minibot/scripts/* ~/minibot/scripts/
+
+# Make scripts executable
+chmod +x ~/minibot/bin/*.sh
+chmod +x ~/minibot/scripts/*.sh
+```
+
+### 5. Configure Shell Environment
+
+```bash
+# Add the shell configuration (includes Homebrew PATH)
+cat minibot/zshrc-additions.sh >> ~/.zshrc
+source ~/.zshrc
+```
 
 ### 6. Store Secrets in the macOS Keychain
 
@@ -151,9 +159,9 @@ For each API key you add:
 4. Where available, prefer **prepaid/credit-based** billing — it acts as a
    natural spending ceiling (you can't spend what you haven't loaded).
 
-> **Note:** The `REQUIRED_SECRETS` array in `minibot-secrets.sh` has commented
-> placeholders for keys like `ANTHROPIC_API_KEY`. When you uncomment and store
-> one, configure the provider's spending limits *before* you start services.
+> **Note:** Configure each provider's spending limits *before* you start
+> services. The `REQUIRED_SECRETS` array in `minibot-secrets.sh` lists all
+> keys that `minibot-secrets.sh init` will prompt for.
 
 ### 7. Start Services
 
@@ -165,7 +173,7 @@ For each API key you add:
 ~/minibot/bin/minibot-logs.sh
 ```
 
-> **Note:** PostgreSQL and Redis run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them separately: `brew install libpq redis`.
+> **Note:** PostgreSQL and Redis run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
 
 ### 8. Enable 24/7 Operation (Optional)
 
