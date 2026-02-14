@@ -357,7 +357,7 @@ Optional to do, but useful for either the admin or the `minibot` user.
 
 ### Removable macOS Apps
 
-For a dedicated experimentation machine, you can remove these apps:
+For a dedicated OpenClaw machine, you can remove these apps:
 
 **Media & Entertainment:**
 - Music, TV, Podcasts, News, Books
