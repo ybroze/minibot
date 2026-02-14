@@ -70,7 +70,7 @@ brew install jq yq tree htop
 brew install --cask tailscale
 ```
 
-### 1b. Set Up Tailscale (Optional, as admin user)
+### 1b. Set Up Tailscale
 
 Tailscale creates a private mesh VPN between your devices so you can reach
 the Minibot machine remotely without exposing any ports to the internet.
