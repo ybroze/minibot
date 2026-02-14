@@ -4,6 +4,8 @@
 # Ensure all new files are owner-only by default (rwx------)
 umask 077
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 export MINIBOT_HOME="$HOME/minibot"
 export PATH="$MINIBOT_HOME/bin:$HOME/.local/bin:$PATH"
 
