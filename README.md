@@ -224,7 +224,6 @@ After running the setup script, you'll have:
 ├── docker/                 # Docker configs
 │   ├── docker-compose.yml
 │   └── Dockerfiles/
-├── agents/                 # Agent source code
 ├── lib/                    # Shared libraries
 ├── scripts/                # Maintenance scripts
 │   ├── backup.sh
@@ -382,10 +381,9 @@ defaults write com.apple.commerce AutoUpdate -bool false
 
 ## Next Steps
 
-1. Add your agent implementations to `~/minibot/agents/`
-2. Configure your agents in `~/minibot/config/agents/`
-3. Set up orchestration rules in `~/minibot/config/orchestration/`
-4. Version control your configurations with git
+1. Configure your agents in `~/minibot/config/agents/`
+2. Set up orchestration rules in `~/minibot/config/orchestration/`
+3. Version control your configurations with git
 
 ## Troubleshooting
 

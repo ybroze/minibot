@@ -217,10 +217,6 @@ rm -rf Movies/ Music/ Public/
 │   │   └── Dockerfiles/
 │   │       ├── agent.Dockerfile
 │   │       └── orchestrator.Dockerfile
-│   ├── agents/                        # Agent source code
-│   │   ├── agent-template/
-│   │   ├── custom-agent-1/
-│   │   └── custom-agent-2/
 │   ├── lib/                           # Shared libraries
 │   │   ├── python/
 │   │   └── node/
