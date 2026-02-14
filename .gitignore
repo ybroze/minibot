@@ -22,6 +22,9 @@
 .vscode/
 .idea/
 
+# Claude
+.claude/
+
 # Vim
 *.swp
 *.swo
