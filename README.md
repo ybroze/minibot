@@ -107,53 +107,28 @@ Minimize the attack surface and noise on the dedicated account:
 
 - **Disable iCloud:** System Settings > Apple ID > iCloud > Turn off all sync services
 - **Disable Siri:** System Settings > Siri & Spotlight > Disable "Ask Siri"
-- **Disable location services (optional):** System Settings > Privacy & Security > Location Services > Off
-- **Minimal dock:** Remove all default apps from the dock except Finder, Terminal, and System Settings
+- **Disable location services:** System Settings > Privacy & Security > Location Services > Off
 
-### 4. Run the Setup Script
+### 4. Install Minibot
 
 ```bash
 # Clone or download this repository
 cd ~/Downloads
 # (extract the minibot files here)
 
-# Run the directory setup script
-bash minibot/setup-minibot-dirs.sh
+# Run the installer (creates dirs, copies scripts, configures shell, prompts for secrets)
+bash minibot/install.sh
 
-# Copy the scripts to the appropriate locations
-cp -r minibot/bin/* ~/minibot/bin/
-cp -r minibot/docker/* ~/minibot/docker/
-cp -r minibot/scripts/* ~/minibot/scripts/
-
-# Make scripts executable
-chmod +x ~/minibot/bin/*.sh
-chmod +x ~/minibot/scripts/*.sh
-```
-
-### 5. Configure Shell Environment
-
-```bash
-# Add the shell configuration (includes Homebrew PATH)
-cat minibot/zshrc-additions.sh >> ~/.zshrc
+# Load the new shell config
 source ~/.zshrc
 ```
 
-### 6. Store Secrets in the macOS Keychain
+The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
+`REDIS_PASSWORD`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`,
+`OPENCLAW_GATEWAY_TOKEN`). These are stored in the macOS Keychain — no
+plaintext `.env` files.
 
-Minibot uses the macOS Keychain for secrets — no plaintext `.env` files.
-
-```bash
-# Interactive setup: prompts you for each required secret
-~/minibot/bin/minibot-secrets.sh init
-
-# Or set secrets individually
-~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
-```
-
-Secrets are stored in your login keychain under the service name `minibot`
-and are loaded just-in-time when you start services.
-
-### 6b. Configure API Spending Limits
+### 4b. Configure API Spending Limits
 
 Before starting services that use external APIs (LLM providers, messaging
 platforms, etc.), set spending limits on each provider's dashboard. The
@@ -172,7 +147,7 @@ For each API key you add:
 > services. The `REQUIRED_SECRETS` array in `minibot-secrets.sh` lists all
 > keys that `minibot-secrets.sh init` will prompt for.
 
-### 7. Start Services
+### 5. Start Services
 
 ```bash
 # Start the base infrastructure
@@ -184,7 +159,7 @@ For each API key you add:
 
 > **Note:** PostgreSQL and Redis run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
 
-### 8. Enable 24/7 Operation (Optional)
+### 6. Enable 24/7 Operation (Optional)
 
 If this is a dedicated machine that should run Minibot continuously:
 
