@@ -238,7 +238,6 @@ After running the setup script, you'll have:
 │   ├── threat-model.md
 │   ├── emergency.md
 │   └── maintenance.md
-├── experiments/            # Experimental setups
 └── tmp/                    # Temporary files
 ```
 
@@ -386,8 +385,7 @@ defaults write com.apple.commerce AutoUpdate -bool false
 1. Add your agent implementations to `~/minibot/agents/`
 2. Configure your agents in `~/minibot/config/agents/`
 3. Set up orchestration rules in `~/minibot/config/orchestration/`
-4. Start experimenting with multi-agent setups in `~/minibot/experiments/`
-5. Version control your configurations with git
+4. Version control your configurations with git
 
 ## Troubleshooting
 
@@ -425,7 +423,7 @@ It's recommended to track your configuration in git:
 ```bash
 cd ~/minibot
 git init
-git add config/ experiments/ docker/docker-compose.yml
+git add config/ docker/docker-compose.yml
 git commit -m "Initial Minibot configuration"
 ```
 

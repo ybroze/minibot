@@ -228,10 +228,6 @@ rm -rf Movies/ Music/ Public/
 │   │   ├── backup.sh
 │   │   ├── restore.sh
 │   │   └── health-check.sh
-│   ├── experiments/                   # Experimental setups
-│   │   ├── 2025-02-12-multi-agent/
-│   │   ├── 2025-02-13-failure-modes/
-│   │   └── README.md
 │   ├── docs/                          # Local documentation
 │   │   ├── architecture.md
 │   │   ├── agent-development.md
@@ -254,7 +250,7 @@ rm -rf Movies/ Music/ Public/
 BASE_DIR="$HOME/minibot"
 
 # Create main directories
-mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,experiments,docs,tmp}
+mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,docs,tmp}
 
 # Config subdirectories
 mkdir -p "$BASE_DIR/config"/{agents,orchestration,environments}
@@ -561,7 +557,7 @@ ssh -L 5432:127.0.0.1:5432 -L 6379:127.0.0.1:6379 minibot@<machine-ip>
 - This setup creates an isolated environment for agent experimentation
 - The directory structure follows XDG Base Directory conventions where appropriate
 - Consider setting up log rotation for `~/minibot/data/logs/`
-- Use version control (git) for `~/minibot/config/` and `~/minibot/experiments/`
+- Use version control (git) for `~/minibot/config/`
 - Adjust configurations based on your specific agent implementations and requirements
 - All secrets are stored in the macOS Keychain — see `minibot-secrets.sh` for management
 - Never bind Docker ports to `0.0.0.0` — use `127.0.0.1` and access remotely via Tailscale or SSH

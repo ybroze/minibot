@@ -9,7 +9,7 @@ BASE_DIR="$HOME/minibot"
 echo "Creating Minibot directory structure at: $BASE_DIR"
 
 # Create main directories
-mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,experiments,docs,tmp}
+mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,docs,tmp}
 
 # Config subdirectories
 mkdir -p "$BASE_DIR/config"/{agents,orchestration,environments}
