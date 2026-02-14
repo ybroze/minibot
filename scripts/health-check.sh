@@ -2,6 +2,8 @@
 # health-check.sh
 # Check the health of Minibot services
 
+set -euo pipefail
+
 cd ~/minibot
 
 echo "=== Minibot Health Check ==="
@@ -30,7 +32,7 @@ echo ""
 
 # Check running containers
 echo "Running Containers:"
-docker compose -f docker/docker-compose.yml ps
+docker compose -f docker/docker-compose.yml ps || echo "  (could not query containers)"
 echo ""
 
 # Check PostgreSQL
@@ -72,7 +74,8 @@ echo ""
 # Check logs
 echo "Recent Errors in Logs:"
 if [ -d ~/minibot/data/logs ]; then
-    find ~/minibot/data/logs -name "*.log" -exec grep -li "error" {} \; 2>/dev/null | head -5 || echo "  (none found)"
+    find ~/minibot/data/logs -name "*.log" -exec grep -li "error" {} \; 2>/dev/null | head -5 || true
+    # If no output above, no errors were found
 else
     echo "  (no logs directory)"
 fi

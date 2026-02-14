@@ -3,7 +3,7 @@
 # Quick installer for Minibot environment
 # Run this as the minibot user
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 

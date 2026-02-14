@@ -2,7 +2,7 @@
 # restore.sh
 # Restore Minibot from a backup
 
-set -e
+set -euo pipefail
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <backup-directory>"
@@ -37,22 +37,28 @@ echo "Stopping services..."
 if [ -d "$BACKUP_DIR/data" ]; then
     echo "Restoring data..."
     rm -rf ~/minibot/data
-    cp -r "$BACKUP_DIR/data" ~/minibot/
+    cp -rp "$BACKUP_DIR/data" ~/minibot/
 fi
 
 # Restore config
 if [ -d "$BACKUP_DIR/config" ]; then
     echo "Restoring configuration..."
     rm -rf ~/minibot/config
-    cp -r "$BACKUP_DIR/config" ~/minibot/
+    cp -rp "$BACKUP_DIR/config" ~/minibot/
 fi
 
 # Restore docker configs
 if [ -d "$BACKUP_DIR/docker" ]; then
     echo "Restoring Docker configurations..."
     rm -rf ~/minibot/docker
-    cp -r "$BACKUP_DIR/docker" ~/minibot/
+    cp -rp "$BACKUP_DIR/docker" ~/minibot/
 fi
+
+# Re-apply restrictive permissions on sensitive directories
+echo "Restoring directory permissions..."
+chmod 700 ~/minibot/config 2>/dev/null || true
+chmod 700 ~/minibot/data 2>/dev/null || true
+chmod 700 ~/minibot/tmp 2>/dev/null || true
 
 # Restart services
 echo "Restarting services..."

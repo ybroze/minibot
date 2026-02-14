@@ -2,6 +2,8 @@
 # setup-minibot-dirs.sh
 # Run this script as the minibot user to create the directory structure
 
+set -euo pipefail
+
 BASE_DIR="$HOME/minibot"
 
 echo "Creating Minibot directory structure at: $BASE_DIR"

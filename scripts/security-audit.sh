@@ -9,9 +9,9 @@ PASS=0
 WARN=0
 FAIL=0
 
-pass() { echo "  ✓ $1"; ((PASS++)); }
-warn() { echo "  ⚠ $1"; ((WARN++)); }
-fail() { echo "  ✗ $1"; ((FAIL++)); }
+pass() { echo "  ✓ $1"; PASS=$((PASS + 1)); }
+warn() { echo "  ⚠ $1"; WARN=$((WARN + 1)); }
+fail() { echo "  ✗ $1"; FAIL=$((FAIL + 1)); }
 
 echo "=== Minibot Security Audit ==="
 echo ""

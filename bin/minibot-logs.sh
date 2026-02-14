@@ -3,6 +3,8 @@
 # Follow logs for all services or a specific service
 # Usage: minibot-logs.sh [service-name]
 
+set -euo pipefail
+
 cd "$(dirname "$0")/.."
 
 # Follow logs for all services (or specific service if provided)

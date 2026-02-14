@@ -57,8 +57,9 @@ cat > "$PLIST_PATH" << EOF
 </plist>
 EOF
 
-# Load the agent
-launchctl load "$PLIST_PATH" 2>/dev/null || true
+# Load the agent (bootstrap is the modern replacement for load)
+GUI_UID=$(id -u)
+launchctl bootstrap "gui/$GUI_UID" "$PLIST_PATH" 2>/dev/null || true
 
 echo "✓ LaunchAgent installed at: $PLIST_PATH"
 echo "  Minibot will start automatically on login."

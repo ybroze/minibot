@@ -2,7 +2,7 @@
 # backup.sh
 # Backup Minibot data and configuration
 
-set -e
+set -euo pipefail
 
 BACKUP_ROOT="$HOME/minibot-backups"
 BACKUP_DIR="$BACKUP_ROOT/$(date +%Y%m%d-%H%M%S)"
@@ -16,15 +16,15 @@ echo "Stopping services..."
 
 # Backup data
 echo "Backing up data..."
-cp -r ~/minibot/data "$BACKUP_DIR/"
+cp -rp ~/minibot/data "$BACKUP_DIR/"
 
 # Backup config
 echo "Backing up configuration..."
-cp -r ~/minibot/config "$BACKUP_DIR/"
+cp -rp ~/minibot/config "$BACKUP_DIR/"
 
 # Backup docker configs
 echo "Backing up Docker configurations..."
-cp -r ~/minibot/docker "$BACKUP_DIR/"
+cp -rp ~/minibot/docker "$BACKUP_DIR/"
 
 # Create backup manifest
 cat > "$BACKUP_DIR/MANIFEST.txt" << EOF

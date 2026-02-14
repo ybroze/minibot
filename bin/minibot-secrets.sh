@@ -132,7 +132,7 @@ cmd_export() {
         if _secret_exists "$key"; then
             local val
             val="$(_get_secret "$key")"
-            echo "export $key='${val//\'/\'\\\'\'}'"
+            printf 'export %s=%q\n' "$key" "$val"
         fi
     done
 }

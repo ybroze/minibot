@@ -13,8 +13,9 @@ if [ ! -f "$PLIST_PATH" ]; then
     exit 0
 fi
 
-# Unload the agent
-launchctl unload "$PLIST_PATH" 2>/dev/null || true
+# Unload the agent (bootout is the modern replacement for unload)
+GUI_UID=$(id -u)
+launchctl bootout "gui/$GUI_UID/$PLIST_NAME" 2>/dev/null || true
 
 # Remove the plist
 rm -f "$PLIST_PATH"

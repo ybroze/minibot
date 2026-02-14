@@ -3,7 +3,7 @@
 # Nuclear option: completely reset Minibot environment
 # WARNING: This deletes ALL data and containers!
 
-set -e
+set -euo pipefail
 
 echo "=== Minibot Environment Reset ==="
 echo ""
