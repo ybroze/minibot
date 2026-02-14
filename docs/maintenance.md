@@ -36,6 +36,9 @@ Rotate all secrets every 3 months. The process:
    ```bash
    mb-secrets set POSTGRES_PASSWORD
    mb-secrets set REDIS_PASSWORD
+   mb-secrets set ANTHROPIC_API_KEY
+   mb-secrets set TELEGRAM_BOT_TOKEN
+   mb-secrets set OPENCLAW_GATEWAY_TOKEN
    ```
 3. Recreate containers so they use the new values:
    ```bash
@@ -53,6 +56,7 @@ Check for security updates to the base images:
 ```bash
 docker pull postgres:15-alpine
 docker pull redis:7-alpine
+docker pull openclaw/openclaw:latest
 mb-stop && mb-start
 ```
 
@@ -75,8 +79,8 @@ restart automatically on login.
 ~/minibot/scripts/backup.sh
 ```
 
-This stops services, copies `data/`, `config/`, and `docker/` to a timestamped
-directory under `~/minibot-backups/`, then restarts services.
+This stops services, copies `data/` and `docker/` to a timestamped directory
+under `~/minibot-backups/`, then restarts services.
 
 ### Restoring from Backup
 

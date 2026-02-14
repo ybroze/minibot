@@ -20,23 +20,19 @@ mkdir -p "$HOME/.config" "$HOME/.cache" "$HOME/.local"/{bin,lib}
 # Create .gitkeep files for empty directories
 find "$BASE_DIR" -type d -empty -exec touch {}/.gitkeep \;
 
-# Set up basic .gitignore
-cat > "$BASE_DIR/.gitignore" << 'EOF'
-# Data & logs
+# Set up .gitignore (use gitignore-template if available, otherwise a minimal default)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$SCRIPT_DIR/gitignore-template" ]; then
+    cp "$SCRIPT_DIR/gitignore-template" "$BASE_DIR/.gitignore"
+else
+    cat > "$BASE_DIR/.gitignore" << 'EOF'
 data/
 *.log
-
-# Environment files
 *.env
 !*.env.example
-
-# IDE
-.vscode/
-.idea/
-
-# OS
 .DS_Store
 EOF
+fi
 
 # Set restrictive permissions on sensitive directories
 chmod 700 "$BASE_DIR/data"

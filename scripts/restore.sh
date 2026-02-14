@@ -40,13 +40,6 @@ if [ -d "$BACKUP_DIR/data" ]; then
     cp -rp "$BACKUP_DIR/data" ~/minibot/
 fi
 
-# Restore config
-if [ -d "$BACKUP_DIR/config" ]; then
-    echo "Restoring configuration..."
-    rm -rf ~/minibot/config
-    cp -rp "$BACKUP_DIR/config" ~/minibot/
-fi
-
 # Restore docker configs
 if [ -d "$BACKUP_DIR/docker" ]; then
     echo "Restoring Docker configurations..."

@@ -30,7 +30,7 @@ echo "Deleting data directories..."
 rm -rf ~/minibot/data/*
 
 echo "Recreating data structure..."
-mkdir -p ~/minibot/data/{postgres,redis,logs/{agents,orchestrator,system}}
+mkdir -p ~/minibot/data/{postgres,redis,openclaw,logs/system}
 chmod 700 ~/minibot/data
 
 echo ""

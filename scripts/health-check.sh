@@ -47,7 +47,7 @@ echo ""
 # Check Redis
 echo "Redis:"
 REDIS_PASS=$(~/minibot/bin/minibot-secrets.sh get REDIS_PASSWORD 2>/dev/null || echo "")
-if [ -n "$REDIS_PASS" ] && docker exec minibot-redis redis-cli -a "$REDIS_PASS" ping &> /dev/null; then
+if [ -n "$REDIS_PASS" ] && docker exec minibot-redis redis-cli --no-auth-warning -a "$REDIS_PASS" ping &> /dev/null; then
     echo "✓ Redis is responding (authenticated)"
 elif docker exec minibot-redis redis-cli ping &> /dev/null; then
     echo "⚠ Redis is responding but WITHOUT authentication"

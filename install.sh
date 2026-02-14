@@ -38,11 +38,6 @@ if [ -d "$SCRIPT_DIR/docs" ]; then
     cp -r "$SCRIPT_DIR/docs"/* ~/minibot/docs/ 2>/dev/null || true
 fi
 
-# Copy config templates (won't overwrite existing files)
-if [ -d "$SCRIPT_DIR/config" ]; then
-    cp -rn "$SCRIPT_DIR/config"/* ~/minibot/config/ 2>/dev/null || true
-fi
-
 echo ""
 echo "Step 3: Making scripts executable..."
 chmod +x ~/minibot/bin/*.sh

@@ -65,7 +65,7 @@ echo "Redis Authentication:"
 
 if docker exec minibot-redis redis-cli ping 2>/dev/null | grep -q PONG; then
     fail "Redis accepts unauthenticated connections (no --requirepass)"
-elif docker exec minibot-redis redis-cli -a "$(~/minibot/bin/minibot-secrets.sh get REDIS_PASSWORD 2>/dev/null || echo '')" ping 2>/dev/null | grep -q PONG; then
+elif docker exec minibot-redis redis-cli --no-auth-warning -a "$(~/minibot/bin/minibot-secrets.sh get REDIS_PASSWORD 2>/dev/null || echo '')" ping 2>/dev/null | grep -q PONG; then
     pass "Redis requires authentication"
 else
     warn "Redis is not running or could not verify auth"

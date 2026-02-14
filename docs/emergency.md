@@ -11,7 +11,7 @@
 If that fails or you don't trust the scripts:
 
 ```bash
-docker kill minibot-postgres minibot-redis 2>/dev/null
+docker kill minibot-postgres minibot-redis minibot-openclaw 2>/dev/null
 docker compose -f ~/minibot/docker/docker-compose.yml down 2>/dev/null
 ```
 
@@ -25,10 +25,9 @@ compromised credentials active can be severe.
 # Set new values in the keychain
 ~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set REDIS_PASSWORD
-
-# If you have API keys stored:
-# ~/minibot/bin/minibot-secrets.sh set ANTHROPIC_API_KEY
-# ~/minibot/bin/minibot-secrets.sh set TELEGRAM_BOT_TOKEN
+~/minibot/bin/minibot-secrets.sh set ANTHROPIC_API_KEY
+~/minibot/bin/minibot-secrets.sh set TELEGRAM_BOT_TOKEN
+~/minibot/bin/minibot-secrets.sh set OPENCLAW_GATEWAY_TOKEN
 ```
 
 Also revoke the old keys/tokens on the provider side (Anthropic console,

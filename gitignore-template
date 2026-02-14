@@ -1,5 +1,5 @@
 # Minibot .gitignore
-# This will be created by setup-minibot-dirs.sh
+# Installed to ~/minibot/.gitignore by setup-minibot-dirs.sh or install.sh
 
 # Data & logs
 data/

@@ -238,7 +238,8 @@ After running the setup script, you'll have:
 ├── docs/                   # Documentation
 │   ├── threat-model.md
 │   ├── emergency.md
-│   └── maintenance.md
+│   ├── maintenance.md
+│   └── openclaw-setup-guide.md
 ```
 
 ## Available Scripts
@@ -430,7 +431,7 @@ It's recommended to track your configuration in git:
 ```bash
 cd ~/minibot
 git init
-git add config/ docker/docker-compose.yml
+git add docker/docker-compose.yml
 git commit -m "Initial Minibot configuration"
 ```
 

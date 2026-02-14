@@ -18,10 +18,6 @@ echo "Stopping services..."
 echo "Backing up data..."
 cp -rp ~/minibot/data "$BACKUP_DIR/"
 
-# Backup config
-echo "Backing up configuration..."
-cp -rp ~/minibot/config "$BACKUP_DIR/"
-
 # Backup docker configs
 echo "Backing up Docker configurations..."
 cp -rp ~/minibot/docker "$BACKUP_DIR/"
@@ -35,7 +31,6 @@ User: $(whoami)
 
 Contents:
 - data/
-- config/
 - docker/
 EOF
 

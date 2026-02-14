@@ -81,8 +81,8 @@ injected instructions instead of (or in addition to) the user's intent.
 - The Docker sandbox limits blast radius even if the agent is tricked.
 
 **Residual risk:** No current LLM is fully immune to prompt injection. Defense
-in depth (SOUL.md + tool policy + sandbox) reduces impact but does not
-eliminate the risk.
+in depth (OpenClaw agent boundaries + tool policy + Docker sandbox) reduces
+impact but does not eliminate the risk.
 
 ---
 
@@ -92,7 +92,9 @@ eliminate the risk.
 contains malicious code.
 
 **Minibot's posture:**
-- Docker images are pinned to specific tags (e.g., `postgres:15-alpine`).
+- Docker images are pinned to specific tags where available (e.g.,
+  `postgres:15-alpine`). The OpenClaw image uses `latest` until stable
+  versioned tags are published.
 - Homebrew auto-update is disabled (`HOMEBREW_NO_AUTO_UPDATE=1`).
 - The setup guide recommends reviewing skills/plugins before installation.
 
