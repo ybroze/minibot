@@ -225,14 +225,14 @@ After running the setup script, you'll have:
 │   ├── reset.sh
 │   ├── install-launchagent.sh
 │   └── uninstall-launchagent.sh
-├── docs/                   # Documentation
-│   ├── emergency.md
-│   ├── filesystem.md
-│   ├── maintenance.md
-│   ├── networking.md
-│   ├── secrets.md
-│   ├── security.md
-│   └── threat-model.md
+└── docs/                   # Documentation
+    ├── emergency.md
+    ├── filesystem.md
+    ├── maintenance.md
+    ├── networking.md
+    ├── secrets.md
+    ├── security.md
+    └── threat-model.md
 ```
 
 ## Available Scripts
