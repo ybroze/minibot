@@ -30,7 +30,7 @@ cache.
 
 ### Quarterly: Rotate Credentials
 
-Rotate all secrets every 3 months. The process:
+Rotate secrets every 3 months (or immediately if you suspect compromise):
 
 1. Generate a new password/key.
 2. Store it in the keychain:
@@ -45,11 +45,15 @@ Rotate all secrets every 3 months. The process:
    ```bash
    mb-stop
    docker compose -f ~/minibot/docker/docker-compose.yml down -v
+   # WARNING: -v removes volumes. Back up first if you have data to keep.
    mb-start
    ```
    **Note:** `-v` removes Docker volumes. Back up first if you have data.
 4. Revoke the old keys/tokens on the provider side too (Anthropic console,
    Telegram @BotFather `/revoke`, etc.).
+
+When rotating an API key for an external provider, it's also a good time to
+review spending limits on that provider's dashboard.
 
 ### As Needed: Update Docker Images
 
@@ -68,8 +72,7 @@ mb-stop && mb-start
 # System Settings > General > Software Update
 ```
 
-Reboot after updates. If you have the LaunchAgent installed, services will
-restart automatically on login.
+Reboot after updates. 
 
 ---
 

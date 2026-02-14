@@ -160,7 +160,7 @@ For each API key you add:
 
 > **Note:** PostgreSQL, Redis, and OpenClaw run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
 
-### 6. Enable 24/7 Operation.
+### 6. Enable 24/7 Operation
 
 This is a dedicated machine that should run Minibot continuously. LaunchAgent
 is used at the system user level rather than machine-wide.
@@ -406,94 +406,16 @@ du -sh ~/minibot/data/*
 docker system prune -a
 ```
 
-## Version Control
-
-It's recommended to track your configuration in git:
-
-```bash
-cd ~/minibot
-git init
-git add docker/docker-compose.yml
-git commit -m "Initial Minibot configuration"
-```
-
-Note: The `.gitignore` file automatically excludes data, logs, and sensitive files.
-
-## Maintenance
-
-### Credential Rotation
-
-Rotate secrets every 3 months (or immediately if you suspect compromise):
-
-```bash
-# 1. Set the new password in the keychain
-mb-secrets set POSTGRES_PASSWORD
-
-# 2. Recreate the containers so they pick up the new value
-mb-stop
-docker compose -f ~/minibot/docker/docker-compose.yml down -v
-# WARNING: -v removes volumes. Back up first if you have data to keep.
-mb-start
-```
-
-Repeat for `REDIS_PASSWORD` and any future secrets. When rotating an API
-key for an external provider, it's also a good time to review your spending
-limits on that provider's dashboard.
-
-### Security Audit
-
-Run the security audit script periodically:
-
-```bash
-~/minibot/scripts/security-audit.sh
-```
-
-### Restoring on a Fresh Machine
-
-Backups (from `scripts/backup.sh`) contain data and config but **not secrets**.
-After restoring on a new machine, you must re-initialize the keychain:
-
-```bash
-mb-secrets init
-```
-
-## File Permissions
-
-Minibot uses the macOS Keychain for secrets, so there are no plaintext
-passwords or API keys on disk. This is a deliberate improvement over the
-common `.env` file pattern, where a single `cat` or stray backup can expose
-everything.
-
-For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
-
-- **`umask 077`** is set in the shell profile (`zshrc-additions.sh`), so every
-  file the minibot user creates is owner-only (`rwx------`) by default. This
-  prevents loose permissions from being created in the first place.
-- **`data/`** is set to `700` during install.
-- **`security-audit.sh`** checks for permission drift and an incorrect umask.
-
-**Known limitation — `docker inspect`:** Anyone with access to the Docker socket
-on the host can run `docker inspect minibot-postgres` and see environment
-variables (including `POSTGRES_PASSWORD`) in the container's config. This is a
-Docker-wide issue with no clean fix short of Docker secrets (which require Swarm
-mode). On a single-user dedicated machine this is low risk, but be aware that
-Docker socket access is effectively root-equivalent.
-
-**Known limitation — log file ownership:** Files created inside Docker volumes
-may be owned by root or by the container's internal user, not the minibot host
-user. The `data/` directory is `700`, which prevents other host users from
-reading the logs, but the files inside may have looser permissions than
-expected. The `security-audit.sh` script checks for this.
-
 ## Additional Resources
 
 - Threat model: `docs/threat-model.md`
 - Emergency procedures: `docs/emergency.md`
 - Maintenance guide: `docs/maintenance.md`
+- Containerization security: `docs/security.md`
+- Networking & ports: `docs/networking.md`
 - Secrets management: `docs/secrets.md`
-- Networking & port security: `docs/networking.md`
-- Security posture & limitations: `docs/security.md`
+- Filesystem security: `docs/filesystem.md`
 ---
 
 **Created:** February 2026
-**For:** Minibot macOS Experimentation Environment
+**For:** Minibot macOS Dedicated-Hardware Environment
