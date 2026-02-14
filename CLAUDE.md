@@ -14,7 +14,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 **Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), and OpenClaw (`127.0.0.1:18789` gateway, `127.0.0.1:18790` bridge) on a Docker bridge network (`minibot-net`). All are localhost-only.
 
-**Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy (see `config/agents/SOUL.md.example`).
+**Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
 
 **Operational lifecycle:**
 - `bin/minibot-start.sh` — loads secrets from Keychain, exports as env vars, runs `docker compose up -d`
@@ -27,7 +27,6 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 - `bin/` — User-facing operational scripts (start, stop, logs, secrets)
 - `scripts/` — Maintenance scripts (backup, restore, health-check, security-audit, reset, LaunchAgent)
 - `docker/` — `docker-compose.yml` and `.env.example`
-- `config/agents/` — Agent identity templates (`SOUL.md.example`)
 - `docs/` — Threat model, emergency procedures, maintenance guide
 
 ## Common Commands

@@ -212,19 +212,12 @@ After running the setup script, you'll have:
 │   ├── minibot-stop.sh
 │   ├── minibot-logs.sh
 │   └── minibot-secrets.sh
-├── config/                 # Configuration files
-│   ├── agents/
-│   │   └── SOUL.md.example
-│   ├── orchestration/
-│   └── environments/
 ├── data/                   # Persistent data
 │   ├── postgres/
 │   ├── redis/
-│   └── logs/
+│   └── openclaw/
 ├── docker/                 # Docker configs
-│   ├── docker-compose.yml
-│   └── Dockerfiles/
-├── lib/                    # Shared libraries
+│   └── docker-compose.yml
 ├── scripts/                # Maintenance scripts
 │   ├── backup.sh
 │   ├── restore.sh
@@ -381,9 +374,7 @@ defaults write com.apple.commerce AutoUpdate -bool false
 
 ## Next Steps
 
-1. Configure your agents in `~/minibot/config/agents/`
-2. Set up orchestration rules in `~/minibot/config/orchestration/`
-3. Version control your configurations with git
+1. Version control your configurations with git
 
 ## Troubleshooting
 
@@ -477,9 +468,8 @@ For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
 - **`umask 077`** is set in the shell profile (`zshrc-additions.sh`), so every
   file the minibot user creates is owner-only (`rwx------`) by default. This
   prevents loose permissions from being created in the first place.
-- **`config/`, `data/`, and `tmp/`** are set to `700` during install.
-- **`security-audit.sh`** checks for permission drift, including world-readable
-  files in `config/` and an incorrect umask.
+- **`data/` and `tmp/`** are set to `700` during install.
+- **`security-audit.sh`** checks for permission drift and an incorrect umask.
 
 **Known limitation — `docker inspect`:** Anyone with access to the Docker socket
 on the host can run `docker inspect minibot-postgres` and see environment
@@ -500,8 +490,6 @@ expected. The `security-audit.sh` script checks for this.
 - Threat model: `docs/threat-model.md`
 - Emergency procedures: `docs/emergency.md`
 - Maintenance guide: `docs/maintenance.md`
-- Agent identity template: `config/agents/SOUL.md.example`
-
 ---
 
 **Created:** February 2026

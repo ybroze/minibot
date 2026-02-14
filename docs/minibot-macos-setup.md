@@ -162,33 +162,14 @@ rm -rf Movies/ Music/ Public/
 │   │   ├── minibot-start.sh
 │   │   ├── minibot-stop.sh
 │   │   └── minibot-logs.sh
-│   ├── config/                        # Configuration files
-│   │   ├── agents/                    # Agent definitions
-│   │   │   ├── agent-1.yaml
-│   │   │   └── agent-2.yaml
-│   │   ├── orchestration/             # Orchestration rules
-│   │   │   └── routing.yaml
-│   │   ├── environments/              # Environment-specific configs
-│   │   │   ├── dev.env
-│   │   │   ├── staging.env
-│   │   │   └── prod.env
-│   │   └── minibot.yaml               # Main config
 │   ├── data/                          # Persistent data
 │   │   ├── postgres/                  # Database files
 │   │   ├── redis/                     # Redis persistence
+│   │   ├── openclaw/                  # OpenClaw state
 │   │   └── logs/                      # Application logs
-│   │       ├── agents/
-│   │       ├── orchestrator/
 │   │       └── system/
 │   ├── docker/                        # Docker configurations
-│   │   ├── docker-compose.yml
-│   │   ├── docker-compose.dev.yml
-│   │   └── Dockerfiles/
-│   │       ├── agent.Dockerfile
-│   │       └── orchestrator.Dockerfile
-│   ├── lib/                           # Shared libraries
-│   │   ├── python/
-│   │   └── node/
+│   │   └── docker-compose.yml
 │   ├── scripts/                       # Maintenance & utility scripts
 │   │   ├── backup.sh
 │   │   ├── restore.sh
@@ -215,19 +196,10 @@ rm -rf Movies/ Music/ Public/
 BASE_DIR="$HOME/minibot"
 
 # Create main directories
-mkdir -p "$BASE_DIR"/{bin,config,data,docker,agents,lib,scripts,docs,tmp}
-
-# Config subdirectories
-mkdir -p "$BASE_DIR/config"/{agents,orchestration,environments}
+mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs,tmp}
 
 # Data subdirectories
-mkdir -p "$BASE_DIR/data"/{postgres,redis,logs/{agents,orchestrator,system}}
-
-# Docker subdirectories
-mkdir -p "$BASE_DIR/docker/Dockerfiles"
-
-# Lib subdirectories
-mkdir -p "$BASE_DIR/lib"/{python,node}
+mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/system}
 
 # Standard hidden directories
 mkdir -p "$HOME/.config" "$HOME/.cache" "$HOME/.local"/{bin,lib}

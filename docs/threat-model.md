@@ -76,8 +76,7 @@ hidden instructions. When the agent processes this input, it follows the
 injected instructions instead of (or in addition to) the user's intent.
 
 **Minibot's posture:**
-- Agents should have a `SOUL.md` with hard boundaries (see
-  `config/agents/SOUL.md.example`).
+- Agents should have hard boundaries configured within OpenClaw.
 - Tool policies should deny dangerous capabilities by default.
 - The Docker sandbox limits blast radius even if the agent is tricked.
 

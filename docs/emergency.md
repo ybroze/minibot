@@ -99,16 +99,15 @@ If you have a messaging channel connected, send `/new` to reset the session.
 Or from the CLI:
 
 ```bash
-# List active sessions
-# (replace with your actual orchestrator CLI once available)
-ls ~/minibot/data/logs/agents/
+# List active sessions via Docker
+docker exec minibot-openclaw ls /home/node/.openclaw/agents/ 2>/dev/null
 ```
 
 ### Hard reset: Wipe agent state
 
 ```bash
 ~/minibot/bin/minibot-stop.sh
-rm -rf ~/minibot/data/logs/agents/*
+rm -rf ~/minibot/data/openclaw/*
 ~/minibot/bin/minibot-start.sh
 ```
 

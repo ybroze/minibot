@@ -75,7 +75,7 @@ echo ""
 # --- 5. File permissions ---------------------------------------------------
 echo "File Permissions:"
 
-for dir in ~/minibot/config ~/minibot/data ~/minibot/tmp; do
+for dir in ~/minibot/data ~/minibot/tmp; do
     if [ -d "$dir" ]; then
         perms=$(stat -f "%Lp" "$dir" 2>/dev/null || stat -c "%a" "$dir" 2>/dev/null)
         if [ "$perms" = "700" ]; then
@@ -85,15 +85,6 @@ for dir in ~/minibot/config ~/minibot/data ~/minibot/tmp; do
         fi
     fi
 done
-
-# Check for world-readable files in config/
-world_readable=$(find ~/minibot/config -perm -o+r -type f 2>/dev/null | head -5)
-if [ -n "$world_readable" ]; then
-    warn "World-readable files found in config/:"
-    echo "$world_readable" | while read -r f; do echo "       $f"; done
-else
-    pass "No world-readable files in config/"
-fi
 echo ""
 
 # --- 5b. Umask --------------------------------------------------------------

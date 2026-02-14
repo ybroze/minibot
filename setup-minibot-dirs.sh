@@ -9,19 +9,10 @@ BASE_DIR="$HOME/minibot"
 echo "Creating Minibot directory structure at: $BASE_DIR"
 
 # Create main directories
-mkdir -p "$BASE_DIR"/{bin,config,data,docker,lib,scripts,docs,tmp}
-
-# Config subdirectories
-mkdir -p "$BASE_DIR/config"/{agents,orchestration,environments}
+mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs,tmp}
 
 # Data subdirectories
-mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/{agents,orchestrator,system}}
-
-# Docker subdirectories
-mkdir -p "$BASE_DIR/docker/Dockerfiles"
-
-# Lib subdirectories
-mkdir -p "$BASE_DIR/lib"/{python,node}
+mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/system}
 
 # Standard hidden directories
 mkdir -p "$HOME/.config" "$HOME/.cache" "$HOME/.local"/{bin,lib}
@@ -49,7 +40,6 @@ tmp/
 EOF
 
 # Set restrictive permissions on sensitive directories
-chmod 700 "$BASE_DIR/config"
 chmod 700 "$BASE_DIR/data"
 chmod 700 "$BASE_DIR/tmp"
 
