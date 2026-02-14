@@ -216,6 +216,7 @@ After running the setup script, you'll have:
 │   ├── emergency.md
 │   ├── maintenance.md
 │   ├── secrets.md
+│   ├── networking.md
 │   └── openclaw-setup-guide.md
 ```
 
@@ -486,6 +487,7 @@ expected. The `security-audit.sh` script checks for this.
 - Emergency procedures: `docs/emergency.md`
 - Maintenance guide: `docs/maintenance.md`
 - Secrets management: `docs/secrets.md`
+- Networking & port security: `docs/networking.md`
 ---
 
 **Created:** February 2026
