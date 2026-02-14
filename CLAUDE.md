@@ -27,7 +27,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 - `bin/` — User-facing operational scripts (start, stop, logs, secrets)
 - `scripts/` — Maintenance scripts (backup, restore, health-check, security-audit, reset, LaunchAgent)
 - `docker/` — `docker-compose.yml` and `.env.example`
-- `docs/` — Threat model, emergency procedures, maintenance guide, secrets, networking, OpenClaw setup guide
+- `docs/` — Threat model, emergency procedures, maintenance guide, secrets, networking, security posture, OpenClaw setup guide
 
 ## Common Commands
 

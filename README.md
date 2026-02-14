@@ -219,6 +219,7 @@ After running the setup script, you'll have:
 │   ├── maintenance.md
 │   ├── secrets.md
 │   ├── networking.md
+│   ├── security.md
 │   └── openclaw-setup-guide.md
 ```
 
@@ -246,6 +247,7 @@ After running the setup script, you'll have:
 - **threat-model.md** - What Minibot defends against and residual risks
 - **emergency.md** - What to do if you suspect compromise
 - **maintenance.md** - Ongoing maintenance tasks and schedules
+- **security.md** - Security posture, container isolation, and known limitations
 
 ## Common Tasks
 
@@ -490,6 +492,7 @@ expected. The `security-audit.sh` script checks for this.
 - Maintenance guide: `docs/maintenance.md`
 - Secrets management: `docs/secrets.md`
 - Networking & port security: `docs/networking.md`
+- Security posture & limitations: `docs/security.md`
 ---
 
 **Created:** February 2026
