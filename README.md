@@ -101,6 +101,15 @@ steps are performed as `minibot`.
 > system-wide by the admin user and are accessible to all users via
 > `/opt/homebrew/bin`.
 
+### 3b. Configure the `minibot` Account
+
+Minimize the attack surface and noise on the dedicated account:
+
+- **Disable iCloud:** System Settings > Apple ID > iCloud > Turn off all sync services
+- **Disable Siri:** System Settings > Siri & Spotlight > Disable "Ask Siri"
+- **Disable location services (optional):** System Settings > Privacy & Security > Location Services > Off
+- **Minimal dock:** Remove all default apps from the dock except Finder, Terminal, and System Settings
+
 ### 4. Run the Setup Script
 
 ```bash
@@ -361,6 +370,16 @@ For a dedicated experimentation machine, you can remove these apps:
 **Keep:**
 - Safari, Terminal, System Settings, App Store, Finder
 
+To remove apps, drag them from `/Applications` to the Trash. Some system apps
+are protected by SIP and cannot be removed — just ignore those.
+
+### Clean Up Default Directories
+
+```bash
+# Remove unused default user directories
+rm -rf ~/Movies ~/Music ~/Public
+```
+
 ### Disable Background Services
 
 ```bash
@@ -485,7 +504,6 @@ expected. The `security-audit.sh` script checks for this.
 
 ## Additional Resources
 
-- Comprehensive setup guide: `docs/minibot-macos-setup.md`
 - Threat model: `docs/threat-model.md`
 - Emergency procedures: `docs/emergency.md`
 - Maintenance guide: `docs/maintenance.md`
