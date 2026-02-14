@@ -1,7 +1,8 @@
 # Minibot macOS Setup Scripts
 
 This repository contains all the scripts and configuration files needed to set
-up a clean, isolated Minibot environment on macOS.
+up a clean, isolated Minibot environment on macOS. This assumes an install on
+clean, dedicated hardware, such as an Apple Silicon MacMini.
 
 # Quick Start
 
