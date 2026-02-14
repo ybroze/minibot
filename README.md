@@ -4,6 +4,10 @@ This repository contains all the scripts and configuration files needed to set
 up a clean, isolated Minibot environment on macOS. This assumes an install on
 clean, dedicated hardware, such as an Apple Silicon MacMini.
 
+Briefly, a dedicated `minibot` user is created, within which Docker is used to 
+orchestrate service containers within a single Linux VM (a limitation of
+Docker), with various networking and other safeguards in place.
+
 # Quick Start
 
 ## Initial Machine Hardening
@@ -158,7 +162,10 @@ For each API key you add:
 ~/minibot/bin/minibot-logs.sh
 ```
 
-> **Note:** PostgreSQL, Redis, and OpenClaw run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
+**Note:** PostgreSQL, Redis, and OpenClaw run as Docker containers —
+they are not installed on the host. If you need CLI tools for debugging
+(e.g., `psql` or `redis-cli`), install them as the admin user:
+`brew install libpq redis`.
 
 ### 6. Enable 24/7 Operation
 
@@ -177,7 +184,12 @@ Then configure the machine for unattended operation:
 
 1. **Prevent sleep:** System Settings > Energy > Prevent automatic sleeping
 when the display is off > **ON**, and set "Turn display off after" to "Never."
-2. **Enable auto-login** (optional headless machines): System Settings > Users & Groups > Automatic login > select the `minibot` user. Without this, the LaunchAgent won't start after a reboot until someone logs in.
+2. **Enable auto-login:**
+System Settings > Users & Groups > Automatic login > select the `minibot` user.
+Without this, the LaunchAgent won't start after a reboot until someone logs in.
+
+**Note:** This is a compromise convenience solution, given that the hardware
+is on-premises. This means remote reboots will not take down the entire system.
 
 Test by rebooting:
 
@@ -214,20 +226,21 @@ After running the setup script, you'll have:
 │   ├── install-launchagent.sh
 │   └── uninstall-launchagent.sh
 ├── docs/                   # Documentation
-│   ├── threat-model.md
 │   ├── emergency.md
+│   ├── filesystem.md
 │   ├── maintenance.md
-│   ├── secrets.md
 │   ├── networking.md
+│   ├── secrets.md
 │   ├── security.md
-│   └── openclaw-setup-guide.md
+│   └── threat-model.md
 ```
 
 ## Available Scripts
 
 ### Operational Scripts (in `~/minibot/bin/`)
 
-- **minibot-start.sh** - Start all services (loads secrets from Keychain automatically)
+- **minibot-start.sh** - Start all services (loads secrets from Keychain
+    automatically)
 - **minibot-stop.sh** - Stop all services
 - **minibot-logs.sh** - View logs (optionally pass service name)
 - **minibot-secrets.sh** - Manage secrets in the macOS Keychain
@@ -242,12 +255,15 @@ After running the setup script, you'll have:
 - **install-launchagent.sh** - Start Minibot automatically on login
 - **uninstall-launchagent.sh** - Remove the LaunchAgent
 
-### Documentation (in `~/minibot/docs/`)
+## Documentation (in `~/minibot/docs/`)
 
-- **threat-model.md** - What Minibot defends against and residual risks
-- **emergency.md** - What to do if you suspect compromise
-- **maintenance.md** - Ongoing maintenance tasks and schedules
-- **security.md** - Security posture, container isolation, and known limitations
+- Threat model: `docs/threat-model.md`
+- Emergency procedures: `docs/emergency.md`
+- Maintenance guide: `docs/maintenance.md`
+- Containerization security: `docs/security.md`
+- Networking & ports: `docs/networking.md`
+- Secrets management: `docs/secrets.md`
+- Filesystem security: `docs/filesystem.md`
 
 ## Common Tasks
 
@@ -406,15 +422,6 @@ du -sh ~/minibot/data/*
 docker system prune -a
 ```
 
-## Additional Resources
-
-- Threat model: `docs/threat-model.md`
-- Emergency procedures: `docs/emergency.md`
-- Maintenance guide: `docs/maintenance.md`
-- Containerization security: `docs/security.md`
-- Networking & ports: `docs/networking.md`
-- Secrets management: `docs/secrets.md`
-- Filesystem security: `docs/filesystem.md`
 ---
 
 **Created:** February 2026
