@@ -61,7 +61,7 @@ brew install git python@3.11 node@22
 brew install --cask visual-studio-code iterm2
 brew install jq yq tree htop
 
-# Install Tailscale for secure remote access (optional but recommended)
+# Install Tailscale for secure remote access
 brew install --cask tailscale
 ```
 
@@ -126,7 +126,7 @@ source ~/.zshrc
 The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
 `REDIS_PASSWORD`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`,
 `OPENCLAW_GATEWAY_TOKEN`). These are stored in the macOS Keychain — no
-plaintext `.env` files.
+plaintext `.env` files outside the OpenClaw Docker container.
 
 ### 4b. Configure API Spending Limits
 
@@ -159,7 +159,7 @@ For each API key you add:
 
 > **Note:** PostgreSQL and Redis run as Docker containers — they are not installed on the host. If you need CLI tools for debugging (e.g., `psql` or `redis-cli`), install them as the admin user: `brew install libpq redis`.
 
-### 6. Enable 24/7 Operation (Optional)
+### 6. Enable 24/7 Operation.
 
 If this is a dedicated machine that should run Minibot continuously:
 
@@ -173,7 +173,8 @@ launchctl list | grep minibot
 
 Then configure the machine for unattended operation:
 
-1. **Prevent sleep:** System Settings > Energy > Prevent automatic sleeping when the display is off > **ON**
+1. **Prevent sleep:** System Settings > Energy > Prevent automatic sleeping
+when the display is off > **ON**
 2. **Enable auto-login** (for headless machines): System Settings > Users & Groups > Automatic login > select the `minibot` user. Without this, the LaunchAgent won't start after a reboot until someone logs in.
 
 Test by rebooting:
@@ -214,6 +215,7 @@ After running the setup script, you'll have:
 │   ├── threat-model.md
 │   ├── emergency.md
 │   ├── maintenance.md
+│   ├── secrets.md
 │   └── openclaw-setup-guide.md
 ```
 
@@ -483,6 +485,7 @@ expected. The `security-audit.sh` script checks for this.
 - Threat model: `docs/threat-model.md`
 - Emergency procedures: `docs/emergency.md`
 - Maintenance guide: `docs/maintenance.md`
+- Secrets management: `docs/secrets.md`
 ---
 
 **Created:** February 2026
