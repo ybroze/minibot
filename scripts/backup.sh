@@ -9,6 +9,7 @@ BACKUP_DIR="$BACKUP_ROOT/$(date +%Y%m%d-%H%M%S)"
 
 echo "Creating backup at: $BACKUP_DIR"
 mkdir -p "$BACKUP_DIR"
+chmod 700 "$BACKUP_DIR"
 
 # Stop services
 echo "Stopping services..."

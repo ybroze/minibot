@@ -1,4 +1,4 @@
-# Minibot Experimental Environment
+# Minibot Environment
 # Add this to ~/.zshrc for the minibot user
 
 # Ensure all new files are owner-only by default (rwx------)

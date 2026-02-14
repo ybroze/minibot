@@ -9,7 +9,7 @@ echo "=== Minibot Environment Reset ==="
 echo ""
 echo "WARNING: This will:"
 echo "  - Stop all services"
-echo "  - Delete all data (PostgreSQL, Redis, logs)"
+echo "  - Delete all data (PostgreSQL, Redis, OpenClaw, logs)"
 echo "  - Remove all Docker containers and volumes"
 echo ""
 read -p "Are you ABSOLUTELY SURE? (type 'reset' to confirm): " confirm

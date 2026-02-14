@@ -2,7 +2,7 @@
 # install-launchagent.sh
 # Install a macOS LaunchAgent so Minibot services start on login.
 #
-# The agent runs minibot-start.sh at load time and keeps it alive.
+# The agent runs minibot-start.sh once at load time.
 # Logs go to ~/minibot/data/logs/system/.
 
 set -euo pipefail

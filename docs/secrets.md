@@ -60,10 +60,3 @@ authentication to unlock.
 - **Rotation:** Rotate secrets quarterly or immediately if you suspect
   compromise. See `docs/maintenance.md` for the rotation procedure and
   `docs/emergency.md` for the emergency response process.
-
-**Known limitation — `docker inspect`:** Anyone with access to the Docker socket
-on the host can run `docker inspect minibot-postgres` and see environment
-variables (including `POSTGRES_PASSWORD`) in the container's config. This is a
-Docker-wide issue with no clean fix short of Docker secrets (which require Swarm
-mode). On a single-user dedicated machine this is low risk, but be aware that
-Docker socket access is effectively root-equivalent.
