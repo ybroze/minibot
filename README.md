@@ -1,18 +1,54 @@
 # Minibot macOS Setup Scripts
 
-This repository contains all the scripts and configuration files needed to set up a clean, isolated Minibot experimentation environment on macOS.
+This repository contains all the scripts and configuration files needed to set
+up a clean, isolated Minibot environment on macOS.
 
-## Quick Start
+# Quick Start
+
+## Initial Machine Hardening
+
+Before creating the dedicated user, secure the base system. These steps only
+need to be done once per machine and require an admin account.
+
+Create a strong password for the admin user of your choice, and ensure you
+have saved it in a secure location or password manager.
+
+### Enable FileVault (Full-Disk Encryption)
+
+```bash
+# System Settings > Privacy & Security > FileVault > Turn On
+# CRITICAL: Save the recovery key in a password manager or print it.
+# Without FileVault, anyone with physical access to the machine can
+# read all data, including keychain secrets, by booting into recovery mode.
+```
+
+### Enable the macOS Firewall
+
+```bash
+# System Settings > Network > Firewall > Turn On
+# This prevents unsolicited inbound connections.
+# Alternatively, via command line:
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+```
+
+### Enable Advanced Data Protection for iCloud services.
+
+```bash
+# System Settings > iCloud > Advanced Data Protection > Turn On
+```
+
+## Configuration
 
 ### 1. Create the `minibot` User
 
 Via System Settings:
+
 - Go to **System Settings > Users & Groups**
 - Click **Add Account...**
 - Select **Standard** account type
-- Full name: `Minibot Experiments`
+- Full name: `Minibot`
 - Account name: `minibot`
-- Set a password
+- Set a strong password and save it in a password manager, or print it out.
 
 ### 2. Log in as `minibot` User
 
@@ -61,7 +97,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Install core dependencies
 brew install --cask docker              # Docker Desktop (daemon + CLI + Compose)
-brew install git python@3.11 node@20
+brew install git python@3.11 node@22
 brew install --cask visual-studio-code iterm2
 brew install jq yq tree htop
 
@@ -464,5 +500,5 @@ expected. The `security-audit.sh` script checks for this.
 
 ---
 
-**Created:** February 2025  
+**Created:** February 2026
 **For:** Minibot macOS Experimentation Environment
