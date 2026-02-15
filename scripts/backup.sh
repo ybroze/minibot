@@ -35,9 +35,16 @@ Contents:
 - docker/
 EOF
 
-# Restart services
+# Idempotency: always restart services even if the backup had issues, and
+# report failure clearly so re-running the script leaves the system healthy.
 echo "Restarting services..."
-~/minibot/bin/minibot-start.sh
+if ! ~/minibot/bin/minibot-start.sh; then
+    echo ""
+    echo "ERROR: Backup succeeded but services failed to restart!" >&2
+    echo "Backup is at: $BACKUP_DIR" >&2
+    echo "Run 'mb-start' manually to bring services back up." >&2
+    exit 1
+fi
 
 echo ""
 echo "✓ Backup created at: $BACKUP_DIR"

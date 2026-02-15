@@ -21,6 +21,16 @@ fi
 mkdir -p "$LOG_DIR"
 mkdir -p "$HOME/Library/LaunchAgents"
 
+# Idempotency: if the agent is already loaded, skip writing the plist and
+# bootstrapping.  This avoids overwriting a live plist and a spurious
+# silent failure from launchctl bootstrap on re-run.
+GUI_UID=$(id -u)
+if launchctl list "$PLIST_NAME" &>/dev/null; then
+    echo "✓ LaunchAgent '$PLIST_NAME' is already loaded — nothing to do."
+    echo "  To reinstall, run uninstall-launchagent.sh first."
+    exit 0
+fi
+
 cat > "$PLIST_PATH" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -58,8 +68,7 @@ cat > "$PLIST_PATH" << EOF
 EOF
 
 # Load the agent (bootstrap is the modern replacement for load)
-GUI_UID=$(id -u)
-launchctl bootstrap "gui/$GUI_UID" "$PLIST_PATH" 2>/dev/null || true
+launchctl bootstrap "gui/$GUI_UID" "$PLIST_PATH"
 
 echo "✓ LaunchAgent installed at: $PLIST_PATH"
 echo "  Minibot will start automatically on login."

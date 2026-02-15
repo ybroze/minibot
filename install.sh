@@ -49,16 +49,26 @@ chmod 700 ~/minibot/data
 
 echo ""
 echo "Step 4: Updating .gitignore..."
-cp "$SCRIPT_DIR/gitignore-template" ~/minibot/.gitignore
+# Idempotency: only create if missing, to preserve user customizations.
+if [ ! -f ~/minibot/.gitignore ]; then
+    cp "$SCRIPT_DIR/gitignore-template" ~/minibot/.gitignore
+else
+    echo "✓ .gitignore already exists — skipping"
+fi
 
 echo ""
 echo "Step 5: Setting up shell environment..."
-if ! grep -q "MINIBOT_HOME" ~/.zshrc 2>/dev/null; then
+# Idempotency: instead of inlining the additions into .zshrc (which makes
+# updates impossible on re-run), copy the file and source it.  The guard
+# ensures we only append the source line once; the cp always brings the
+# latest version of the additions file.
+cp "$SCRIPT_DIR/zshrc-additions.sh" ~/minibot/zshrc-additions.sh
+if ! grep -q "source ~/minibot/zshrc-additions.sh" ~/.zshrc 2>/dev/null; then
     echo "" >> ~/.zshrc  # ensure leading newline
-    cat "$SCRIPT_DIR/zshrc-additions.sh" >> ~/.zshrc
-    echo "✓ Added to ~/.zshrc"
+    echo "source ~/minibot/zshrc-additions.sh" >> ~/.zshrc
+    echo "✓ Added source line to ~/.zshrc"
 else
-    echo "✓ ~/.zshrc already configured"
+    echo "✓ ~/.zshrc already configured (additions file updated in place)"
 fi
 
 echo ""
