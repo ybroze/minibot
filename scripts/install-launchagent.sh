@@ -21,14 +21,12 @@ fi
 mkdir -p "$LOG_DIR"
 mkdir -p "$HOME/Library/LaunchAgents"
 
-# Idempotency: if the agent is already loaded, skip writing the plist and
-# bootstrapping.  This avoids overwriting a live plist and a spurious
-# silent failure from launchctl bootstrap on re-run.
+# Idempotency: always write the plist so that config changes (paths, env vars)
+# are picked up on re-run.  Only skip the bootstrap call if already loaded.
 GUI_UID=$(id -u)
+ALREADY_LOADED=false
 if launchctl list "$PLIST_NAME" &>/dev/null; then
-    echo "✓ LaunchAgent '$PLIST_NAME' is already loaded — nothing to do."
-    echo "  To reinstall, run uninstall-launchagent.sh first."
-    exit 0
+    ALREADY_LOADED=true
 fi
 
 cat > "$PLIST_PATH" << EOF
@@ -67,8 +65,13 @@ cat > "$PLIST_PATH" << EOF
 </plist>
 EOF
 
-# Load the agent (bootstrap is the modern replacement for load)
-launchctl bootstrap "gui/$GUI_UID" "$PLIST_PATH"
+# Load the agent (bootstrap is the modern replacement for load).
+# Skip if already loaded — uninstall first to pick up plist changes at runtime.
+if $ALREADY_LOADED; then
+    echo "✓ Plist updated.  Agent is already loaded; unload/reload to apply changes."
+else
+    launchctl bootstrap "gui/$GUI_UID" "$PLIST_PATH"
+fi
 
 echo "✓ LaunchAgent installed at: $PLIST_PATH"
 echo "  Minibot will start automatically on login."

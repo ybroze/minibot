@@ -51,7 +51,17 @@ echo ""
 echo "Step 4: Updating .gitignore..."
 # Idempotency: only create if missing, to preserve user customizations.
 if [ ! -f ~/minibot/.gitignore ]; then
-    cp "$SCRIPT_DIR/gitignore-template" ~/minibot/.gitignore
+    if [ -f "$SCRIPT_DIR/gitignore-template" ]; then
+        cp "$SCRIPT_DIR/gitignore-template" ~/minibot/.gitignore
+    else
+        cat > ~/minibot/.gitignore << 'GITIGNORE'
+data/
+*.log
+*.env
+!*.env.example
+.DS_Store
+GITIGNORE
+    fi
 else
     echo "✓ .gitignore already exists — skipping"
 fi
