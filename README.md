@@ -77,7 +77,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Install core dependencies
 brew install --cask docker              # Docker Desktop (daemon + CLI + Compose)
-brew install git
 
 # Install Tailscale for secure remote access
 brew install --cask tailscale
