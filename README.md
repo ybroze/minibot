@@ -144,9 +144,9 @@ source ~/.zshrc
 ```
 
 The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
-`REDIS_PASSWORD`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`,
-`OPENCLAW_GATEWAY_TOKEN`). These are stored in the macOS Keychain — no
-plaintext `.env` files outside the OpenClaw Docker container.
+`REDIS_PASSWORD`). These are stored in the macOS Keychain — no plaintext
+`.env` files. OpenClaw manages its own secrets (API keys, bot tokens, gateway
+token) internally.
 
 ### 4b. Configure API Spending Limits
 

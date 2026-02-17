@@ -63,7 +63,7 @@ Even if a service is reachable, it requires credentials:
   user.
 - **Redis** — requires `REDIS_PASSWORD` via `--requirepass`. Unauthenticated
   `PING` commands are rejected.
-- **OpenClaw** — requires `OPENCLAW_GATEWAY_TOKEN` for gateway access.
+- **OpenClaw** — requires a gateway token for access, managed internally by OpenClaw.
 
 See [secrets.md](secrets.md) for how credentials are managed.
 

@@ -11,13 +11,12 @@ running `docker compose up`.
 
 ## Required Secrets
 
-| Secret                  | Used by   | Description                        |
-|-------------------------|-----------|------------------------------------|
-| `POSTGRES_PASSWORD`     | PostgreSQL | Database password for the `minibot` user |
-| `REDIS_PASSWORD`        | Redis     | Authentication password (`--requirepass`) |
-| `ANTHROPIC_API_KEY`     | OpenClaw  | Anthropic Claude API key           |
-| `TELEGRAM_BOT_TOKEN`    | OpenClaw  | Telegram bot token                 |
-| `OPENCLAW_GATEWAY_TOKEN`| OpenClaw  | Gateway authentication token       |
+| Secret              | Used by    | Description                                       |
+|---------------------|------------|---------------------------------------------------|
+| `POSTGRES_PASSWORD` | PostgreSQL | Database password for the `minibot` user          |
+| `REDIS_PASSWORD`    | Redis      | Authentication password (`--requirepass`)         |
+
+OpenClaw manages its own secrets (API keys, bot tokens, gateway token) internally — they are not stored in the macOS Keychain.
 
 ## Managing Secrets
 
@@ -26,7 +25,7 @@ running `docker compose up`.
 mb-secrets init
 
 # Set or update a single secret
-mb-secrets set ANTHROPIC_API_KEY
+mb-secrets set POSTGRES_PASSWORD
 
 # Retrieve a secret value
 mb-secrets get POSTGRES_PASSWORD

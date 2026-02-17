@@ -25,13 +25,10 @@ compromised credentials active can be severe.
 # Set new values in the keychain
 ~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set REDIS_PASSWORD
-~/minibot/bin/minibot-secrets.sh set ANTHROPIC_API_KEY
-~/minibot/bin/minibot-secrets.sh set TELEGRAM_BOT_TOKEN
-~/minibot/bin/minibot-secrets.sh set OPENCLAW_GATEWAY_TOKEN
 ```
 
-Also revoke the old keys/tokens on the provider side (Anthropic console,
-Telegram @BotFather `/revoke`, etc.).
+Also rotate any OpenClaw-managed secrets (API keys, bot tokens, gateway
+token) through OpenClaw's own configuration.
 
 ### Step 3: Investigate
 

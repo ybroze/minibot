@@ -53,4 +53,4 @@ mb-secrets        # Manage keychain secrets
 
 - All scripts use `set -euo pipefail`
 - Keychain operations use `security find-generic-password` / `security add-generic-password` with service name `minibot`
-- Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `OPENCLAW_GATEWAY_TOKEN`
+- Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD` (OpenClaw manages its own secrets internally)
