@@ -63,9 +63,6 @@ services:
     environment:
       POSTGRES_DB_URL: postgres://minibot:${POSTGRES_PASSWORD:?Set via minibot-secrets.sh init}@postgres:5432/minibot
       REDIS_URL: redis://:${REDIS_PASSWORD:?Set via minibot-secrets.sh init}@redis:6379
-      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:?Set via minibot-secrets.sh init}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?Set via minibot-secrets.sh init}
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?Set via minibot-secrets.sh init}
     networks:
       - minibot-net
     restart: unless-stopped
