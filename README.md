@@ -27,6 +27,12 @@ have saved it in a secure location or password manager.
 # read all data, including keychain secrets, by booting into recovery mode.
 ```
 
+**Note that remote login (Tahoe and later) is required to run headless.**
+
+Enable "Remote Login" (SSH) in System Settings → General → Sharing.
+After a reboot, connect via SSH from another machine → you'll get a special pre-boot prompt:
+"This system is locked. To unlock it, use a local account name and password."
+
 ### Enable the macOS Firewall
 
 ```bash
