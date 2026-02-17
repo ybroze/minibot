@@ -13,8 +13,7 @@ echo "This script will:"
 echo "  1. Create the ~/minibot directory structure"
 echo "  2. Copy all scripts to the correct locations"
 echo "  3. Set up your shell environment"
-echo "  4. Make all scripts executable"
-echo "  5. Store secrets in the macOS Keychain"
+echo "  4. Store secrets in the macOS Keychain"
 echo ""
 read -p "Continue? (yes/no): " confirm
 
@@ -39,16 +38,11 @@ if [ -d "$SCRIPT_DIR/docs" ]; then
 fi
 
 echo ""
-echo "Step 3: Making scripts executable..."
-chmod +x ~/minibot/bin/*.sh
-chmod +x ~/minibot/scripts/*.sh
-
-echo ""
-echo "Step 3b: Setting file permissions..."
+echo "Step 2b: Setting file permissions..."
 chmod 700 ~/minibot/data
 
 echo ""
-echo "Step 4: Updating .gitignore..."
+echo "Step 3: Updating .gitignore..."
 # Idempotency: only create if missing, to preserve user customizations.
 if [ ! -f ~/minibot/.gitignore ]; then
     if [ -f "$SCRIPT_DIR/gitignore-template" ]; then
@@ -67,7 +61,7 @@ else
 fi
 
 echo ""
-echo "Step 5: Setting up shell environment..."
+echo "Step 4: Setting up shell environment..."
 # Idempotency: instead of inlining the additions into .zshrc (which makes
 # updates impossible on re-run), copy the file and source it.  The guard
 # ensures we only append the source line once; the cp always brings the
@@ -82,7 +76,7 @@ else
 fi
 
 echo ""
-echo "Step 6: Setting up secrets in macOS Keychain..."
+echo "Step 5: Setting up secrets in macOS Keychain..."
 ~/minibot/bin/minibot-secrets.sh init
 
 echo ""
