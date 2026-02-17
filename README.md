@@ -18,6 +18,10 @@ need to be done once per machine and require an admin account.
 Create a strong password for the admin user of your choice, and ensure you
 have saved it in a secure location or password manager.
 
+### Perform System Upgrade
+Ensure that all system updates and upgrades are done via the Software Update
+tool -- Tahoe is expected.
+
 ### Enable FileVault (Full-Disk Encryption)
 
 ```bash
