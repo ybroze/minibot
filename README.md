@@ -30,8 +30,13 @@ have saved it in a secure location or password manager.
 **Note that remote login (Tahoe and later) is required to run headless.**
 
 Enable "Remote Login" (SSH) in System Settings → General → Sharing.
-After a reboot, connect via SSH from another machine → you'll get a special pre-boot prompt:
+After a reboot, connect via SSH from another machine → you'll get a
+special pre-boot prompt:
 "This system is locked. To unlock it, use a local account name and password."
+FileVault being enabled *requires* a password on reboot, but with remote logins
+via ssh (ie., with Tailscale), this can be administered. Caveat that each
+reboot will require unlocking the encrypted disk using the administrator
+password. Save your backup key.
 
 ### Enable the macOS Firewall
 
