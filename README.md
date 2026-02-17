@@ -78,8 +78,6 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Install core dependencies
 brew install --cask docker              # Docker Desktop (daemon + CLI + Compose)
 brew install git
-brew install --cask visual-studio-code iterm2
-brew install jq yq tree htop
 
 # Install Tailscale for secure remote access
 brew install --cask tailscale
