@@ -112,14 +112,13 @@ cmd_delete() {
 
 cmd_list() {
     echo "Minibot secrets in keychain:"
-    # security dump-keychain is noisy; parse out our service entries
-    security dump-keychain 2>/dev/null \
-        | grep -A4 "\"svce\"<blob>=\"$SERVICE_NAME\"" \
-        | grep '"acct"' \
-        | sed 's/.*="//;s/".*//' \
-        | while read -r key; do
-            echo "  $key"
-        done
+    for key in "${REQUIRED_SECRETS[@]}"; do
+        if _secret_exists "$key"; then
+            echo "  ✓ $key"
+        else
+            echo "  ✗ $key (not set)"
+        fi
+    done
 }
 
 cmd_export() {
