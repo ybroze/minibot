@@ -77,7 +77,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Install core dependencies
 brew install --cask docker              # Docker Desktop (daemon + CLI + Compose)
-brew install git python@3.11 node@22
+brew install git
 brew install --cask visual-studio-code iterm2
 brew install jq yq tree htop
 
