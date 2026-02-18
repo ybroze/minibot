@@ -87,8 +87,10 @@ open -a Docker
 ```
 
 Wait for the whale icon in the menu bar to settle (no animation) before
-running any `docker` commands. You will not need to repeat this after
-subsequent reboots — Docker Desktop is configured to start automatically.
+running any `docker` commands. During first-run setup, enable
+**"Start Docker Desktop when you sign in"** so it starts automatically on
+future logins. Note that this setting is per-user — you will need to do this
+again when you first open Docker Desktop as the `minibot` user in step 5.
 
 ### 1b. Set Up Tailscale
 
@@ -96,6 +98,9 @@ Tailscale creates a private mesh VPN between your devices so you can reach
 the Minibot machine remotely without exposing any ports to the internet.
 
 1. Open Tailscale from Applications and log in (or create an account).
+   On first launch, macOS will prompt you to approve a system extension and
+   a VPN configuration — allow both. The system extension approval may
+   require your admin password.
 2. Install Tailscale on any device you want remote access from (phone, laptop, etc.) and log in with the same account.
 3. Verify connectivity:
    ```bash
@@ -178,8 +183,9 @@ For each API key you add:
 
 > **Note:** Docker Desktop must be running before executing any `docker`
 > commands (steps 5 and 6). Open it from Applications if it isn't already
-> running, and wait for the whale icon in the menu bar to show "Docker Desktop
-> is running" before proceeding.
+> running and wait for the whale icon in the menu bar to settle. On first
+> launch as the `minibot` user, enable **"Start Docker Desktop when you sign
+> in"** so it starts automatically on future logins.
 
 ```bash
 # Build the OpenClaw Docker image from source (one-time, takes a few minutes)
@@ -273,7 +279,8 @@ After running the setup script, you'll have:
 ├── data/                   # Persistent data
 │   ├── postgres/
 │   ├── redis/
-│   └── openclaw/
+│   ├── openclaw/
+│   └── logs/system/        # LaunchAgent stdout/stderr logs
 ├── docker/                 # Docker configs
 │   └── docker-compose.yml
 ├── scripts/                # Maintenance scripts
@@ -365,6 +372,7 @@ mb-secrets get POSTGRES_PASSWORD
 ```bash
 ~/minibot/bin/minibot-logs.sh postgres
 ~/minibot/bin/minibot-logs.sh redis
+~/minibot/bin/minibot-logs.sh openclaw
 ```
 
 ### Create a Backup
@@ -446,10 +454,16 @@ rm -rf ~/Movies ~/Music ~/Public
 
 ### Disable Background Services
 
-```bash
-# Disable Spotlight indexing for data directory
-sudo mdutil -i off ~/minibot/data
+Run the following as the **admin user** (requires `sudo`):
 
+```bash
+# Disable Spotlight indexing for the data directory
+sudo mdutil -i off ~/minibot/data
+```
+
+Run the following as the `minibot` user:
+
+```bash
 # Disable automatic App Store updates
 defaults write com.apple.commerce AutoUpdate -bool false
 ```
@@ -458,10 +472,14 @@ defaults write com.apple.commerce AutoUpdate -bool false
 
 ### Docker not starting
 ```bash
-# Check if Docker Desktop is running
+# Launch Docker Desktop
 open -a Docker
+```
 
-# Wait for Docker to fully start, then retry
+Wait 30–60 seconds for the whale icon in the menu bar to stop animating
+before retrying — the daemon takes a moment to fully initialize.
+
+```bash
 ~/minibot/bin/minibot-start.sh
 ```
 
