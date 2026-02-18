@@ -24,12 +24,11 @@ tool -- Tahoe is expected.
 
 ### Enable FileVault (Full-Disk Encryption)
 
-```bash
-# System Settings > Privacy & Security > FileVault > Turn On
-# CRITICAL: Save the recovery key in a password manager or print it.
-# Without FileVault, anyone with physical access to the machine can
-# read all data, including keychain secrets, by booting into recovery mode.
-```
+Go to **System Settings > Privacy & Security > FileVault > Turn On**.
+
+> **CRITICAL:** Save the recovery key in a password manager or print it.
+> Without FileVault, anyone with physical access to the machine can read all
+> data, including keychain secrets, by booting into recovery mode.
 
 **Note that remote login (Tahoe and later) is required to run headless.**
 
@@ -44,18 +43,16 @@ password. Save your backup key.
 
 ### Enable the macOS Firewall
 
+Go to **System Settings > Network > Firewall > Turn On**. This prevents
+unsolicited inbound connections. Alternatively, via the command line:
+
 ```bash
-# System Settings > Network > Firewall > Turn On
-# This prevents unsolicited inbound connections.
-# Alternatively, via command line:
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 ```
 
 ### Enable Advanced Data Protection for iCloud services.
 
-```bash
-# System Settings > iCloud > Advanced Data Protection > Turn On
-```
+Go to **System Settings > Apple ID > iCloud > Advanced Data Protection > Turn On**.
 
 ## Configuration
 
@@ -129,9 +126,9 @@ Minimize the attack surface and noise on the dedicated account:
 ### 4. Install Minibot
 
 ```bash
-# Clone or download this repository
+# Clone this repository
 cd ~/Downloads
-# (extract the minibot files here)
+git clone https://github.com/ybroze/minibot.git
 
 # Run the installer (creates dirs, copies scripts, configures shell, prompts for secrets)
 bash minibot/install.sh
@@ -185,7 +182,10 @@ image. You only need to re-run this when upgrading OpenClaw.
 # Start the base infrastructure
 ~/minibot/bin/minibot-start.sh
 
-# Check status
+# Check container status
+docker compose -f ~/minibot/docker/docker-compose.yml ps
+
+# Follow live logs
 ~/minibot/bin/minibot-logs.sh
 ```
 
@@ -215,8 +215,18 @@ when the display is off > **ON**, and set "Turn display off after" to "Never."
 System Settings > Users & Groups > Automatic login > select the `minibot` user.
 Without this, the LaunchAgent won't start after a reboot until someone logs in.
 
-**Note:** This is a compromise convenience solution, given that the hardware
-is on-premises. This means remote reboots will not take down the entire system.
+> **Note on FileVault + auto-login:** macOS disables the auto-login option in
+> System Settings when FileVault is enabled. If you followed the hardening steps
+> above, you will see this option greyed out. In that case, after every reboot
+> you must initiate the `minibot` user session manually — either by connecting
+> via Screen Sharing (`System Settings > General > Sharing > Screen Sharing`)
+> from another device on your Tailscale network, or by logging in at the
+> physical keyboard. Once the `minibot` session starts, the LaunchAgent fires
+> automatically and services come up.
+
+**Note:** This is a convenience trade-off for on-premises hardware. With
+auto-login and the LaunchAgent in place, the system recovers automatically
+after a reboot — no manual intervention required to bring services back up.
 
 Test by rebooting:
 
@@ -245,6 +255,7 @@ After running the setup script, you'll have:
 ├── docker/                 # Docker configs
 │   └── docker-compose.yml
 ├── scripts/                # Maintenance scripts
+│   ├── build-openclaw.sh
 │   ├── backup.sh
 │   ├── restore.sh
 │   ├── health-check.sh
@@ -274,6 +285,7 @@ After running the setup script, you'll have:
 
 ### Maintenance Scripts (in `~/minibot/scripts/`)
 
+- **build-openclaw.sh** - Build the OpenClaw Docker image from source
 - **backup.sh** - Backup data and configuration
 - **restore.sh** - Restore from a backup
 - **health-check.sh** - Check system health and status
@@ -340,7 +352,7 @@ mb-secrets get POSTGRES_PASSWORD
 
 ### Restore from Backup
 ```bash
-~/minibot/scripts/restore.sh ~/minibot-backups/20250212-143022
+~/minibot/scripts/restore.sh ~/minibot-backups/20260212-143022
 ```
 
 ### Check System Health
