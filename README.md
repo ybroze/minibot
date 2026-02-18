@@ -166,6 +166,11 @@ For each API key you add:
 
 ### 5. Build the OpenClaw Image
 
+> **Note:** Docker Desktop must be running before executing any `docker`
+> commands (steps 5 and 6). Open it from Applications if it isn't already
+> running, and wait for the whale icon in the menu bar to show "Docker Desktop
+> is running" before proceeding.
+
 ```bash
 # Build the OpenClaw Docker image from source (one-time, takes a few minutes)
 ~/minibot/scripts/build-openclaw.sh
