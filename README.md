@@ -20,7 +20,7 @@ have saved it in a secure location or password manager.
 
 ### Perform System Upgrade
 Ensure that all system updates and upgrades are done via the Software Update
-tool -- Tahoe is expected.
+tool. macOS Tahoe (15.x) or later is recommended.
 
 ### Enable FileVault (Full-Disk Encryption)
 
@@ -78,6 +78,17 @@ brew install --cask docker              # Docker Desktop (daemon + CLI + Compose
 # Install Tailscale for secure remote access
 brew install --cask tailscale
 ```
+
+After installing Docker Desktop, you must open it at least once to accept the
+license agreement and let it start the Docker daemon:
+
+```bash
+open -a Docker
+```
+
+Wait for the whale icon in the menu bar to settle (no animation) before
+running any `docker` commands. You will not need to repeat this after
+subsequent reboots — Docker Desktop is configured to start automatically.
 
 ### 1b. Set Up Tailscale
 
@@ -158,8 +169,10 @@ For each API key you add:
    natural spending ceiling (you can't spend what you haven't loaded).
 
 > **Note:** Configure each provider's spending limits *before* you start
-> services. The `REQUIRED_SECRETS` array in `minibot-secrets.sh` lists all
-> keys that `minibot-secrets.sh init` will prompt for.
+> services. API keys for LLM providers and other external services are managed
+> by OpenClaw internally — not through `minibot-secrets.sh`. The only secrets
+> stored in the macOS Keychain via `minibot-secrets.sh` are the infrastructure
+> passwords (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`).
 
 ### 5. Build the OpenClaw Image
 
@@ -224,16 +237,25 @@ Without this, the LaunchAgent won't start after a reboot until someone logs in.
 > physical keyboard. Once the `minibot` session starts, the LaunchAgent fires
 > automatically and services come up.
 
-**Note:** This is a convenience trade-off for on-premises hardware. With
-auto-login and the LaunchAgent in place, the system recovers automatically
-after a reboot — no manual intervention required to bring services back up.
+**Note:** If auto-login is enabled (only possible without FileVault), the
+system recovers fully automatically after a reboot — the `minibot` session
+starts and the LaunchAgent fires with no intervention. With FileVault enabled,
+you must initiate the `minibot` session after each reboot as described above,
+after which services come up automatically.
 
 Test by rebooting:
 
 ```bash
 sudo reboot
+```
 
-# After reboot, verify services came back:
+After the reboot, if FileVault is enabled you must unlock the disk first.
+Reconnect via SSH — you will see the pre-boot prompt — and authenticate
+with the admin password. Then connect again (or use Screen Sharing) to
+start the `minibot` session. Once logged in as `minibot`, verify services
+came back:
+
+```bash
 mb-status
 ```
 
@@ -443,6 +465,28 @@ open -a Docker
 ~/minibot/bin/minibot-start.sh
 ```
 
+### Keychain secrets missing
+If `mb-start` reports `Error: POSTGRES_PASSWORD not found in keychain`:
+```bash
+# Run interactive first-time secrets setup
+mb-secrets init
+
+# Verify secrets are stored
+mb-secrets list
+```
+
+### OpenClaw won't start
+```bash
+# Check if the image exists (if not, run mb-build first)
+docker image inspect openclaw:local
+
+# Check OpenClaw logs for startup errors
+mb-logs openclaw
+
+# OpenClaw waits for Postgres and Redis to be healthy — check their status
+mb-status
+```
+
 ### Database connection errors
 ```bash
 # Check PostgreSQL logs
@@ -457,8 +501,11 @@ mb-secrets get POSTGRES_PASSWORD
 # Check disk usage
 du -sh ~/minibot/data/*
 
-# Clean old Docker images
-docker system prune -a
+# Remove stopped containers and dangling images (safe)
+docker system prune
+
+# Remove ALL unused images including openclaw:local (requires mb-build to recover)
+# docker system prune -a
 ```
 
 ---
