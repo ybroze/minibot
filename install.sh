@@ -39,6 +39,7 @@ fi
 
 echo ""
 echo "Step 2b: Setting file permissions..."
+chmod +x ~/minibot/bin/*.sh ~/minibot/scripts/*.sh
 chmod 700 ~/minibot/data
 
 echo ""

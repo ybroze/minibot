@@ -164,7 +164,17 @@ For each API key you add:
 > services. The `REQUIRED_SECRETS` array in `minibot-secrets.sh` lists all
 > keys that `minibot-secrets.sh init` will prompt for.
 
-### 5. Start Services
+### 5. Build the OpenClaw Image
+
+```bash
+# Build the OpenClaw Docker image from source (one-time, takes a few minutes)
+~/minibot/scripts/build-openclaw.sh
+```
+
+The script clones the OpenClaw source repository and builds the `openclaw:local`
+image. You only need to re-run this when upgrading OpenClaw.
+
+### 6. Start Services
 
 ```bash
 # Start the base infrastructure
@@ -179,7 +189,7 @@ they are not installed on the host. If you need CLI tools for debugging
 (e.g., `psql` or `redis-cli`), install them as the admin user:
 `brew install libpq redis`.
 
-### 6. Enable 24/7 Operation
+### 7. Enable 24/7 Operation
 
 This is a dedicated machine that should run Minibot continuously. LaunchAgent
 is used at the system user level rather than machine-wide.
@@ -281,6 +291,7 @@ After running the setup script, you'll have:
 
 The following aliases are available after sourcing `~/.zshrc`:
 
+- `mb-build` - Build the OpenClaw Docker image
 - `mb-start` - Start services
 - `mb-stop` - Stop services
 - `mb-logs` - View logs
