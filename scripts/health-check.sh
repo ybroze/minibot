@@ -30,6 +30,16 @@ else
 fi
 echo ""
 
+# Check openclaw:local image
+echo "OpenClaw Image:"
+if docker image inspect openclaw:local &>/dev/null; then
+    built_at=$(docker image inspect openclaw:local --format='{{.Created}}' 2>/dev/null || echo "unknown")
+    echo "✓ openclaw:local exists (built: $built_at)"
+else
+    echo "✗ openclaw:local not found (run: scripts/build-openclaw.sh)"
+fi
+echo ""
+
 # Check running containers
 echo "Running Containers:"
 docker compose -f docker/docker-compose.yml ps || echo "  (could not query containers)"

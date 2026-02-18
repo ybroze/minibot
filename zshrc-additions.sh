@@ -19,6 +19,7 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 export PS1="%F{cyan}[minibot]%f %~ %# "
 
 # Helpful aliases
+alias mb-build='~/minibot/scripts/build-openclaw.sh'
 alias mb-start='~/minibot/bin/minibot-start.sh'
 alias mb-stop='~/minibot/bin/minibot-stop.sh'
 alias mb-logs='~/minibot/bin/minibot-logs.sh'

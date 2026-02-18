@@ -49,7 +49,7 @@ services:
           cpus: '0.5'
 
   openclaw:
-    image: openclaw/openclaw:latest
+    image: openclaw:local
     container_name: minibot-openclaw
     depends_on:
       postgres:

@@ -25,6 +25,13 @@ if [ "$missing" -eq 1 ]; then
     exit 1
 fi
 
+# --- Verify openclaw:local image exists ------------------------------------
+if ! docker image inspect openclaw:local &>/dev/null; then
+    echo "Error: openclaw:local image not found." >&2
+    echo "Run:  ~/minibot/scripts/build-openclaw.sh" >&2
+    exit 1
+fi
+
 # --- Start services --------------------------------------------------------
 echo "Starting Minibot services..."
 docker compose -f docker/docker-compose.yml up -d
