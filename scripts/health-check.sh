@@ -11,7 +11,7 @@ echo ""
 
 # Check keychain secrets
 echo "Keychain Secrets:"
-for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
     if ~/minibot/bin/minibot-secrets.sh get "$key" &>/dev/null; then
         echo "✓ $key is set"
     else

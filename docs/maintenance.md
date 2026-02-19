@@ -38,6 +38,7 @@ Rotate secrets every 3 months (or immediately if you suspect compromise):
    mb-secrets set POSTGRES_PASSWORD
    mb-secrets set REDIS_PASSWORD
    mb-secrets set MONGO_PASSWORD
+   mb-secrets set OPENCLAW_GATEWAY_PASSWORD
    ```
 3. Recreate containers so they use the new values:
    ```bash

@@ -161,11 +161,11 @@ source ~/.zshrc
 ```
 
 The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
-`REDIS_PASSWORD`, `MONGO_PASSWORD`). These are stored in the macOS Keychain —
-no plaintext `.env` files. OpenClaw manages its own secrets (API keys, bot
-tokens, gateway token) internally. The installer also builds the
-`openclaw:local` Docker image from source — this takes a few minutes on first
-run.
+`REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`). These are
+stored in the macOS Keychain — no plaintext `.env` files. OpenClaw manages its
+own internal secrets (API keys, bot tokens) separately. The installer also
+builds the `openclaw:local` Docker image from source — this takes a few minutes
+on first run.
 
 ### 4b. Configure API Spending Limits
 
@@ -184,9 +184,10 @@ For each API key you add:
 
 > **Note:** Configure each provider's spending limits *before* you start
 > services. API keys for LLM providers and other external services are managed
-> by OpenClaw internally — not through `minibot-secrets.sh`. The only secrets
+> by OpenClaw internally — not through `minibot-secrets.sh`. The secrets
 > stored in the macOS Keychain via `minibot-secrets.sh` are the infrastructure
-> passwords (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`).
+> passwords (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`,
+> `OPENCLAW_GATEWAY_PASSWORD`).
 
 ### 5. Start Services
 

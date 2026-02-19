@@ -11,13 +11,14 @@ running `docker compose up`.
 
 ## Required Secrets
 
-| Secret              | Used by    | Description                                       |
-|---------------------|------------|---------------------------------------------------|
-| `POSTGRES_PASSWORD` | PostgreSQL | Database password for the `minibot` user          |
-| `REDIS_PASSWORD`    | Redis      | Authentication password (`--requirepass`)         |
-| `MONGO_PASSWORD`    | MongoDB    | Root authentication password (`minibot` user)    |
+| Secret                     | Used by    | Description                                       |
+|----------------------------|------------|---------------------------------------------------|
+| `POSTGRES_PASSWORD`        | PostgreSQL | Database password for the `minibot` user          |
+| `REDIS_PASSWORD`           | Redis      | Authentication password (`--requirepass`)         |
+| `MONGO_PASSWORD`           | MongoDB    | Root authentication password (`minibot` user)    |
+| `OPENCLAW_GATEWAY_PASSWORD`| OpenClaw   | Gateway authentication password                  |
 
-OpenClaw manages its own secrets (API keys, bot tokens, gateway token) internally — they are not stored in the macOS Keychain.
+OpenClaw manages its own internal secrets (API keys, bot tokens) separately — they are not stored in the macOS Keychain. The gateway password, however, is Keychain-managed like the other infrastructure secrets.
 
 ## Managing Secrets
 

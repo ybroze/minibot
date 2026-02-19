@@ -19,7 +19,7 @@ echo ""
 # --- 1. Keychain secrets ---------------------------------------------------
 echo "Keychain Secrets:"
 
-for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
     val=$(~/minibot/bin/minibot-secrets.sh get "$key" 2>/dev/null || true)
     if [ -z "$val" ]; then
         fail "$key is not set in the keychain"

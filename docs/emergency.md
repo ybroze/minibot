@@ -26,6 +26,7 @@ compromised credentials active can be severe.
 ~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set REDIS_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set MONGO_PASSWORD
+~/minibot/bin/minibot-secrets.sh set OPENCLAW_GATEWAY_PASSWORD
 ```
 
 Also rotate any OpenClaw-managed secrets (API keys, bot tokens, gateway

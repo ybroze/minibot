@@ -66,7 +66,8 @@ Even if a service is reachable, it requires credentials:
   `PING` commands are rejected.
 - **MongoDB** — requires `MONGO_PASSWORD` for the `minibot` root user via
   `MONGO_INITDB_ROOT_PASSWORD`.
-- **OpenClaw** — requires a gateway token for access, managed internally by OpenClaw.
+- **OpenClaw** — requires `OPENCLAW_GATEWAY_PASSWORD` for gateway access,
+  managed via the macOS Keychain alongside other infrastructure secrets.
 
 See [secrets.md](secrets.md) for how credentials are managed.
 
