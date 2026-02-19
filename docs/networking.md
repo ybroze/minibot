@@ -30,6 +30,7 @@ only from the host machine — not from the local network or the internet.
 |------------|--------------------|------------------------|------------------------|
 | PostgreSQL | minibot-postgres   | `127.0.0.1:5432`      | Database               |
 | Redis      | minibot-redis      | `127.0.0.1:6379`      | Cache / message broker |
+| MongoDB    | minibot-mongo      | `127.0.0.1:27017`     | Document database      |
 | OpenClaw   | minibot-openclaw   | `127.0.0.1:18789`     | Gateway (WebSocket)    |
 
 This is enforced in `docker/docker-compose.yml`. The `security-audit.sh`
@@ -63,6 +64,8 @@ Even if a service is reachable, it requires credentials:
   user.
 - **Redis** — requires `REDIS_PASSWORD` via `--requirepass`. Unauthenticated
   `PING` commands are rejected.
+- **MongoDB** — requires `MONGO_PASSWORD` for the `minibot` root user via
+  `MONGO_INITDB_ROOT_PASSWORD`.
 - **OpenClaw** — requires a gateway token for access, managed internally by OpenClaw.
 
 See [secrets.md](secrets.md) for how credentials are managed.
@@ -78,6 +81,7 @@ from exhausting the host:
 |------------|-------------|-----------|
 | PostgreSQL | 512 MB      | 1.0 CPU   |
 | Redis      | 256 MB      | 0.5 CPU   |
+| MongoDB    | 512 MB      | 1.0 CPU   |
 | OpenClaw   | 1 GB        | 2.0 CPUs  |
 
 These are set via `deploy.resources.limits` in `docker-compose.yml`.
@@ -94,7 +98,7 @@ Remote access to the Minibot machine is handled exclusively through:
 
 2. **SSH tunnel** — forward specific ports over SSH:
    ```bash
-   ssh -L 5432:127.0.0.1:5432 -L 18789:127.0.0.1:18789 minibot@<machine-ip>
+   ssh -L 5432:127.0.0.1:5432 -L 27017:127.0.0.1:27017 -L 18789:127.0.0.1:18789 minibot@<machine-ip>
    ```
 
 Neither method requires changing any port bindings or firewall rules.
@@ -125,4 +129,5 @@ Run the security audit to verify the networking posture:
 This checks:
 - All ports are bound to `127.0.0.1`
 - Redis rejects unauthenticated connections
+- MongoDB rejects unauthenticated access
 - The macOS firewall is enabled

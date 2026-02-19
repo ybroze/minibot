@@ -11,7 +11,7 @@
 If that fails or you don't trust the scripts:
 
 ```bash
-docker kill minibot-postgres minibot-redis minibot-openclaw 2>/dev/null
+docker kill minibot-postgres minibot-redis minibot-mongo minibot-openclaw 2>/dev/null
 docker compose -f ~/minibot/docker/docker-compose.yml down 2>/dev/null
 ```
 
@@ -25,6 +25,7 @@ compromised credentials active can be severe.
 # Set new values in the keychain
 ~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set REDIS_PASSWORD
+~/minibot/bin/minibot-secrets.sh set MONGO_PASSWORD
 ```
 
 Also rotate any OpenClaw-managed secrets (API keys, bot tokens, gateway

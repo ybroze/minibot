@@ -19,7 +19,7 @@ echo ""
 # --- 1. Keychain secrets ---------------------------------------------------
 echo "Keychain Secrets:"
 
-for key in POSTGRES_PASSWORD REDIS_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD; do
     val=$(~/minibot/bin/minibot-secrets.sh get "$key" 2>/dev/null || true)
     if [ -z "$val" ]; then
         fail "$key is not set in the keychain"
@@ -69,6 +69,23 @@ elif docker exec minibot-redis redis-cli --no-auth-warning -a "$(~/minibot/bin/m
     pass "Redis requires authentication"
 else
     warn "Redis is not running or could not verify auth"
+fi
+echo ""
+
+# --- 4b. MongoDB authentication ---------------------------------------------
+echo "MongoDB Authentication:"
+
+MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || true)
+if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --eval "db.runCommand({ping:1})" &>/dev/null; then
+    pass "MongoDB accepts authenticated connections"
+    # Test that unauthenticated access to user data is rejected
+    if docker exec minibot-mongo mongosh --quiet --eval "db.getSiblingDB('admin').getUsers()" 2>&1 | grep -qi "unauthorized\|requires authentication"; then
+        pass "MongoDB rejects unauthenticated user enumeration"
+    else
+        warn "MongoDB unauthenticated access check was inconclusive"
+    fi
+else
+    warn "MongoDB is not running or could not verify auth"
 fi
 echo ""
 
@@ -143,6 +160,9 @@ echo "  PostgreSQL:      $pg_image"
 
 redis_image=$(docker inspect minibot-redis --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  Redis:           $redis_image"
+
+mongo_image=$(docker inspect minibot-mongo --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
+echo "  MongoDB:         $mongo_image"
 
 oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  OpenClaw:        $oc_image"

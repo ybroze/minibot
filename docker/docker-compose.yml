@@ -49,6 +49,30 @@ services:
           memory: 256M
           cpus: '0.5'
 
+  mongo:
+    image: mongo:7
+    container_name: minibot-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: minibot
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Set via minibot-secrets.sh init}
+    volumes:
+      - ../data/mongo:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+    networks:
+      - minibot-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.runCommand({ping:1})\""]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+
   openclaw:
     image: openclaw:local
     container_name: minibot-openclaw

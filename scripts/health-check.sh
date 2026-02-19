@@ -11,7 +11,7 @@ echo ""
 
 # Check keychain secrets
 echo "Keychain Secrets:"
-for key in POSTGRES_PASSWORD REDIS_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD; do
     if ~/minibot/bin/minibot-secrets.sh get "$key" &>/dev/null; then
         echo "✓ $key is set"
     else
@@ -66,6 +66,18 @@ else
 fi
 echo ""
 
+# Check MongoDB
+echo "MongoDB:"
+MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || echo "")
+if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --eval "db.runCommand({ping:1})" &> /dev/null; then
+    echo "✓ MongoDB is responding (authenticated)"
+elif docker exec minibot-mongo mongosh --quiet --eval "db.runCommand({ping:1})" &> /dev/null; then
+    echo "⚠ MongoDB is responding but authentication status unclear"
+else
+    echo "✗ MongoDB is not responding"
+fi
+echo ""
+
 # Check OpenClaw
 echo "OpenClaw:"
 if docker exec minibot-openclaw node -e "process.exit(0)" &> /dev/null; then
@@ -90,6 +102,8 @@ pg_image=$(docker inspect minibot-postgres --format='{{.Config.Image}}' 2>/dev/n
 echo "  PostgreSQL:     $pg_image"
 redis_image=$(docker inspect minibot-redis --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  Redis:          $redis_image"
+mongo_image=$(docker inspect minibot-mongo --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
+echo "  MongoDB:        $mongo_image"
 oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  OpenClaw:       $oc_image"
 echo ""

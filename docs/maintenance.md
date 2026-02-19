@@ -24,7 +24,7 @@ Verify all services are running and responsive.
 du -sh ~/minibot/data/*
 ```
 
-If PostgreSQL, Redis, or OpenClaw data is growing unexpectedly, investigate.
+If PostgreSQL, Redis, MongoDB, or OpenClaw data is growing unexpectedly, investigate.
 Consider running `docker system prune` to clean up unused images and build
 cache.
 
@@ -37,6 +37,7 @@ Rotate secrets every 3 months (or immediately if you suspect compromise):
    ```bash
    mb-secrets set POSTGRES_PASSWORD
    mb-secrets set REDIS_PASSWORD
+   mb-secrets set MONGO_PASSWORD
    ```
 3. Recreate containers so they use the new values:
    ```bash
@@ -59,6 +60,7 @@ Check for security updates to the base images:
 ```bash
 docker pull postgres:15-alpine
 docker pull redis:7-alpine
+docker pull mongo:7
 docker pull openclaw/openclaw:latest
 mb-stop && mb-start
 ```

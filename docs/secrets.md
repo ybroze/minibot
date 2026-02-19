@@ -15,6 +15,7 @@ running `docker compose up`.
 |---------------------|------------|---------------------------------------------------|
 | `POSTGRES_PASSWORD` | PostgreSQL | Database password for the `minibot` user          |
 | `REDIS_PASSWORD`    | Redis      | Authentication password (`--requirepass`)         |
+| `MONGO_PASSWORD`    | MongoDB    | Root authentication password (`minibot` user)    |
 
 OpenClaw manages its own secrets (API keys, bot tokens, gateway token) internally — they are not stored in the macOS Keychain.
 

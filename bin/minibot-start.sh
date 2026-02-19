@@ -14,7 +14,7 @@ eval "$("$SCRIPT_DIR/minibot-secrets.sh" export)"
 
 # Verify required secrets are present
 missing=0
-for key in POSTGRES_PASSWORD REDIS_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD; do
     if [ -z "${!key:-}" ]; then
         echo "Error: $key not found in keychain." >&2
         missing=1

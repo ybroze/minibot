@@ -12,7 +12,7 @@ echo "Creating Minibot directory structure at: $BASE_DIR"
 mkdir -p "$BASE_DIR"/{bin,data,docker,scripts,docs}
 
 # Data subdirectories
-mkdir -p "$BASE_DIR/data"/{postgres,redis,openclaw,logs/system}
+mkdir -p "$BASE_DIR/data"/{postgres,redis,mongo,openclaw,logs/system}
 
 # Standard hidden directories
 mkdir -p "$HOME/.config" "$HOME/.cache" "$HOME/.local"/{bin,lib}

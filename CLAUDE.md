@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~750 lines of bash) plus configuration and documentation.
+Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, MongoDB 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~750 lines of bash) plus configuration and documentation.
 
 Target platform: macOS (Sequoia / recent versions), intended to run under a dedicated `minibot` standard user account.
 
@@ -12,7 +12,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 **Secrets flow:** `macOS Keychain → minibot-start.sh (exports env vars) → docker compose up → containers`
 
-**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only.
+**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only.
 
 **Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
 
@@ -53,4 +53,4 @@ mb-secrets        # Manage keychain secrets
 
 - All scripts use `set -euo pipefail`
 - Keychain operations use `security find-generic-password` / `security add-generic-password` with service name `minibot`
-- Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD` (OpenClaw manages its own secrets internally)
+- Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD` (OpenClaw manages its own secrets internally)

@@ -161,10 +161,11 @@ source ~/.zshrc
 ```
 
 The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
-`REDIS_PASSWORD`). These are stored in the macOS Keychain — no plaintext
-`.env` files. OpenClaw manages its own secrets (API keys, bot tokens, gateway
-token) internally. The installer also builds the `openclaw:local` Docker
-image from source — this takes a few minutes on first run.
+`REDIS_PASSWORD`, `MONGO_PASSWORD`). These are stored in the macOS Keychain —
+no plaintext `.env` files. OpenClaw manages its own secrets (API keys, bot
+tokens, gateway token) internally. The installer also builds the
+`openclaw:local` Docker image from source — this takes a few minutes on first
+run.
 
 ### 4b. Configure API Spending Limits
 
@@ -185,7 +186,7 @@ For each API key you add:
 > services. API keys for LLM providers and other external services are managed
 > by OpenClaw internally — not through `minibot-secrets.sh`. The only secrets
 > stored in the macOS Keychain via `minibot-secrets.sh` are the infrastructure
-> passwords (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`).
+> passwords (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`).
 
 ### 5. Start Services
 
@@ -200,10 +201,10 @@ docker compose -f ~/minibot/docker/docker-compose.yml ps
 ~/minibot/bin/minibot-logs.sh
 ```
 
-**Note:** PostgreSQL, Redis, and OpenClaw run as Docker containers —
+**Note:** PostgreSQL, Redis, MongoDB, and OpenClaw run as Docker containers —
 they are not installed on the host. If you need CLI tools for debugging
-(e.g., `psql` or `redis-cli`), install them as the admin user:
-`brew install libpq redis`.
+(e.g., `psql`, `redis-cli`, or `mongosh`), install them as the admin user:
+`brew install libpq redis mongosh`.
 
 ### 6. Enable 24/7 Operation
 
@@ -271,6 +272,7 @@ After running the setup script, you'll have:
 ├── data/                   # Persistent data
 │   ├── postgres/
 │   ├── redis/
+│   ├── mongo/
 │   ├── openclaw/
 │   └── logs/system/        # LaunchAgent stdout/stderr logs
 ├── docker/                 # Docker configs
@@ -364,6 +366,7 @@ mb-secrets get POSTGRES_PASSWORD
 ```bash
 ~/minibot/bin/minibot-logs.sh postgres
 ~/minibot/bin/minibot-logs.sh redis
+~/minibot/bin/minibot-logs.sh mongo
 ~/minibot/bin/minibot-logs.sh openclaw
 ```
 
