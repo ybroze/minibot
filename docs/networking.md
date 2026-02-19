@@ -80,10 +80,10 @@ from exhausting the host:
 
 | Service    | Memory Limit | CPU Limit |
 |------------|-------------|-----------|
-| PostgreSQL | 512 MB      | 1.0 CPU   |
+| PostgreSQL | 1 GB        | 1.0 CPU   |
 | Redis      | 256 MB      | 0.5 CPU   |
-| MongoDB    | 512 MB      | 1.0 CPU   |
-| OpenClaw   | 1 GB        | 2.0 CPUs  |
+| MongoDB    | 1 GB        | 1.0 CPU   |
+| OpenClaw   | 4 GB        | 2.0 CPUs  |
 
 These are set via `deploy.resources.limits` in `docker-compose.yml`.
 

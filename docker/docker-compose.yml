@@ -22,7 +22,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 1G
           cpus: '1.0'
 
   redis:
@@ -70,7 +70,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 1G
           cpus: '1.0'
 
   openclaw:
@@ -89,6 +89,7 @@ services:
       POSTGRES_DB_URL: postgres://minibot:${POSTGRES_PASSWORD:?Set via minibot-secrets.sh init}@postgres:5432/minibot
       REDIS_URL: redis://:${REDIS_PASSWORD:?Set via minibot-secrets.sh init}@redis:6379
       OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:?Set via minibot-secrets.sh init}
+      NODE_OPTIONS: "--max-old-space-size=3584"
     networks:
       - minibot-net
     restart: unless-stopped
@@ -101,7 +102,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 4G
           cpus: '2.0'
 
 networks:
