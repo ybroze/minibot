@@ -77,6 +77,9 @@ brew install --cask docker              # Docker Desktop (daemon + CLI + Compose
 
 # Install Tailscale for secure remote access
 brew install --cask tailscale
+
+# Install CLI tools for debugging (psql, redis-cli, mongosh)
+brew install libpq redis mongosh
 ```
 
 After installing Docker Desktop, you must open it at least once to accept the
