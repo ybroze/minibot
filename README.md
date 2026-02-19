@@ -90,7 +90,7 @@ Wait for the whale icon in the menu bar to settle (no animation) before
 running any `docker` commands. During first-run setup, enable
 **"Start Docker Desktop when you sign in"** so it starts automatically on
 future logins. Note that this setting is per-user — you will need to do this
-again when you first open Docker Desktop as the `minibot` user in step 5.
+again when you first open Docker Desktop as the `minibot` user in step 4.
 
 ### 1b. Set Up Tailscale
 
@@ -141,12 +141,19 @@ Minimize the attack surface and noise on the dedicated account:
 
 ### 4. Install Minibot
 
+> **Note:** Docker Desktop must be running before running the installer,
+> because it builds the OpenClaw Docker image. Open it from Applications if
+> it isn't already running and wait for the whale icon in the menu bar to
+> settle. On first launch as the `minibot` user, enable **"Start Docker
+> Desktop when you sign in"** so it starts automatically on future logins.
+
 ```bash
 # Clone this repository
 cd ~/Downloads
 git clone https://github.com/ybroze/minibot.git
 
-# Run the installer (creates dirs, copies scripts, configures shell, prompts for secrets)
+# Run the installer (creates dirs, copies scripts, configures shell,
+# prompts for secrets, and builds the OpenClaw Docker image)
 bash minibot/install.sh
 
 # Load the new shell config
@@ -156,7 +163,8 @@ source ~/.zshrc
 The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
 `REDIS_PASSWORD`). These are stored in the macOS Keychain — no plaintext
 `.env` files. OpenClaw manages its own secrets (API keys, bot tokens, gateway
-token) internally.
+token) internally. The installer also builds the `openclaw:local` Docker
+image from source — this takes a few minutes on first run.
 
 ### 4b. Configure API Spending Limits
 
@@ -179,23 +187,7 @@ For each API key you add:
 > stored in the macOS Keychain via `minibot-secrets.sh` are the infrastructure
 > passwords (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`).
 
-### 5. Build the OpenClaw Image
-
-> **Note:** Docker Desktop must be running before executing any `docker`
-> commands (steps 5 and 6). Open it from Applications if it isn't already
-> running and wait for the whale icon in the menu bar to settle. On first
-> launch as the `minibot` user, enable **"Start Docker Desktop when you sign
-> in"** so it starts automatically on future logins.
-
-```bash
-# Build the OpenClaw Docker image from source (one-time, takes a few minutes)
-~/minibot/scripts/build-openclaw.sh
-```
-
-The script clones the OpenClaw source repository and builds the `openclaw:local`
-image. You only need to re-run this when upgrading OpenClaw.
-
-### 6. Start Services
+### 5. Start Services
 
 ```bash
 # Start the base infrastructure
@@ -213,7 +205,7 @@ they are not installed on the host. If you need CLI tools for debugging
 (e.g., `psql` or `redis-cli`), install them as the admin user:
 `brew install libpq redis`.
 
-### 7. Enable 24/7 Operation
+### 6. Enable 24/7 Operation
 
 This is a dedicated machine that should run Minibot continuously. LaunchAgent
 is used at the system user level rather than machine-wide.

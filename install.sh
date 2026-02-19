@@ -14,6 +14,7 @@ echo "  1. Create the ~/minibot directory structure"
 echo "  2. Copy all scripts to the correct locations"
 echo "  3. Set up your shell environment"
 echo "  4. Store secrets in the macOS Keychain"
+echo "  5. Build the OpenClaw Docker image"
 echo ""
 read -p "Continue? (yes/no): " confirm
 
@@ -79,6 +80,11 @@ fi
 echo ""
 echo "Step 5: Setting up secrets in macOS Keychain..."
 ~/minibot/bin/minibot-secrets.sh init
+
+echo ""
+echo "Step 6: Building OpenClaw Docker image..."
+echo "(This clones the OpenClaw source and builds the image — may take a few minutes.)"
+~/minibot/scripts/build-openclaw.sh
 
 echo ""
 echo "=== Installation Complete! ==="
