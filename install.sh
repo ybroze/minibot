@@ -33,7 +33,6 @@ echo ""
 echo "Step 2: Copying scripts..."
 cp -r "$SCRIPT_DIR/bin"/* ~/minibot/bin/
 cp -r "$SCRIPT_DIR/docker"/* ~/minibot/docker/
-cp "$SCRIPT_DIR/docker/.env.example" ~/minibot/docker/ 2>/dev/null || true
 cp -r "$SCRIPT_DIR/scripts"/* ~/minibot/scripts/
 
 # Copy documentation
