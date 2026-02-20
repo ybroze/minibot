@@ -26,7 +26,8 @@ fi
 echo ""
 echo "Step 1: Enabling macOS firewall..."
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
-echo "✓ Firewall enabled"
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+echo "✓ Firewall enabled (stealth mode)"
 
 # ── Step 2: Install Xcode Command Line Tools ────────────────────────────────
 echo ""
