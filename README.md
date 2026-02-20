@@ -210,6 +210,20 @@ they are not installed on the host. If you need CLI tools for debugging
 (e.g., `psql`, `redis-cli`, or `mongosh`), install them as the admin user:
 `brew install libpq redis mongosh`.
 
+#### Container Memory Allocation (16 GB Mac Mini)
+
+| Service    | Container          | Memory Limit | CPU Limit | Notes                                  |
+|------------|--------------------|-------------|-----------|----------------------------------------|
+| PostgreSQL | minibot-postgres   | 1 GB        | 1.0       | Query caching, shared buffers          |
+| Redis      | minibot-redis      | 256 MB      | 0.5       | Cache/message broker                   |
+| MongoDB    | minibot-mongo      | 1 GB        | 1.0       | WiredTiger cache                       |
+| OpenClaw   | minibot-openclaw   | 4 GB        | 2.0       | Node.js heap set to 3.5 GB via `NODE_OPTIONS` |
+| **Total**  |                    | **6.25 GB** | **3.5**   |                                        |
+
+macOS and Docker Desktop require approximately 4-5 GB, leaving 5-6 GB of free
+headroom on a 16 GB machine. These limits are set via `deploy.resources.limits`
+in `docker/docker-compose.yml`.
+
 ### 6. Enable 24/7 Operation
 
 This is a dedicated machine that should run Minibot continuously. LaunchAgent
