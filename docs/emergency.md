@@ -29,8 +29,8 @@ compromised credentials active can be severe.
 ~/minibot/bin/minibot-secrets.sh set OPENCLAW_GATEWAY_PASSWORD
 ```
 
-Also rotate any OpenClaw-managed secrets (API keys, bot tokens, gateway
-token) through OpenClaw's own configuration.
+Also rotate any OpenClaw-managed secrets (API keys, bot tokens) through
+OpenClaw's own configuration.
 
 ### Step 3: Investigate
 

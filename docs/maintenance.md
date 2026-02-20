@@ -48,8 +48,8 @@ Rotate secrets every 3 months (or immediately if you suspect compromise):
    mb-start
    ```
    **Note:** `-v` removes Docker volumes. Back up first if you have data.
-4. Rotate any OpenClaw-managed secrets (API keys, bot tokens, gateway token)
-   through OpenClaw's own configuration.
+4. Rotate any OpenClaw-managed secrets (API keys, bot tokens) through
+   OpenClaw's own configuration.
 
 When rotating an API key for an external provider, it's also a good time to
 review spending limits on that provider's dashboard.

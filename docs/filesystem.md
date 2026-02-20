@@ -17,4 +17,5 @@ For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
 may be owned by root or by the container's internal user, not the minibot host
 user. The `data/` directory is `700`, which prevents other host users from
 reading the logs, but the files inside may have looser permissions than
-expected. The `security-audit.sh` script checks for this.
+expected. The `security-audit.sh` script checks the parent `data/` directory
+permissions but does not recursively audit file ownership inside volumes.
