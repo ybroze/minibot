@@ -11,7 +11,7 @@ echo ""
 
 # Check keychain secrets
 echo "Keychain Secrets:"
-for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
+for key in POSTGRES_PASSWORD REDIS_PASSWORDWORD MONGO_PASSWORDWORD OPENCLAW_GATEWAY_PASSWORD; do
     if ~/minibot/bin/minibot-secrets.sh get "$key" &>/dev/null; then
         echo "✓ $key is set"
     else
@@ -56,8 +56,8 @@ echo ""
 
 # Check Redis
 echo "Redis:"
-REDIS_PASS=$(~/minibot/bin/minibot-secrets.sh get REDIS_PASSWORD 2>/dev/null || echo "")
-if [ -n "$REDIS_PASS" ] && docker exec minibot-redis redis-cli --no-auth-warning -a "$REDIS_PASS" ping &> /dev/null; then
+REDIS_PASSWORD=$(~/minibot/bin/minibot-secrets.sh get REDIS_PASSWORDWORD 2>/dev/null || echo "")
+if [ -n "$REDIS_PASSWORD" ] && docker exec minibot-redis redis-cli --no-auth-warning -a "$REDIS_PASSWORD" ping &> /dev/null; then
     echo "✓ Redis is responding (authenticated)"
 elif docker exec minibot-redis redis-cli ping &> /dev/null; then
     echo "⚠ Redis is responding but WITHOUT authentication"
@@ -68,8 +68,8 @@ echo ""
 
 # Check MongoDB
 echo "MongoDB:"
-MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || echo "")
-if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --authenticationDatabase admin --eval "db.runCommand({ping:1})" &> /dev/null; then
+MONGO_PASSWORD=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORDWORD 2>/dev/null || echo "")
+if [ -n "$MONGO_PASSWORD" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASSWORD" --authenticationDatabase admin --eval "db.runCommand({ping:1})" &> /dev/null; then
     echo "✓ MongoDB is responding (authenticated)"
 elif docker exec minibot-mongo mongosh --quiet --eval "db.runCommand({ping:1})" &> /dev/null; then
     echo "⚠ MongoDB is responding but authentication status unclear"
