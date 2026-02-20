@@ -63,7 +63,7 @@ services:
   mongo:
     image: mongo:7
     container_name: minibot-mongo
-    command: mongod --quiet
+    command: mongod --quiet --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: minibot
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Set via minibot-secrets.sh init}
@@ -75,7 +75,7 @@ services:
       - minibot-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "mongosh --quiet -u minibot -p \"$MONGO_INITDB_ROOT_PASSWORD\" --eval \"db.runCommand({ping:1})\""]
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.runCommand({ping:1})\""]
       interval: 10s
       timeout: 5s
       retries: 3
