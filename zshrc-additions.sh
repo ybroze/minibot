@@ -15,6 +15,10 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 # Clear environment of user-specific cruft
 # unset HISTFILE  # Optional: disable shell history (uncomment if desired)
 
+# Load Keychain secrets into the environment so all docker compose
+# commands work without each script loading them individually.
+eval "$(~/minibot/bin/minibot-secrets.sh export 2>/dev/null)"
+
 # Prompt indicator
 export PS1="%F{cyan}[minibot]%f %~ %# "
 
@@ -23,7 +27,7 @@ alias mb-build='~/minibot/scripts/build-openclaw.sh'
 alias mb-start='~/minibot/bin/minibot-start.sh'
 alias mb-stop='~/minibot/bin/minibot-stop.sh'
 alias mb-logs='~/minibot/bin/minibot-logs.sh'
-alias mb-status='eval "$(~/minibot/bin/minibot-secrets.sh export)" && docker compose -f ~/minibot/docker/docker-compose.yml ps'
+alias mb-status='docker compose -f ~/minibot/docker/docker-compose.yml ps'
 alias mb-secrets='~/minibot/bin/minibot-secrets.sh'
 alias mb-health='~/minibot/scripts/health-check.sh'
 alias mb-audit='~/minibot/scripts/security-audit.sh'
