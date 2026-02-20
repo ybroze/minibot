@@ -69,7 +69,7 @@ echo ""
 # Check MongoDB
 echo "MongoDB:"
 MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || echo "")
-if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --eval "db.runCommand({ping:1})" &> /dev/null; then
+if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --authenticationDatabase admin --eval "db.runCommand({ping:1})" &> /dev/null; then
     echo "✓ MongoDB is responding (authenticated)"
 elif docker exec minibot-mongo mongosh --quiet --eval "db.runCommand({ping:1})" &> /dev/null; then
     echo "⚠ MongoDB is responding but authentication status unclear"
