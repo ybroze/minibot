@@ -20,12 +20,13 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 - `bin/minibot-start.sh` — loads secrets from Keychain, verifies all are present, runs `docker compose up -d`
 - `bin/minibot-stop.sh` — `docker compose down`
 - `bin/minibot-secrets.sh` — Keychain CRUD (init, set, get, list, delete)
+- `scripts/admin-setup.sh` — one-time machine setup (run as admin before `install.sh`)
 - `scripts/` — backup, restore, health-check, security-audit, reset, LaunchAgent management
 
 ## Key Directories
 
 - `bin/` — User-facing operational scripts (start, stop, logs, secrets)
-- `scripts/` — Maintenance scripts (backup, restore, health-check, security-audit, reset, LaunchAgent)
+- `scripts/` — Maintenance scripts (admin-setup, backup, restore, health-check, security-audit, reset, LaunchAgent)
 - `docker/` — `docker-compose.yml` and `.env.example`
 - `docs/` — Threat model, emergency procedures, maintenance guide, secrets, networking, security posture, filesystem security
 

@@ -61,6 +61,25 @@ Go to **System Settings > Apple ID > iCloud > Advanced Data Protection > Turn On
 Homebrew and its packages require administrator privileges. Run these steps
 while logged in as your admin account — **not** the `minibot` user.
 
+The fastest way is to run the admin setup script, which handles steps 1, 2,
+5, and 6 in a single command:
+
+```bash
+# Clone the repo (if not already done)
+cd ~/Downloads
+git clone https://github.com/ybroze/minibot.git
+
+# Run the admin setup script
+bash minibot/scripts/admin-setup.sh
+```
+
+The script installs Xcode CLI Tools, Homebrew, Docker Desktop, Tailscale,
+CLI debug tools, creates the `minibot` user, and configures sleep settings.
+Each step is idempotent — safe to re-run.
+
+<details>
+<summary>Manual alternative (click to expand)</summary>
+
 ```bash
 # Install Xcode Command Line Tools (required by Homebrew and Git)
 xcode-select --install
@@ -81,6 +100,8 @@ brew install --cask tailscale
 # Install CLI tools for debugging (psql, redis-cli, mongosh)
 brew install libpq redis mongosh
 ```
+
+</details>
 
 After installing Docker Desktop, you must open it at least once to accept the
 license agreement and let it start the Docker daemon:
@@ -116,7 +137,10 @@ tailnet using its Tailscale IP — no port forwarding or firewall changes needed
 
 ### 2. Create the `minibot` User (as admin user)
 
-Via System Settings:
+If you ran `admin-setup.sh` in step 1, the user was already created — skip
+to step 3.
+
+Otherwise, create it via System Settings:
 
 - Go to **System Settings > Users & Groups**
 - Click **Add Account...**
@@ -136,7 +160,9 @@ steps are performed as `minibot`.
 
 ### 3b. Configure the `minibot` Account
 
-Minimize the attack surface and noise on the dedicated account:
+The installer (`install.sh`, step 4) offers an optional account-hardening
+step that removes unused directories and disables App Store auto-updates.
+The following items are GUI-only and must be done manually:
 
 - **Disable iCloud:** System Settings > Apple ID > iCloud > Turn off all sync services
 - **Disable Siri:** System Settings > Siri & Spotlight > Disable "Ask Siri"
@@ -241,7 +267,8 @@ If it's missing, install it manually:
 
 Then configure the machine for unattended operation:
 
-1. **Prevent sleep:** System Settings > Energy > Prevent automatic sleeping
+1. **Prevent sleep:** If you ran `admin-setup.sh`, sleep is already disabled
+via `pmset`. Otherwise: System Settings > Energy > Prevent automatic sleeping
 when the display is off > **ON**, and set "Turn display off after" to "Never."
 2. **Enable auto-login:**
 System Settings > Users & Groups > Automatic login > select the `minibot` user.
@@ -300,6 +327,7 @@ After running the installer, you'll have:
 ├── vendor/                 # Third-party source (created by build-openclaw.sh)
 │   └── openclaw/
 ├── scripts/                # Maintenance scripts
+│   ├── admin-setup.sh
 │   ├── build-openclaw.sh
 │   ├── backup.sh
 │   ├── restore.sh
@@ -335,6 +363,7 @@ configuration including models, Telegram, sandbox, and SOUL.md).
 
 ### Maintenance Scripts (in `~/minibot/scripts/`)
 
+- **admin-setup.sh** - One-time machine setup (run as admin before install.sh)
 - **build-openclaw.sh** - Build the OpenClaw Docker image from source
 - **backup.sh** - Backup data and configuration
 - **restore.sh** - Restore from a backup
@@ -452,6 +481,10 @@ tail -f ~/minibot/data/logs/system/launchagent-stderr.log
 ## Environment Cleanup
 
 Optional to do, but useful for either the admin or the `minibot` user.
+
+> **Note:** If you accepted the account-hardening prompt in `install.sh`
+> (Step 8), the directory cleanup and App Store update steps below are
+> already done.
 
 ### Removable macOS Apps
 

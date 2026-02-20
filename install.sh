@@ -17,6 +17,7 @@ echo "  4. Store secrets in the macOS Keychain"
 echo "  5. Install CLI debugging tools (may require admin privileges)"
 echo "  6. Build the OpenClaw Docker image"
 echo "  7. Install LaunchAgent for 24/7 operation"
+echo "  8. (Optional) Harden this account for dedicated use"
 echo ""
 read -p "Continue? (yes/no): " confirm
 
@@ -95,6 +96,23 @@ echo "Step 7: Installing LaunchAgent for 24/7 operation..."
 ~/minibot/scripts/install-launchagent.sh
 
 echo ""
+echo "Step 8: Account hardening (optional)..."
+echo ""
+echo "This removes unused directories and disables App Store auto-updates"
+echo "to minimize the attack surface on this dedicated account."
+echo ""
+read -p "Harden this account for dedicated use? (yes/no): " harden
+
+if [ "$harden" = "yes" ]; then
+    rm -rf ~/Movies ~/Music ~/Public
+    echo "✓ Removed ~/Movies, ~/Music, ~/Public"
+    defaults write com.apple.commerce AutoUpdate -bool false
+    echo "✓ Disabled App Store auto-updates"
+else
+    echo "Skipped account hardening."
+fi
+
+echo ""
 echo "=== Installation Complete! ==="
 echo ""
 echo "Next steps:"
@@ -102,5 +120,9 @@ echo "  1. Source your shell config: source ~/.zshrc"
 echo "  2. Start services:           mb-start"
 echo ""
 echo "Manage secrets anytime with: mb-secrets"
+echo ""
+echo "Remaining manual steps (require admin/sudo):"
+echo "  • Disable Spotlight on data dir: sudo mdutil -i off ~/minibot/data"
+echo "  • Disable iCloud, Siri, Location Services (System Settings — GUI only)"
 echo ""
 echo "For detailed instructions, see README.md"
