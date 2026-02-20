@@ -98,14 +98,12 @@ echo "Step 7: Installing LaunchAgent for 24/7 operation..."
 echo ""
 echo "Step 8: Account hardening (optional)..."
 echo ""
-echo "This removes unused directories and disables App Store auto-updates"
-echo "to minimize the attack surface on this dedicated account."
+echo "This disables App Store auto-updates to minimize background noise"
+echo "on this dedicated account."
 echo ""
 read -p "Harden this account for dedicated use? (yes/no): " harden
 
 if [ "$harden" = "yes" ]; then
-    rm -rf ~/Movies ~/Music ~/Public
-    echo "✓ Removed ~/Movies, ~/Music, ~/Public"
     defaults write com.apple.commerce AutoUpdate -bool false
     echo "✓ Disabled App Store auto-updates"
 else

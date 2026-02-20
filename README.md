@@ -483,8 +483,7 @@ tail -f ~/minibot/data/logs/system/launchagent-stderr.log
 Optional to do, but useful for either the admin or the `minibot` user.
 
 > **Note:** If you accepted the account-hardening prompt in `install.sh`
-> (Step 8), the directory cleanup and App Store update steps below are
-> already done.
+> (Step 8), the App Store update step below is already done.
 
 ### Removable macOS Apps
 
@@ -504,13 +503,6 @@ For a dedicated OpenClaw machine, you can remove these apps:
 
 To remove apps, drag them from `/Applications` to the Trash. Some system apps
 are protected by SIP and cannot be removed — just ignore those.
-
-### Clean Up Default Directories
-
-```bash
-# Remove unused default user directories
-rm -rf ~/Movies ~/Music ~/Public
-```
 
 ### Disable Background Services
 
