@@ -88,11 +88,6 @@ services:
   openclaw:
     image: openclaw:local
     container_name: minibot-openclaw
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     volumes:
       - ../data/openclaw:/home/node/.openclaw
     ports:
