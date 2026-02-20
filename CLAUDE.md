@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, MongoDB 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~750 lines of bash) plus configuration and documentation.
+Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, MongoDB 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~1150 lines of bash) plus configuration and documentation.
 
 Target platform: macOS (Sequoia / recent versions), intended to run under a dedicated `minibot` standard user account.
 
@@ -17,7 +17,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 **Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
 
 **Operational lifecycle:**
-- `bin/minibot-start.sh` — verifies secrets are present, runs `docker compose up -d`
+- `bin/minibot-start.sh` — loads secrets from Keychain, verifies all are present, runs `docker compose up -d`
 - `bin/minibot-stop.sh` — `docker compose down`
 - `bin/minibot-secrets.sh` — Keychain CRUD (init, set, get, list, delete)
 - `scripts/` — backup, restore, health-check, security-audit, reset, LaunchAgent management
@@ -33,6 +33,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 ```bash
 # Shell aliases (defined in zshrc-additions.sh)
+mb-build          # Build OpenClaw image from source
 mb-start          # Start services
 mb-stop           # Stop services
 mb-logs           # View Docker logs

@@ -132,5 +132,6 @@ rm -rf ~/minibot/data/openclaw/*
 ~/minibot/scripts/reset.sh
 ```
 
-This destroys all data, containers, and volumes. You will need to
-`minibot-secrets.sh init` and reconfigure from scratch.
+This destroys all data, containers, and volumes. The script will prompt
+to rotate secrets; if you skip that step, run `minibot-secrets.sh init`
+manually before restarting.

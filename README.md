@@ -32,8 +32,8 @@ Go to **System Settings > Privacy & Security > FileVault > Turn On**.
 
 **Note that remote login (Tahoe and later) is required to run headless.**
 
-Enable "Remote Login" (SSH) in System Settings → General → Sharing.
-After a reboot, connect via SSH from another machine → you'll get a
+Enable "Remote Login" (SSH) in System Settings > General > Sharing.
+After a reboot, connect via SSH from another machine — you'll get a
 special pre-boot prompt:
 "This system is locked. To unlock it, use a local account name and password."
 FileVault being enabled *requires* a password on reboot, but with remote logins
@@ -50,7 +50,7 @@ unsolicited inbound connections. Alternatively, via the command line:
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 ```
 
-### Enable Advanced Data Protection for iCloud services.
+### Enable Advanced Data Protection for iCloud services
 
 Go to **System Settings > Apple ID > iCloud > Advanced Data Protection > Turn On**.
 
@@ -195,7 +195,7 @@ For each API key you add:
 ### 5. Start Services
 
 ```bash
-# Start the base infrastructure
+# Start all services
 ~/minibot/bin/minibot-start.sh
 
 # Check container status
@@ -280,7 +280,7 @@ mb-status
 
 ## Directory Structure
 
-After running the setup script, you'll have:
+After running the installer, you'll have:
 
 ```
 ~/minibot/
@@ -289,7 +289,7 @@ After running the setup script, you'll have:
 │   ├── minibot-stop.sh
 │   ├── minibot-logs.sh
 │   └── minibot-secrets.sh
-├── data/                   # Persistent data
+├── data/                   # Persistent data (700 permissions)
 │   ├── postgres/
 │   ├── redis/
 │   ├── mongo/
@@ -308,15 +308,20 @@ After running the setup script, you'll have:
 │   ├── reset.sh
 │   ├── install-launchagent.sh
 │   └── uninstall-launchagent.sh
-└── docs/                   # Documentation
-    ├── emergency.md
-    ├── filesystem.md
-    ├── maintenance.md
-    ├── networking.md
-    ├── secrets.md
-    ├── security.md
-    └── threat-model.md
+├── docs/                   # Documentation
+│   ├── emergency.md
+│   ├── filesystem.md
+│   ├── maintenance.md
+│   ├── networking.md
+│   ├── secrets.md
+│   ├── security.md
+│   └── threat-model.md
+└── zshrc-additions.sh      # Shell config (sourced by ~/.zshrc)
 ```
+
+The repository also includes `install.sh`, `setup-minibot-dirs.sh`, and
+`misc/openclaw-setup-guide.md` (a detailed walkthrough of OpenClaw
+configuration including models, Telegram, sandbox, and SOUL.md).
 
 ## Available Scripts
 
@@ -348,19 +353,22 @@ After running the setup script, you'll have:
 - Networking & ports: `docs/networking.md`
 - Secrets management: `docs/secrets.md`
 - Filesystem security: `docs/filesystem.md`
+- OpenClaw setup guide: `misc/openclaw-setup-guide.md`
 
 ## Shell Aliases
 
 The following aliases are available after sourcing `~/.zshrc`:
 
-- `mb-build` - Build the OpenClaw Docker image
-- `mb-start` - Start services
-- `mb-stop` - Stop services
-- `mb-logs` - View logs
-- `mb-status` - Check container status
-- `mb-secrets` - Manage keychain secrets
-- `mb-health` - Run health check
-- `mb-audit` - Run security audit
+| Alias | Description |
+|-------|-------------|
+| `mb-build` | Build the OpenClaw Docker image from source |
+| `mb-start` | Start all services |
+| `mb-stop` | Stop all services |
+| `mb-logs` | View Docker logs (optionally pass service name) |
+| `mb-status` | Show container status |
+| `mb-secrets` | Manage Keychain secrets |
+| `mb-health` | Run health check |
+| `mb-audit` | Run security audit |
 
 ## Common Tasks
 

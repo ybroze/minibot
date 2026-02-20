@@ -41,9 +41,3 @@ fi
 chmod 700 "$BASE_DIR/data"
 
 echo "✓ Directory structure created at: $BASE_DIR"
-echo ""
-echo "Next steps:"
-echo "  1. Copy the bin/ scripts to $BASE_DIR/bin/"
-echo "  2. Copy docker/ files to $BASE_DIR/docker/"
-echo "  3. Copy scripts/ files to $BASE_DIR/scripts/"
-echo "  4. Make scripts executable: chmod +x $BASE_DIR/bin/*.sh $BASE_DIR/scripts/*.sh"

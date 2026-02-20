@@ -94,8 +94,8 @@ contains malicious code.
 
 **Minibot's posture:**
 - Docker images are pinned to specific tags where available (e.g.,
-  `postgres:15-alpine`). The OpenClaw image uses `latest` until stable
-  versioned tags are published.
+  `postgres:15-alpine`). The OpenClaw image is built from source
+  (`openclaw:local`) using the default branch of the upstream repository.
 - Homebrew auto-update is disabled (`HOMEBREW_NO_AUTO_UPDATE=1`).
 - The setup guide recommends reviewing skills/plugins before installation.
 

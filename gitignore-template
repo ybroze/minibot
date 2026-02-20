@@ -50,4 +50,3 @@ yarn-error.log*
 *.dll
 *.exe
 *.o
-*.so

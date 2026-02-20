@@ -25,6 +25,10 @@
 # Claude
 .claude/
 
+# Runtime directories (only exist in ~/minibot, not the repo)
+data/
+vendor/
+
 # Vim
 *.swp
 *.swo

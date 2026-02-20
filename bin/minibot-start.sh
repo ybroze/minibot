@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# Ensure restrictive file permissions even when run outside a login shell
+# (e.g., via LaunchAgent where zshrc-additions.sh is not sourced).
+umask 077
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 

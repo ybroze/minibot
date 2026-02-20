@@ -141,7 +141,7 @@ under `~/minibot-backups/`, then restarts services.
 ### Restoring from Backup
 
 ```bash
-~/minibot/scripts/restore.sh ~/minibot-backups/20250212-143022
+~/minibot/scripts/restore.sh ~/minibot-backups/20260212-143022
 ```
 
 **Important:** Backups do not include keychain secrets. After restoring on a
