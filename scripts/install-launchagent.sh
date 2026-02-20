@@ -60,7 +60,6 @@ cat > "$PLIST_PATH" << EOF
     <dict>
         <key>PATH</key>
         <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
-        <!-- Ensure keychain access works under launchd -->
         <key>HOME</key>
         <string>${HOME}</string>
     </dict>

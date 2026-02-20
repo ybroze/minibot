@@ -6,7 +6,7 @@
 #   minibot-secrets.sh set <KEY> [value]   Store a secret (prompts if value omitted)
 #   minibot-secrets.sh get <KEY>           Retrieve a secret
 #   minibot-secrets.sh delete <KEY>        Remove a secret
-#   minibot-secrets.sh list                List all Minibot secret keys
+#   minibot-secrets.sh list                List required Minibot secret keys
 #   minibot-secrets.sh export              Export all secrets as shell exports (for eval)
 #   minibot-secrets.sh init                Interactive first-time setup of required secrets
 #
@@ -33,7 +33,7 @@ usage() {
     echo "  set <KEY> [value]   Store a secret (prompts interactively if value omitted)"
     echo "  get <KEY>           Print a secret's value to stdout"
     echo "  delete <KEY>        Remove a secret from the keychain"
-    echo "  list                List all Minibot secret keys in the keychain"
+    echo "  list                List required Minibot secret keys in the keychain"
     echo "  export              Print 'export KEY=value' lines for eval"
     echo "  init                Interactive first-time setup of all required secrets"
     exit 1

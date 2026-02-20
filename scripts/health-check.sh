@@ -108,13 +108,13 @@ oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/n
 echo "  OpenClaw:       $oc_image"
 echo ""
 
-# Check logs
-echo "Recent Errors in Logs:"
-if [ -d ~/minibot/data/logs ]; then
-    find ~/minibot/data/logs -name "*.log" -exec grep -li "error" {} \; 2>/dev/null | head -5 || true
+# Check LaunchAgent logs (container logs are managed by Docker's json-file driver)
+echo "Recent Errors in LaunchAgent Logs:"
+if [ -d ~/minibot/data/logs/system ]; then
+    find ~/minibot/data/logs/system -name "*.log" -exec grep -li "error" {} \; 2>/dev/null | head -5 || true
     # If no output above, no errors were found
 else
-    echo "  (no logs directory)"
+    echo "  (no LaunchAgent logs yet)"
 fi
 echo ""
 

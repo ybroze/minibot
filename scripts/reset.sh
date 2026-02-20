@@ -20,9 +20,6 @@ if [ "$confirm" != "reset" ]; then
 fi
 
 echo ""
-echo "Stopping services..."
-~/minibot/bin/minibot-stop.sh
-
 echo "Removing containers and volumes..."
 docker compose -f ~/minibot/docker/docker-compose.yml down -v
 
