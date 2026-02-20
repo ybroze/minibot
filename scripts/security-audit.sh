@@ -46,10 +46,10 @@ echo "Port Binding:"
 
 compose_file=~/minibot/docker/docker-compose.yml
 if [ -f "$compose_file" ]; then
-    # Check for any port binding that isn't localhost
-    if grep -E '^\s*-\s*"[0-9]+:[0-9]+"' "$compose_file" | grep -v '127\.0\.0\.1' &>/dev/null; then
+    # Check for any port binding that isn't localhost (catches both "port:port" and "host:port:port")
+    if grep -E '^\s*-\s*"[^"]*:[0-9]+"' "$compose_file" | grep -v '127\.0\.0\.1' &>/dev/null; then
         fail "docker-compose.yml has ports not bound to 127.0.0.1"
-        grep -n -E '^\s*-\s*"[0-9]+:[0-9]+"' "$compose_file" | grep -v '127\.0\.0\.1' | while read -r line; do
+        grep -n -E '^\s*-\s*"[^"]*:[0-9]+"' "$compose_file" | grep -v '127\.0\.0\.1' | while read -r line; do
             echo "       $line"
         done
     else

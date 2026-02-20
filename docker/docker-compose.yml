@@ -19,6 +19,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
@@ -43,12 +48,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 256M
           cpus: '0.5'
 
+  # MongoDB is available for agents/plugins but not wired to OpenClaw directly.
   mongo:
     image: mongo:7
     container_name: minibot-mongo
@@ -63,10 +74,15 @@ services:
       - minibot-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.runCommand({ping:1})\""]
+      test: ["CMD-SHELL", "mongosh --quiet -u minibot -p \"$MONGO_INITDB_ROOT_PASSWORD\" --eval \"db.runCommand({ping:1})\""]
       interval: 10s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:
@@ -100,6 +116,11 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     deploy:
       resources:
         limits:

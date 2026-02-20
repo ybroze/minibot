@@ -35,6 +35,9 @@ venv/
 env/
 *.egg-info/
 
+# Vendor (OpenClaw source clone)
+vendor/
+
 # Node
 node_modules/
 npm-debug.log*

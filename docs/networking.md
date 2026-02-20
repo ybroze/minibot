@@ -45,14 +45,14 @@ network.
 
 ## Layer 3: Docker Bridge Network
 
-All three services communicate over an internal Docker bridge network
+All four services communicate over an internal Docker bridge network
 (`minibot-net`). Within this network, containers can reach each other by
-service name (e.g., `postgres`, `redis`) without any traffic leaving the
-Docker host.
+service name (e.g., `postgres`, `redis`, `mongo`) without any traffic leaving
+the Docker host.
 
-This means OpenClaw can connect to PostgreSQL at `postgres:5432` and Redis at
-`redis:6379` internally, without those connections traversing the host
-network stack.
+This means OpenClaw can connect to PostgreSQL at `postgres:5432`, Redis at
+`redis:6379`, and MongoDB at `mongo:27017` internally, without those
+connections traversing the host network stack.
 
 ---
 

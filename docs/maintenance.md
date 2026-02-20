@@ -62,7 +62,7 @@ Check for security updates to the base images:
 docker pull postgres:15-alpine
 docker pull redis:7-alpine
 docker pull mongo:7
-docker pull openclaw/openclaw:latest
+~/minibot/scripts/build-openclaw.sh    # Rebuilds openclaw:local from source
 mb-stop && mb-start
 ```
 

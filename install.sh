@@ -16,6 +16,9 @@ echo "  3. Set up your shell environment"
 echo "  4. Store secrets in the macOS Keychain"
 echo "  5. Build the OpenClaw Docker image"
 echo ""
+echo "NOTE: CLI debugging tools (psql, redis-cli, mongosh) must be"
+echo "installed as the admin user: brew install libpq redis mongosh"
+echo ""
 read -p "Continue? (yes/no): " confirm
 
 if [ "$confirm" != "yes" ]; then
@@ -44,26 +47,7 @@ chmod +x ~/minibot/bin/*.sh ~/minibot/scripts/*.sh
 chmod 700 ~/minibot/data
 
 echo ""
-echo "Step 3: Updating .gitignore..."
-# Idempotency: only create if missing, to preserve user customizations.
-if [ ! -f ~/minibot/.gitignore ]; then
-    if [ -f "$SCRIPT_DIR/gitignore-template" ]; then
-        cp "$SCRIPT_DIR/gitignore-template" ~/minibot/.gitignore
-    else
-        cat > ~/minibot/.gitignore << 'GITIGNORE'
-data/
-*.log
-*.env
-!*.env.example
-.DS_Store
-GITIGNORE
-    fi
-else
-    echo "✓ .gitignore already exists — skipping"
-fi
-
-echo ""
-echo "Step 4: Setting up shell environment..."
+echo "Step 3: Setting up shell environment..."
 # Idempotency: instead of inlining the additions into .zshrc (which makes
 # updates impossible on re-run), copy the file and source it.  The guard
 # ensures we only append the source line once; the cp always brings the
@@ -78,11 +62,11 @@ else
 fi
 
 echo ""
-echo "Step 5: Setting up secrets in macOS Keychain..."
+echo "Step 4: Setting up secrets in macOS Keychain..."
 ~/minibot/bin/minibot-secrets.sh init
 
 echo ""
-echo "Step 6: Building OpenClaw Docker image..."
+echo "Step 5: Building OpenClaw Docker image..."
 echo "(This clones the OpenClaw source and builds the image — may take a few minutes.)"
 ~/minibot/scripts/build-openclaw.sh
 

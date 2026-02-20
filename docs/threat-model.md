@@ -22,8 +22,8 @@ this is mitigated by SIP and per-user process isolation, but it is not zero
 risk.
 
 Additionally, Docker exposes container environment variables (including
-interpolated secrets like `POSTGRES_PASSWORD`, `MONGO_PASSWORD`,
-`OPENCLAW_GATEWAY_PASSWORD`) to anyone
+interpolated secrets like `POSTGRES_PASSWORD`, `REDIS_PASSWORD`,
+`MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`) to anyone
 who can run `docker inspect` on the host. Docker socket access is effectively
 root-equivalent, so on a shared machine this is a real concern. On a
 single-user dedicated machine the risk is lower but worth documenting.

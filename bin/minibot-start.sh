@@ -8,6 +8,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
+# --- Verify Docker is running ----------------------------------------------
+if ! docker info &>/dev/null; then
+    echo "Error: Docker is not running. Start Docker Desktop first." >&2
+    exit 1
+fi
+
 # --- Load secrets from keychain into the environment -----------------------
 echo "Loading secrets from keychain..."
 eval "$("$SCRIPT_DIR/minibot-secrets.sh" export)"

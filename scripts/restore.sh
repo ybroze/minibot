@@ -19,6 +19,11 @@ if [ ! -d "$BACKUP_DIR" ]; then
     exit 1
 fi
 
+if [ ! -d "$BACKUP_DIR/data" ] && [ ! -d "$BACKUP_DIR/docker" ]; then
+    echo "Error: Backup directory contains neither data/ nor docker/." >&2
+    exit 1
+fi
+
 echo "Restoring from: $BACKUP_DIR"
 echo ""
 echo "WARNING: This will overwrite current data and configuration!"
@@ -34,7 +39,7 @@ SERVICES_STOPPED=false
 cleanup_on_interrupt() {
     echo ""
     echo "Interrupted — cleaning up..." >&2
-    rm -rf ~/minibot/data.bak ~/minibot/docker.bak
+    echo "NOTE: Rollback dirs (data.bak, docker.bak) preserved for manual recovery." >&2
     if $SERVICES_STOPPED; then
         echo "Attempting to restart services..." >&2
         ~/minibot/bin/minibot-start.sh || echo "WARNING: services may still be stopped." >&2
