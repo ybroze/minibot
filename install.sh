@@ -16,6 +16,7 @@ echo "  3. Set up your shell environment"
 echo "  4. Store secrets in the macOS Keychain"
 echo "  5. Install CLI debugging tools (may require admin privileges)"
 echo "  6. Build the OpenClaw Docker image"
+echo "  7. Install LaunchAgent for 24/7 operation"
 echo ""
 read -p "Continue? (yes/no): " confirm
 
@@ -84,6 +85,10 @@ echo ""
 echo "Step 6: Building OpenClaw Docker image..."
 echo "(This clones the OpenClaw source and builds the image — may take a few minutes.)"
 ~/minibot/scripts/build-openclaw.sh
+
+echo ""
+echo "Step 7: Installing LaunchAgent for 24/7 operation..."
+~/minibot/scripts/install-launchagent.sh
 
 echo ""
 echo "=== Installation Complete! ==="
