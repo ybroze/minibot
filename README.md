@@ -296,7 +296,8 @@ After running the installer, you'll have:
 │   ├── openclaw/
 │   └── logs/system/        # LaunchAgent stdout/stderr logs
 ├── docker/                 # Docker configs
-│   └── docker-compose.yml
+│   ├── docker-compose.yml
+│   └── .env.example       # Reference only (secrets come from Keychain)
 ├── vendor/                 # Third-party source (created by build-openclaw.sh)
 │   └── openclaw/
 ├── scripts/                # Maintenance scripts

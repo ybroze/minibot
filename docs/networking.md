@@ -50,9 +50,11 @@ All four services communicate over an internal Docker bridge network
 service name (e.g., `postgres`, `redis`, `mongo`) without any traffic leaving
 the Docker host.
 
-This means OpenClaw can connect to PostgreSQL at `postgres:5432`, Redis at
-`redis:6379`, and MongoDB at `mongo:27017` internally, without those
-connections traversing the host network stack.
+Containers can reach each other by service name — for example, OpenClaw
+connects to PostgreSQL at `postgres:5432` and Redis at `redis:6379`
+internally, without those connections traversing the host network stack.
+MongoDB is on the same network and reachable at `mongo:27017`, but OpenClaw
+is not configured to use it directly — it is available for agents and plugins.
 
 ---
 

@@ -33,6 +33,7 @@ echo ""
 echo "Step 2: Copying scripts..."
 cp -r "$SCRIPT_DIR/bin"/* ~/minibot/bin/
 cp -r "$SCRIPT_DIR/docker"/* ~/minibot/docker/
+cp "$SCRIPT_DIR/docker/.env.example" ~/minibot/docker/ 2>/dev/null || true
 cp -r "$SCRIPT_DIR/scripts"/* ~/minibot/scripts/
 
 # Copy documentation
@@ -71,13 +72,17 @@ if [ -w "$BREW_PREFIX/bin" ]; then
     brew install libpq redis mongosh
     echo "✓ Installed psql, redis-cli, mongosh"
 else
-    echo "Admin privileges required for Homebrew packages."
-    echo "Attempting with sudo..."
-    if sudo -n true 2>/dev/null || sudo true; then
-        sudo -u "$(stat -f '%Su' "$BREW_PREFIX/bin")" brew install libpq redis mongosh
-        echo "✓ Installed psql, redis-cli, mongosh"
+    if dseditgroup -o checkmember -m "$(whoami)" admin &>/dev/null; then
+        echo "Admin privileges required for Homebrew packages."
+        echo "Attempting with sudo..."
+        if sudo -u "$(stat -f '%Su' "$BREW_PREFIX/bin")" brew install libpq redis mongosh; then
+            echo "✓ Installed psql, redis-cli, mongosh"
+        else
+            echo "Skipped — install manually as admin: brew install libpq redis mongosh"
+        fi
     else
-        echo "Skipped — install manually as admin: brew install libpq redis mongosh"
+        echo "Skipped — standard user cannot install Homebrew packages."
+        echo "Install as admin: brew install libpq redis mongosh"
     fi
 fi
 

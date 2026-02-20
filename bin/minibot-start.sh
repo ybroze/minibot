@@ -48,8 +48,5 @@ docker compose -f docker/docker-compose.yml up -d
 
 echo "✓ Services started."
 echo ""
-echo "Check status with:"
-echo "  docker compose -f docker/docker-compose.yml ps"
-echo ""
-echo "View logs with:"
-echo "  ~/minibot/bin/minibot-logs.sh"
+echo "Check status:  mb-status"
+echo "View logs:     mb-logs"
