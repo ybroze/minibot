@@ -3,11 +3,13 @@
 ## Overview
 
 Minibot stores all secrets in the macOS Keychain under the service name
-`minibot` — never in plaintext `.env` files. Secrets are loaded just-in-time
-by `minibot-start.sh`, which exports them as environment variables before
-running `docker compose up`.
+`minibot` — never in plaintext `.env` files. Secrets are loaded into the
+shell environment on every login via `zshrc-additions.sh`, which calls
+`minibot-secrets.sh export`. This means all shell commands — including
+`docker compose`, `mb-stop`, `mb-logs`, and `mb-status` — have access to
+the secrets without each script loading them individually.
 
-**Flow:** `macOS Keychain → minibot-start.sh (exports env vars) → docker compose up → containers`
+**Flow:** `macOS Keychain → zshrc-additions.sh (exports env vars on login) → shell environment → docker compose → containers`
 
 ## Required Secrets
 
@@ -49,9 +51,12 @@ authentication to unlock.
 
 ## Security Considerations
 
-- **Environment variable window:** Secrets are briefly present in shell
-  environment variables when `minibot-start.sh` runs. On macOS, SIP and
-  per-user process isolation mitigate the risk of other processes reading them.
+- **Environment variable exposure:** Secrets are present as shell environment
+  variables for the duration of every `minibot` login session (loaded by
+  `zshrc-additions.sh`). On macOS, SIP and per-user process isolation prevent
+  other users' processes from reading them. On a single-user dedicated machine
+  the risk is low, but the secrets are not transient — they persist in the
+  shell environment until the session ends.
 
 - **Docker inspect:** Anyone with access to the Docker socket on the host can
   run `docker inspect` and see container environment variables (including

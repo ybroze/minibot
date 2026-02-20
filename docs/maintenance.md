@@ -30,26 +30,77 @@ cache.
 
 ### Quarterly: Rotate Credentials
 
-Rotate secrets every 3 months (or immediately if you suspect compromise):
+Rotate secrets every 3 months (or immediately if you suspect compromise).
+See `docs/emergency.md` for the emergency rotation process.
 
-1. Generate a new password/key.
-2. Store it in the keychain:
+> **Important:** PostgreSQL and MongoDB only read their password environment
+> variables on **first initialization** (when the data directory is empty).
+> After that, passwords are stored inside the database itself. Simply updating
+> the Keychain and restarting will **not** change the database password — the
+> container will start with the old internal password while the connection
+> string has the new one, causing authentication failures.
+
+**Redis and OPENCLAW_GATEWAY_PASSWORD** are simple — they read their
+passwords from environment variables on every start. Just update the Keychain
+and restart.
+
+#### Full rotation procedure
+
+1. **Back up first:**
    ```bash
-   mb-secrets set POSTGRES_PASSWORD
-   mb-secrets set REDIS_PASSWORD
-   mb-secrets set MONGO_PASSWORD
+   ~/minibot/scripts/backup.sh
+   ```
+
+2. **Change passwords inside the running databases:**
+
+   ```bash
+   # PostgreSQL — change the internal password
+   docker exec -it minibot-postgres psql -U minibot -c \
+     "ALTER USER minibot WITH PASSWORD 'NEW_PG_PASSWORD';"
+
+   # MongoDB — change the internal password
+   docker exec -it minibot-mongo mongosh -u minibot \
+     -p "$(mb-secrets get MONGO_PASSWORD)" --authenticationDatabase admin \
+     --eval 'db.getSiblingDB("admin").changeUserPassword("minibot", "NEW_MONGO_PASSWORD")'
+   ```
+
+3. **Update the Keychain to match:**
+   ```bash
+   mb-secrets set POSTGRES_PASSWORD    # enter NEW_PG_PASSWORD
+   mb-secrets set REDIS_PASSWORD       # enter new Redis password
+   mb-secrets set MONGO_PASSWORD       # enter NEW_MONGO_PASSWORD
    mb-secrets set OPENCLAW_GATEWAY_PASSWORD
    ```
-3. Recreate containers so they use the new values:
+
+4. **Reload secrets and restart:**
    ```bash
-   mb-stop
-   docker compose -f ~/minibot/docker/docker-compose.yml down -v
-   # WARNING: -v removes volumes. Back up first if you have data to keep.
-   mb-start
+   source ~/.zshrc   # picks up new Keychain values
+   mb-stop && mb-start
    ```
-   **Note:** `-v` removes Docker volumes. Back up first if you have data.
-4. Rotate any OpenClaw-managed secrets (API keys, bot tokens) through
+
+5. **Verify connectivity:**
+   ```bash
+   ~/minibot/scripts/health-check.sh
+   ```
+
+6. Rotate any OpenClaw-managed secrets (API keys, bot tokens) through
    OpenClaw's own configuration.
+
+#### Alternative: clean wipe rotation
+
+If you don't need to preserve data (or have a backup), you can wipe the
+database volumes and let the containers re-initialize with new passwords:
+
+```bash
+mb-stop
+rm -rf ~/minibot/data/postgres ~/minibot/data/mongo
+mb-secrets set POSTGRES_PASSWORD
+mb-secrets set REDIS_PASSWORD
+mb-secrets set MONGO_PASSWORD
+mb-secrets set OPENCLAW_GATEWAY_PASSWORD
+source ~/.zshrc
+mb-start
+```
 
 When rotating an API key for an external provider, it's also a good time to
 review spending limits on that provider's dashboard.

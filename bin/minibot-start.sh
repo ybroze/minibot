@@ -1,7 +1,7 @@
 #!/bin/bash
 # minibot-start.sh
 # Start all Minibot services via Docker Compose.
-# Secrets are pulled just-in-time from the macOS Keychain.
+# Secrets are loaded from the macOS Keychain (also loaded on login by zshrc-additions.sh).
 
 set -euo pipefail
 

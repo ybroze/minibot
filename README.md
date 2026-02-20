@@ -226,15 +226,17 @@ in `docker/docker-compose.yml`.
 
 ### 6. Enable 24/7 Operation
 
-This is a dedicated machine that should run Minibot continuously. LaunchAgent
-is used at the system user level rather than machine-wide.
+This is a dedicated machine that should run Minibot continuously. The
+installer (Step 4) already installed the LaunchAgent. Verify it's loaded:
 
 ```bash
-# Install the LaunchAgent
-~/minibot/scripts/install-launchagent.sh
-
-# Verify it's installed and loaded
 launchctl list | grep minibot
+```
+
+If it's missing, install it manually:
+
+```bash
+~/minibot/scripts/install-launchagent.sh
 ```
 
 Then configure the machine for unattended operation:
@@ -357,6 +359,8 @@ The following aliases are available after sourcing `~/.zshrc`:
 - `mb-logs` - View logs
 - `mb-status` - Check container status
 - `mb-secrets` - Manage keychain secrets
+- `mb-health` - Run health check
+- `mb-audit` - Run security audit
 
 ## Common Tasks
 

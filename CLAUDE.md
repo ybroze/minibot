@@ -10,14 +10,14 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 ## Architecture
 
-**Secrets flow:** `macOS Keychain → minibot-start.sh (exports env vars) → docker compose up → containers`
+**Secrets flow:** `macOS Keychain → zshrc-additions.sh (exports env vars on login) → shell environment → docker compose → containers`
 
 **Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only.
 
 **Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
 
 **Operational lifecycle:**
-- `bin/minibot-start.sh` — loads secrets from Keychain, exports as env vars, runs `docker compose up -d`
+- `bin/minibot-start.sh` — verifies secrets are present, runs `docker compose up -d`
 - `bin/minibot-stop.sh` — `docker compose down`
 - `bin/minibot-secrets.sh` — Keychain CRUD (init, set, get, list, delete)
 - `scripts/` — backup, restore, health-check, security-audit, reset, LaunchAgent management
@@ -38,6 +38,8 @@ mb-stop           # Stop services
 mb-logs           # View Docker logs
 mb-status         # docker compose ps
 mb-secrets        # Manage keychain secrets
+mb-health         # Run health check
+mb-audit          # Run security audit
 
 # Direct script invocation
 ~/minibot/bin/minibot-start.sh
@@ -54,3 +56,5 @@ mb-secrets        # Manage keychain secrets
 - All scripts use `set -euo pipefail`
 - Keychain operations use `security find-generic-password` / `security add-generic-password` with service name `minibot`
 - Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`
+- OpenClaw manages its own internal secrets (API keys, bot tokens) separately
+- **Credential rotation caveat:** PostgreSQL and MongoDB only read password env vars on first init — see `docs/maintenance.md` for the correct rotation procedure

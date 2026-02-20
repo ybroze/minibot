@@ -15,11 +15,12 @@ skill) reads credentials stored on disk.
 plaintext `.env` files. The keychain is encrypted at rest (backed by
 FileVault) and requires user authentication to unlock.
 
-**Residual risk:** Secrets are briefly present in shell environment variables
-when `minibot-start.sh` runs. A process running as the same user during that
-window could read `/proc/<pid>/environ` (on Linux) or equivalent. On macOS
-this is mitigated by SIP and per-user process isolation, but it is not zero
-risk.
+**Residual risk:** Secrets are present as shell environment variables for the
+duration of every `minibot` login session (loaded by `zshrc-additions.sh`).
+A process running as the same user can read them via the process environment.
+On macOS this is mitigated by SIP and per-user process isolation, but it is
+not zero risk — any code running as the `minibot` user (including agent
+skills) can access these variables.
 
 Additionally, Docker exposes container environment variables (including
 interpolated secrets like `POSTGRES_PASSWORD`, `REDIS_PASSWORD`,

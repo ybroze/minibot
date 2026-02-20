@@ -21,13 +21,27 @@ Even if you're not sure the secrets were exfiltrated, rotate them
 preemptively. The cost of a false alarm is minutes; the cost of leaving
 compromised credentials active can be severe.
 
+> **Important:** PostgreSQL and MongoDB store passwords internally — updating
+> the Keychain alone won't change them. See `docs/maintenance.md` for the
+> full rotation procedure. In an emergency, the simplest approach is a clean
+> wipe:
+
 ```bash
+# Wipe database volumes so containers re-initialize with new passwords
+rm -rf ~/minibot/data/postgres ~/minibot/data/mongo
+
 # Set new values in the keychain
 ~/minibot/bin/minibot-secrets.sh set POSTGRES_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set REDIS_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set MONGO_PASSWORD
 ~/minibot/bin/minibot-secrets.sh set OPENCLAW_GATEWAY_PASSWORD
+
+# Reload secrets into shell environment
+source ~/.zshrc
 ```
+
+If you need to preserve database data, follow the in-place rotation steps
+in `docs/maintenance.md` instead.
 
 Also rotate any OpenClaw-managed secrets (API keys, bot tokens) through
 OpenClaw's own configuration.
