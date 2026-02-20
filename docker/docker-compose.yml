@@ -63,6 +63,7 @@ services:
   mongo:
     image: mongo:7
     container_name: minibot-mongo
+    command: mongod --quiet --auth --bind_ip_all
     environment:
       MONGO_INITDB_ROOT_USERNAME: minibot
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Set via minibot-secrets.sh init}
