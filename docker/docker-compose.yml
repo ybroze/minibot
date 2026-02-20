@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: minibot
       POSTGRES_USER: minibot
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set via minibot-secrets.sh init}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ../data/postgres:/var/lib/postgresql/data
@@ -33,9 +33,9 @@ services:
   redis:
     image: redis:7-alpine
     container_name: minibot-redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?Set via minibot-secrets.sh init}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set via minibot-secrets.sh init}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
     volumes:
       - ../data/redis:/data
     ports:
@@ -66,7 +66,7 @@ services:
     command: mongod --quiet --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: minibot
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?Set via minibot-secrets.sh init}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-}
     volumes:
       - ../data/mongo:/data/db
     ports:
@@ -103,10 +103,10 @@ services:
     ports:
       - "127.0.0.1:18789:18789"
     environment:
-      POSTGRES_DB_URL: postgres://minibot:${POSTGRES_PASSWORD:?Set via minibot-secrets.sh init}@postgres:5432/minibot
-      REDIS_URL: redis://:${REDIS_PASSWORD:?Set via minibot-secrets.sh init}@redis:6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set via minibot-secrets.sh init}
-      OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:?Set via minibot-secrets.sh init}
+      POSTGRES_DB_URL: postgres://minibot:${POSTGRES_PASSWORD:-}@postgres:5432/minibot
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:-}
       NODE_OPTIONS: "--max-old-space-size=3584"
     networks:
       - minibot-net
