@@ -20,7 +20,7 @@ have saved it in a secure location or password manager.
 
 ### Perform System Upgrade
 Ensure that all system updates and upgrades are done via the Software Update
-tool. macOS Tahoe (15.x) or later is recommended.
+tool. macOS Sequoia (15.x) or later is recommended.
 
 ### Enable FileVault (Full-Disk Encryption)
 
@@ -295,6 +295,8 @@ After running the setup script, you'll have:
 │   └── logs/system/        # LaunchAgent stdout/stderr logs
 ├── docker/                 # Docker configs
 │   └── docker-compose.yml
+├── vendor/                 # Third-party source (created by build-openclaw.sh)
+│   └── openclaw/
 ├── scripts/                # Maintenance scripts
 │   ├── build-openclaw.sh
 │   ├── backup.sh

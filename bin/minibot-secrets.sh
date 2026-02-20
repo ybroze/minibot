@@ -86,6 +86,9 @@ cmd_set() {
             exit 1
         fi
     fi
+    if [ ${#value} -lt 12 ]; then
+        echo "  Warning: password is shorter than 12 characters." >&2
+    fi
     _set_secret "$key" "$value"
     echo "✓ Stored $key in keychain (service: $SERVICE_NAME)"
 }
@@ -159,6 +162,9 @@ cmd_init() {
         if [ -z "$value" ]; then
             echo "  Skipped (empty)."
             continue
+        fi
+        if [ ${#value} -lt 12 ]; then
+            echo "  Warning: password is shorter than 12 characters." >&2
         fi
         _set_secret "$key" "$value"
         echo "  ✓ Stored."

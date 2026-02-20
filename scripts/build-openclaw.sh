@@ -13,7 +13,11 @@ echo ""
 # --- Clone or update source -------------------------------------------------
 if [ -d "$VENDOR_DIR/.git" ]; then
     echo "Updating OpenClaw source..."
-    git -C "$VENDOR_DIR" pull --ff-only
+    if ! git -C "$VENDOR_DIR" pull --ff-only; then
+        echo "Error: Could not fast-forward OpenClaw source." >&2
+        echo "Try: cd $VENDOR_DIR && git status" >&2
+        exit 1
+    fi
 else
     echo "Cloning OpenClaw source to $VENDOR_DIR..."
     mkdir -p "$(dirname "$VENDOR_DIR")"
