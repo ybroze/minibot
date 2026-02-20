@@ -79,10 +79,10 @@ MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || 
 if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --eval "db.runCommand({ping:1})" &>/dev/null; then
     pass "MongoDB accepts authenticated connections"
     # Test that unauthenticated access to user data is rejected
-    if docker exec minibot-mongo mongosh --quiet --eval "db.getSiblingDB('admin').getUsers()" 2>&1 | grep -qi "unauthorized\|requires authentication"; then
+    if ! docker exec minibot-mongo mongosh --quiet --eval "db.getSiblingDB('admin').getUsers()" &>/dev/null; then
         pass "MongoDB rejects unauthenticated user enumeration"
     else
-        warn "MongoDB unauthenticated access check was inconclusive"
+        fail "MongoDB allows unauthenticated user enumeration"
     fi
 else
     warn "MongoDB is not running or could not verify auth"
