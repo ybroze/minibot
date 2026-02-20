@@ -76,7 +76,7 @@ echo ""
 echo "MongoDB Authentication:"
 
 MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || true)
-if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --eval "db.runCommand({ping:1})" &>/dev/null; then
+if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --authenticationDatabase admin --eval "db.runCommand({ping:1})" &>/dev/null; then
     pass "MongoDB accepts authenticated connections"
     # Test that unauthenticated access to user data is rejected
     if ! docker exec minibot-mongo mongosh --quiet --eval "db.getSiblingDB('admin').getUsers()" &>/dev/null; then
@@ -140,7 +140,7 @@ echo ""
 # --- 8. Stray .env files ---------------------------------------------------
 echo "Stray .env Files:"
 
-env_files=$(find ~/minibot -name "*.env" ! -name "*.env.example" 2>/dev/null || true)
+env_files=$(find ~/minibot \( -name ".env" -o -name "*.env" \) ! -name "*.env.example" 2>/dev/null || true)
 if [ -n "$env_files" ]; then
     warn "Found .env files (secrets should be in Keychain, not on disk):"
     echo "$env_files" | while read -r f; do echo "       $f"; done

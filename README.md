@@ -161,7 +161,7 @@ steps are performed as `minibot`.
 ### 3b. Configure the `minibot` Account
 
 The installer (`install.sh`, step 4) offers an optional account-hardening
-step that removes unused directories and disables App Store auto-updates.
+step that disables App Store auto-updates.
 The following items are GUI-only and must be done manually:
 
 - **Disable iCloud:** System Settings > Apple ID > iCloud > Turn off all sync services
@@ -553,7 +553,7 @@ docker image inspect openclaw:local
 # Check OpenClaw logs for startup errors
 mb-logs openclaw
 
-# OpenClaw waits for Postgres and Redis to be healthy — check their status
+# All services start simultaneously — check that Postgres and Redis are healthy
 mb-status
 ```
 
