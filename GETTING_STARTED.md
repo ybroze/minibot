@@ -1,61 +1,163 @@
-# Minibot User Guide
+# Getting Started with Minibot
 
-This guide is for after you've completed installation (`README.md`). You have
-four containers running, your shell aliases loaded, and secrets in the Keychain.
-Now what?
-
-## System Overview
-
-```
-                        macOS Keychain
-                             |
-    mb-start loads secrets   |   docker compose up -d
-    ─────────────────────────┤────────────────────────
-                             |
-    ┌────────────────────────┴────────────────────────┐
-    │                  minibot-net                     │
-    │                                                  │
-    │   minibot-postgres ─── 127.0.0.1:5432           │
-    │   minibot-redis    ─── 127.0.0.1:6379           │
-    │   minibot-mongo    ─── 127.0.0.1:27017          │
-    │   minibot-openclaw ─── 127.0.0.1:18789          │
-    │                                                  │
-    └──────────────────────────────────────────────────┘
-```
-
-All ports bind to localhost only. Containers talk to each other over an
-internal Docker bridge network by service name (`postgres`, `redis`, `mongo`).
-OpenClaw is the agent gateway that connects to the databases internally and to
-external APIs (LLM providers, Telegram) over the internet.
-
-## Quick Reference
-
-| Command | What it does |
-|---------|--------------|
-| `mb-start` | Load secrets from Keychain, start all containers |
-| `mb-stop` | Stop all containers |
-| `mb-status` | Show container status (`docker compose ps`) |
-| `mb-logs` | Follow logs for all services |
-| `mb-logs openclaw` | Follow logs for one service |
-| `mb-health` | Full health check (exits non-zero on failure) |
-| `mb-audit` | Security posture audit |
-| `mb-secrets list` | Show which secrets are stored |
-| `mb-build` | Rebuild OpenClaw image from latest source |
-
-All `mb-*` commands are shell aliases defined in `~/minibot/zshrc-additions.sh`.
-All `bin/` scripts accept `--help`.
+You've finished the installation in `README.md`. You have four services
+running. This guide explains what you're looking at and how to interact
+with it.
 
 ---
 
-## Working with Containers
+## What is Docker?
 
-### Checking status
+Docker runs applications in **containers** — lightweight, isolated
+environments that share the Mac's operating system kernel but have their
+own filesystem, network, and process space. Think of each container as a
+sealed box: the application inside can't see the rest of your Mac, and your
+Mac can't see the application's files directly.
+
+On macOS, Docker Desktop runs a single hidden Linux virtual machine. All
+your containers live inside that VM. You interact with them through the
+`docker` command-line tool from your Mac's terminal.
+
+Key concepts:
+
+- **Image** — a read-only template for creating containers. Like a snapshot
+  of an application and everything it needs to run. Example: `postgres:15-alpine`
+  is the official PostgreSQL 15 image based on Alpine Linux.
+- **Container** — a running instance of an image. You can start, stop, and
+  restart containers without losing their data (because data is stored in
+  volumes).
+- **Volume** — a folder on your Mac that is mounted into a container, so
+  data persists even when the container is stopped or recreated. Minibot
+  stores all database data in `~/minibot/data/`.
+- **Port binding** — a mapping from a port on your Mac to a port inside a
+  container. Minibot binds all ports to `127.0.0.1` (localhost only), so
+  they're accessible from the Mac but not from the network.
+- **Docker Compose** — a tool that reads a YAML file
+  (`docker/docker-compose.yml`) and starts multiple containers together as
+  a group. One command brings everything up or tears everything down.
+
+---
+
+## What You Have Running
+
+After `mb-start`, four containers are running inside Docker:
+
+```
+Your Mac (macOS)
+│
+├── Docker Desktop (hidden Linux VM)
+│   │
+│   ├── minibot-postgres   PostgreSQL 15 database
+│   ├── minibot-redis      Redis 7 cache / message broker
+│   ├── minibot-mongo      MongoDB 7 document database
+│   └── minibot-openclaw   OpenClaw agent gateway
+│
+├── ~/minibot/data/        Persistent data (mounted into containers)
+│   ├── postgres/
+│   ├── redis/
+│   ├── mongo/
+│   └── openclaw/
+│
+└── macOS Keychain          Stores all passwords (not on disk)
+```
+
+The containers talk to each other over an internal Docker network called
+`minibot-net`. Each container also exposes a port on `127.0.0.1` so you can
+reach it from the Mac:
+
+| Container | What it is | Port on your Mac |
+|-----------|------------|------------------|
+| minibot-postgres | Relational database (SQL) | `127.0.0.1:5432` |
+| minibot-redis | In-memory key-value store | `127.0.0.1:6379` |
+| minibot-mongo | Document database (JSON-like) | `127.0.0.1:27017` |
+| minibot-openclaw | Agent gateway (HTTP/WebSocket) | `127.0.0.1:18789` |
+
+`127.0.0.1` means "this machine only." Nobody on your network can reach
+these ports — they're only accessible from the Mac itself (or through an SSH
+tunnel or Tailscale).
+
+---
+
+## How to Reach the Mac
+
+### Sitting at the Mac
+
+Just open Terminal. You're already logged in as the `minibot` user, your
+shell aliases are loaded, and secrets are in the environment. Skip to the
+next section.
+
+### From another computer (SSH)
+
+If you set up Tailscale during installation, you can SSH in from any device
+on your tailnet:
+
+```bash
+# Find the Mac Mini's Tailscale IP (run this ON the Mac)
+tailscale ip -4     # prints something like 100.64.1.23
+
+# From your laptop or other device
+ssh minibot@100.64.1.23
+```
+
+Once connected via SSH, you're in a terminal on the Mac — everything works
+the same as sitting in front of it.
+
+### Port forwarding (accessing services from your laptop)
+
+The database ports and OpenClaw's web interface are bound to `127.0.0.1` on
+the Mac, so your laptop can't reach them directly. SSH tunneling solves this
+— it forwards a port on your laptop to a port on the Mac:
+
+```bash
+# Forward OpenClaw's port to your laptop
+ssh -L 18789:127.0.0.1:18789 minibot@100.64.1.23
+
+# Now open http://localhost:18789 in your laptop's browser
+```
+
+You can forward multiple ports at once:
+
+```bash
+ssh -L 5432:127.0.0.1:5432 \
+    -L 18789:127.0.0.1:18789 \
+    minibot@100.64.1.23
+```
+
+While that SSH session is open, `localhost:5432` on your laptop reaches
+PostgreSQL on the Mac, and `localhost:18789` reaches OpenClaw.
+
+---
+
+## The OpenClaw Web Interface
+
+OpenClaw is the only service with a web UI. Once services are running:
+
+- **From the Mac:** open `http://127.0.0.1:18789` in a browser.
+- **From another device:** set up an SSH tunnel (see above) or use the
+  Mac's Tailscale IP if OpenClaw is configured to listen beyond localhost.
+
+The gateway password is `OPENCLAW_GATEWAY_PASSWORD` from the Keychain. To
+retrieve it:
+
+```bash
+mb-secrets get OPENCLAW_GATEWAY_PASSWORD
+```
+
+The other three services (PostgreSQL, Redis, MongoDB) are databases — they
+don't have web interfaces. You interact with them through command-line
+clients or through OpenClaw, which connects to them internally.
+
+---
+
+## Talking to Containers
+
+### Checking what's running
 
 ```bash
 mb-status
 ```
 
-Healthy output looks like:
+Healthy output:
 
 ```
 NAME               STATUS
@@ -65,291 +167,216 @@ minibot-mongo      Up (healthy)
 minibot-openclaw   Up (healthy)
 ```
 
-If a container shows `starting`, give it 30 seconds — OpenClaw has a
-`start_period` of 30 seconds in its healthcheck.
+If a container shows `starting`, wait 30 seconds — OpenClaw takes the
+longest to initialize.
 
-### Running commands inside containers
+### Getting a shell inside a container
 
-Use `docker exec` to run commands inside a running container:
+This is the Docker equivalent of "SSH into a server." It drops you into a
+terminal running *inside* the container:
 
 ```bash
-# Open an interactive shell in any container
 docker exec -it minibot-postgres bash
-docker exec -it minibot-redis sh       # Alpine images use sh, not bash
-docker exec -it minibot-mongo bash
-docker exec -it minibot-openclaw sh
-
-# Run a single command without an interactive session
-docker exec minibot-postgres pg_isready -U minibot
 ```
 
-The `-it` flags give you an interactive terminal. Omit them for
-non-interactive (scripted) commands.
+- `docker exec` = "run a command in a running container"
+- `-it` = "give me an interactive terminal"
+- `minibot-postgres` = the container name
+- `bash` = the command to run (a shell)
 
-### Viewing logs
+You're now inside the container's filesystem. Type `exit` to leave. Nothing
+you do here affects your Mac directly — you're inside the container's
+isolated environment.
+
+Some containers use Alpine Linux, which has `sh` instead of `bash`:
 
 ```bash
-# Follow all logs (Ctrl-C to stop)
+docker exec -it minibot-redis sh
+docker exec -it minibot-openclaw sh
+```
+
+You can also run a single command without entering a shell:
+
+```bash
+# Check if PostgreSQL is accepting connections
+docker exec minibot-postgres pg_isready -U minibot
+
+# Check Redis
+docker exec minibot-redis redis-cli -a "$REDIS_PASSWORD" PING
+```
+
+### Reading logs
+
+Every container writes logs. Docker captures them:
+
+```bash
+# Follow all container logs in real time (Ctrl-C to stop)
 mb-logs
 
-# Follow logs for a single service
+# Follow logs for just one service
 mb-logs postgres
-mb-logs redis
-mb-logs mongo
 mb-logs openclaw
 
-# View last 50 lines without following
+# Show the last 50 lines without following
 docker compose -f ~/minibot/docker/docker-compose.yml logs --tail 50 openclaw
 ```
 
-### Restarting a single service
+### Starting and stopping
 
 ```bash
+mb-start          # Start everything (loads secrets, runs docker compose up)
+mb-stop           # Stop everything (docker compose down)
+
+# Restart a single container without touching the others
 docker compose -f ~/minibot/docker/docker-compose.yml restart postgres
-```
-
-To restart everything: `mb-stop && mb-start`.
-
-### Inspecting a container
-
-```bash
-# Full container details (image, env vars, mounts, network)
-docker inspect minibot-openclaw
-
-# Just the image name
-docker inspect minibot-openclaw --format='{{.Config.Image}}'
-
-# Environment variables (will include interpolated secrets)
-docker inspect minibot-openclaw --format='{{json .Config.Env}}' | python3 -m json.tool
 ```
 
 ---
 
 ## Connecting to Databases
 
+Each database has a command-line client. You can either run the client on
+your Mac (if installed via Homebrew) or run it inside the container.
+
 ### PostgreSQL
 
 ```bash
-# From the host (requires psql — install with: brew install libpq)
+# Option A: from your Mac (requires: brew install libpq)
 psql -h 127.0.0.1 -U minibot -d minibot
 
-# From inside the container (no password needed — peer auth)
+# Option B: from inside the container (no password needed)
 docker exec -it minibot-postgres psql -U minibot -d minibot
 ```
 
-Useful queries:
+Once connected, try:
 
 ```sql
--- List databases
-\l
-
--- List tables in current database
-\dt
-
--- Check database size
-SELECT pg_size_pretty(pg_database_size('minibot'));
-
--- Show active connections
-SELECT pid, usename, state, query FROM pg_stat_activity;
+\l                  -- list databases
+\dt                 -- list tables
+\q                  -- quit
 ```
 
 ### Redis
 
 ```bash
-# From the host (requires redis-cli — install with: brew install redis)
+# Option A: from your Mac (requires: brew install redis)
 redis-cli -h 127.0.0.1 -a "$(mb-secrets get REDIS_PASSWORD)"
 
-# From inside the container
+# Option B: from inside the container
 docker exec -it minibot-redis redis-cli -a "$REDIS_PASSWORD"
 ```
 
-Useful commands:
+Once connected, try:
 
 ```
-PING                    # Should return PONG
-INFO memory             # Memory usage
-INFO keyspace           # Number of keys per database
-DBSIZE                  # Number of keys in current database
-KEYS *                  # List all keys (use cautiously in production)
+PING                -- should return PONG
+INFO memory         -- memory usage
+DBSIZE              -- number of keys
 ```
 
 ### MongoDB
 
 ```bash
-# From the host (requires mongosh — install with: brew install mongosh)
+# Option A: from your Mac (requires: brew install mongosh)
 mongosh "mongodb://minibot:$(mb-secrets get MONGO_PASSWORD)@127.0.0.1:27017/admin"
 
-# From inside the container
-docker exec -it minibot-mongo mongosh -u minibot -p "$MONGO_PASSWORD" --authenticationDatabase admin
+# Option B: from inside the container
+docker exec -it minibot-mongo mongosh -u minibot -p "$MONGO_PASSWORD" \
+    --authenticationDatabase admin
 ```
 
-Useful commands:
+Once connected, try:
 
 ```javascript
-// List databases
-show dbs
-
-// Switch database
-use minibot
-
-// List collections
-show collections
-
-// Check server status
-db.serverStatus()
+show dbs            // list databases
+show collections    // list collections in current db
+db.serverStatus()   // server health
 ```
 
 ---
 
 ## Managing Secrets
 
-Secrets live in the macOS Keychain — never on disk.
+Passwords are stored in the macOS Keychain — not in files. They're loaded
+into your shell environment automatically when you log in.
 
 ```bash
-# See which secrets are stored
-mb-secrets list
-
-# Retrieve a specific secret (prints to stdout)
-mb-secrets get POSTGRES_PASSWORD
-
-# Update a secret (prompts interactively)
-mb-secrets set REDIS_PASSWORD
-
-# Generate a new random password and store it
-mb-secrets generate REDIS_PASSWORD
-
-# Print all required key names
-mb-secrets keys
-
-# Export as shell variables (this is what zshrc-additions.sh calls on login)
-mb-secrets export
+mb-secrets list                     # which secrets are stored?
+mb-secrets get POSTGRES_PASSWORD    # print a specific secret
+mb-secrets set REDIS_PASSWORD       # change a secret (prompts for value)
 ```
 
-After changing a secret, reload your shell and restart services:
+After changing a secret, reload and restart:
 
 ```bash
 source ~/.zshrc
 mb-stop && mb-start
 ```
 
-**Important:** PostgreSQL and MongoDB only read password env vars on first
-initialization. Changing the Keychain value alone won't update the database's
-internal password. See `docs/maintenance.md` for the full rotation procedure.
+**Caveat:** PostgreSQL and MongoDB store their passwords internally on first
+startup. Updating the Keychain alone won't change them. See
+`docs/maintenance.md` for the full rotation procedure.
 
 ---
 
-## Backups and Restore
-
-### Creating a backup
+## Health Checks
 
 ```bash
-~/minibot/scripts/backup.sh
+mb-health
 ```
 
-This stops services, copies `data/` and `docker/` to
-`~/minibot-backups/<timestamp>/`, then restarts services. Takes a few minutes
-depending on data size.
+This tests everything: Keychain secrets, Docker, database connectivity,
+OpenClaw, and the LaunchAgent. It prints `✓` for passing checks, `✗` for
+failures, and `⚠` for warnings. It exits non-zero if anything critical
+fails:
 
-Keychain secrets are **not** included in backups. To export them separately:
+```bash
+mb-health && echo "All good" || echo "Something is wrong"
+```
+
+For a security-focused check:
+
+```bash
+mb-audit
+```
+
+This verifies port bindings, authentication, file permissions, firewall, and
+FileVault.
+
+---
+
+## Backups
+
+```bash
+# Create a backup (stops services, copies data, restarts)
+~/minibot/scripts/backup.sh
+
+# List backups
+ls ~/minibot-backups/
+
+# Restore a backup
+~/minibot/scripts/restore.sh ~/minibot-backups/20260221-143022
+```
+
+Backups do **not** include Keychain secrets. To back them up separately:
 
 ```bash
 mb-secrets export > ~/minibot-backups/secrets-backup.sh
 chmod 600 ~/minibot-backups/secrets-backup.sh
 ```
 
-### Restoring from a backup
-
-```bash
-# List available backups
-ls ~/minibot-backups/
-
-# Restore a specific backup
-~/minibot/scripts/restore.sh ~/minibot-backups/20260221-143022
-```
-
-The restore script stops services, swaps the data directories (with rollback
-on failure), and restarts services.
-
-### Backup retention
-
-Keep the last 5-10 backups:
-
-```bash
-ls -1d ~/minibot-backups/*/ | head -n -5 | xargs rm -rf
-```
-
 ---
 
-## Health Checks and Auditing
+## Updating
 
-### Health check
-
-```bash
-mb-health
-```
-
-Tests Keychain secrets, Docker, each database, OpenClaw, and the LaunchAgent.
-Exits non-zero if any critical check fails, so you can script it:
+### OpenClaw (built from source)
 
 ```bash
-mb-health && echo "All services healthy" || echo "Something is down"
+mb-build                  # pulls latest source, rebuilds image
+mb-stop && mb-start       # restart with new image
 ```
 
-### Security audit
-
-```bash
-mb-audit
-```
-
-Checks port bindings, authentication, file permissions, umask, firewall, and
-FileVault. Run weekly. Exits non-zero if any check fails outright.
-
----
-
-## Remote Access
-
-### Via Tailscale
-
-If Tailscale is set up, services are reachable from any device on your tailnet
-using the Mac Mini's Tailscale IP:
-
-```bash
-# Find the Mac Mini's Tailscale IP
-tailscale ip -4
-
-# From another device, SSH in
-ssh minibot@100.x.x.x
-```
-
-### Via SSH tunnel
-
-Forward specific ports to your local machine:
-
-```bash
-ssh -L 5432:127.0.0.1:5432 \
-    -L 6379:127.0.0.1:6379 \
-    -L 27017:127.0.0.1:27017 \
-    -L 18789:127.0.0.1:18789 \
-    minibot@<machine-ip>
-```
-
-Then connect to `localhost:5432`, `localhost:18789`, etc. from your local tools.
-
----
-
-## Updating OpenClaw
-
-```bash
-# Pull latest source and rebuild the Docker image
-mb-build
-
-# Restart to pick up the new image
-mb-stop && mb-start
-```
-
-The build uses `--progress=plain` so you see real-time output.
-
-## Updating Base Images
+### Database images (pulled from Docker Hub)
 
 ```bash
 docker pull postgres:15-alpine
@@ -362,62 +389,43 @@ mb-stop && mb-start
 
 ## Troubleshooting
 
-### Docker not found / not running
+**Docker not found / not running** — Open Docker Desktop (`open -a Docker`),
+wait for the whale icon in the menu bar to stop animating (~30-60 seconds).
 
-```bash
-open -a Docker
-```
+**A container keeps restarting** — Check its logs (`mb-logs openclaw`) and
+exit code (`docker inspect minibot-openclaw --format='{{.State.ExitCode}}'`).
+Common causes: missing secrets, database not ready, image not built.
 
-Wait for the whale icon to settle (~30-60 seconds), then retry.
+**Secrets missing after reboot** — They load from Keychain on login. Run
+`mb-secrets list` to check they exist, then `source ~/.zshrc` to reload them.
 
-### A container keeps restarting
+**Can't connect to a database** — Check that the container is running
+(`mb-status`), check its logs (`docker logs minibot-postgres --tail 50`),
+and try connecting from inside the container to rule out network issues.
 
-```bash
-# Check its logs
-mb-logs openclaw
+**Disk space running low** — Check data usage (`du -sh ~/minibot/data/*`)
+and Docker overhead (`docker system df`). Clean up with
+`docker system prune`.
 
-# Check the exit code
-docker inspect minibot-openclaw --format='{{.State.ExitCode}}'
-```
+---
 
-Common causes: missing secrets, database not ready yet, image not built.
+## Quick Reference
 
-### Secrets missing after reboot
+| Command | What it does |
+|---------|--------------|
+| `mb-start` | Load secrets, start all containers |
+| `mb-stop` | Stop all containers |
+| `mb-status` | Show container status |
+| `mb-logs [service]` | Follow logs (all or one service) |
+| `mb-health` | Full health check |
+| `mb-audit` | Security posture audit |
+| `mb-secrets list` | Show stored secrets |
+| `mb-secrets get KEY` | Print a secret value |
+| `mb-build` | Rebuild OpenClaw from source |
+| `docker exec -it CONTAINER sh` | Open a shell inside a container |
+| `docker logs CONTAINER` | View a container's logs |
 
-Secrets load from Keychain on shell login via `zshrc-additions.sh`. If they're
-missing:
-
-```bash
-mb-secrets list          # Are they in the Keychain?
-source ~/.zshrc          # Reload them into the environment
-echo "$POSTGRES_PASSWORD" # Verify they're set (should print a value)
-```
-
-### Database won't accept connections
-
-```bash
-# Check if the container is running
-docker ps | grep minibot-postgres
-
-# Check the container's internal logs
-docker logs minibot-postgres --tail 50
-
-# Test from inside the container (bypasses network)
-docker exec minibot-postgres pg_isready -U minibot
-```
-
-### Disk space running low
-
-```bash
-# Check Minibot data usage
-du -sh ~/minibot/data/*
-
-# Check Docker disk usage
-docker system df
-
-# Clean up unused images and build cache (safe)
-docker system prune
-```
+All `bin/` scripts accept `--help`.
 
 ---
 
