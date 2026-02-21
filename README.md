@@ -347,9 +347,7 @@ After running the installer, you'll have:
 └── zshrc-additions.sh      # Shell config (sourced by ~/.zshrc)
 ```
 
-The repository also includes `install.sh`, `setup-minibot-dirs.sh`, and
-`misc/openclaw-setup-guide.md` (a detailed walkthrough of OpenClaw
-configuration including models, Telegram, sandbox, and SOUL.md).
+The repository also includes `install.sh` and `setup-minibot-dirs.sh`.
 
 ## Available Scripts
 
@@ -382,7 +380,6 @@ configuration including models, Telegram, sandbox, and SOUL.md).
 - Networking & ports: `docs/networking.md`
 - Secrets management: `docs/secrets.md`
 - Filesystem security: `docs/filesystem.md`
-- OpenClaw setup guide: `misc/openclaw-setup-guide.md`
 
 ## Shell Aliases
 

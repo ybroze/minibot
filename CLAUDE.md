@@ -29,6 +29,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 - `scripts/` — Maintenance scripts (admin-setup, backup, restore, health-check, security-audit, reset, LaunchAgent)
 - `docker/` — `docker-compose.yml` and `.env.example`
 - `docs/` — Threat model, emergency procedures, maintenance guide, secrets, networking, security posture, filesystem security
+- `misc/` — Personal notes and reference material; not part of the polished repo. Do not reference `misc/` from other docs.
 
 ## Common Commands
 

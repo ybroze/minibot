@@ -432,6 +432,5 @@ docker system prune
 | Filesystem security | `docs/filesystem.md` |
 | Maintenance schedule | `docs/maintenance.md` |
 | Emergency procedures | `docs/emergency.md` |
-| OpenClaw configuration | `misc/openclaw-setup-guide.md` |
 
 See `docs/README.md` for a recommended reading order.
