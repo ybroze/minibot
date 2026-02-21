@@ -73,5 +73,8 @@ SERVICES_STOPPED=false
 echo ""
 echo "✓ Backup created at: $BACKUP_DIR"
 echo ""
+echo "Note: Keychain secrets are NOT included in this backup."
+echo "  To back up secrets separately: minibot-secrets.sh export > secrets-backup.sh"
+echo ""
 echo "To restore: ~/minibot/scripts/restore.sh $BACKUP_DIR"
 echo "Keep only the last 5-10 backups and delete older ones to save space."

@@ -12,10 +12,26 @@ umask 077
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
-# --- Verify Docker is running ----------------------------------------------
-if ! docker info &>/dev/null; then
-    echo "Error: Docker is not running. Start Docker Desktop first." >&2
-    exit 1
+# --- Wait for Docker to be available ----------------------------------------
+DOCKER_TIMEOUT=90
+DOCKER_INTERVAL=5
+
+if docker info &>/dev/null; then
+    echo "Docker is available."
+else
+    echo "Waiting for Docker to become available (up to ${DOCKER_TIMEOUT}s)..."
+    elapsed=0
+    while ! docker info &>/dev/null; do
+        if [ "$elapsed" -ge "$DOCKER_TIMEOUT" ]; then
+            echo "Error: Docker did not become available within ${DOCKER_TIMEOUT}s." >&2
+            echo "Start Docker Desktop and try again." >&2
+            exit 1
+        fi
+        sleep "$DOCKER_INTERVAL"
+        elapsed=$((elapsed + DOCKER_INTERVAL))
+        echo "  ... waiting (${elapsed}s elapsed)"
+    done
+    echo "Docker is available (after ${elapsed}s)."
 fi
 
 # --- Load secrets from keychain into the environment -----------------------

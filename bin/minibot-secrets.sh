@@ -8,6 +8,7 @@
 #   minibot-secrets.sh delete <KEY>        Remove a secret
 #   minibot-secrets.sh list                List required Minibot secret keys
 #   minibot-secrets.sh export              Export all secrets as shell exports (for eval)
+#   minibot-secrets.sh generate <KEY|all>  Generate a random password and store it
 #   minibot-secrets.sh init                Interactive first-time setup of required secrets
 #
 # Secrets are stored in the user's login keychain under the service name
@@ -35,6 +36,7 @@ usage() {
     echo "  delete <KEY>        Remove a secret from the keychain"
     echo "  list                List required Minibot secret keys in the keychain"
     echo "  export              Print 'export KEY=value' lines for eval"
+    echo "  generate <KEY|all>  Generate a random password and store it"
     echo "  init                Interactive first-time setup of all required secrets"
     exit 1
 }
@@ -66,6 +68,11 @@ _delete_secret() {
     else
         echo "Not found: $1"
     fi
+}
+
+_generate_password() {
+    # 48 hex characters — no special characters, safe for URLs and connection strings.
+    openssl rand -hex 24
 }
 
 # --- commands ---------------------------------------------------------------
@@ -137,6 +144,40 @@ cmd_export() {
     done
 }
 
+cmd_generate() {
+    local key="${1:-}"
+    if [ -z "$key" ]; then
+        echo "Error: KEY or 'all' is required."
+        usage
+    fi
+
+    if [ "$key" = "all" ]; then
+        for k in "${REQUIRED_SECRETS[@]}"; do
+            if _secret_exists "$k"; then
+                echo "  $k already exists — skipped."
+            else
+                local pw
+                pw="$(_generate_password)"
+                _set_secret "$k" "$pw"
+                echo "  ✓ Generated and stored $k"
+            fi
+        done
+    else
+        if _secret_exists "$key"; then
+            echo -n "$key already exists. Overwrite? (y/N): "
+            read -r confirm
+            if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+                echo "  Skipped."
+                return
+            fi
+        fi
+        local pw
+        pw="$(_generate_password)"
+        _set_secret "$key" "$pw"
+        echo "✓ Generated and stored $key"
+    fi
+}
+
 cmd_init() {
     echo "=== Minibot Secrets Setup ==="
     echo ""
@@ -156,18 +197,27 @@ cmd_init() {
                 continue
             fi
         fi
-        echo -n "Enter value for $key: "
-        read -rs value
-        echo ""
-        if [ -z "$value" ]; then
-            echo "  Skipped (empty)."
-            continue
+        echo -n "Auto-generate $key? (Y/n): "
+        read -r choice
+        if [ "$choice" != "n" ] && [ "$choice" != "N" ]; then
+            local pw
+            pw="$(_generate_password)"
+            _set_secret "$key" "$pw"
+            echo "  ✓ Generated and stored."
+        else
+            echo -n "Enter value for $key: "
+            read -rs value
+            echo ""
+            if [ -z "$value" ]; then
+                echo "  Skipped (empty)."
+                continue
+            fi
+            if [ ${#value} -lt 12 ]; then
+                echo "  Warning: password is shorter than 12 characters." >&2
+            fi
+            _set_secret "$key" "$value"
+            echo "  ✓ Stored."
         fi
-        if [ ${#value} -lt 12 ]; then
-            echo "  Warning: password is shorter than 12 characters." >&2
-        fi
-        _set_secret "$key" "$value"
-        echo "  ✓ Stored."
     done
 
     echo ""
@@ -181,11 +231,12 @@ command="${1:-}"
 shift || true
 
 case "$command" in
-    set)    cmd_set "$@" ;;
-    get)    cmd_get "$@" ;;
-    delete) cmd_delete "$@" ;;
-    list)   cmd_list ;;
-    export) cmd_export ;;
-    init)   cmd_init ;;
-    *)      usage ;;
+    set)      cmd_set "$@" ;;
+    get)      cmd_get "$@" ;;
+    delete)   cmd_delete "$@" ;;
+    list)     cmd_list ;;
+    export)   cmd_export ;;
+    generate) cmd_generate "$@" ;;
+    init)     cmd_init ;;
+    *)        usage ;;
 esac

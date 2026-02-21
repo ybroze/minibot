@@ -17,9 +17,6 @@ mkdir -p "$BASE_DIR/data"/{postgres,redis,mongo,openclaw,logs/system}
 # Standard hidden directories
 mkdir -p "$HOME/.config" "$HOME/.cache" "$HOME/.local"/{bin,lib}
 
-# Create .gitkeep files for empty directories
-find "$BASE_DIR" -type d -empty -exec touch {}/.gitkeep \;
-
 # Idempotency: only create .gitignore if it doesn't already exist, so that
 # user customizations are preserved across re-runs of this script.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

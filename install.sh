@@ -63,7 +63,18 @@ fi
 
 echo ""
 echo "Step 4: Setting up secrets in macOS Keychain..."
-~/minibot/bin/minibot-secrets.sh init
+_all_secrets_exist=true
+for _key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
+    if ! ~/minibot/bin/minibot-secrets.sh get "$_key" &>/dev/null; then
+        _all_secrets_exist=false
+        break
+    fi
+done
+if $_all_secrets_exist; then
+    echo "✓ All required secrets already exist in keychain — skipping init."
+else
+    ~/minibot/bin/minibot-secrets.sh init
+fi
 
 echo ""
 echo "Step 5: Installing CLI debugging tools..."
@@ -88,8 +99,20 @@ fi
 
 echo ""
 echo "Step 6: Building OpenClaw Docker image..."
-echo "(This clones the OpenClaw source and builds the image — may take a few minutes.)"
-~/minibot/scripts/build-openclaw.sh
+if docker image inspect openclaw:local &>/dev/null; then
+    _built_at=$(docker image inspect openclaw:local --format='{{.Created}}' 2>/dev/null || echo "unknown")
+    echo "openclaw:local already exists (built: $_built_at)"
+    echo -n "Rebuild? (y/N): "
+    read -r _rebuild
+    if [ "$_rebuild" = "y" ] || [ "$_rebuild" = "Y" ]; then
+        ~/minibot/scripts/build-openclaw.sh
+    else
+        echo "Skipped rebuild."
+    fi
+else
+    echo "(This clones the OpenClaw source and builds the image — may take a few minutes.)"
+    ~/minibot/scripts/build-openclaw.sh
+fi
 
 echo ""
 echo "Step 7: Installing LaunchAgent for 24/7 operation..."
