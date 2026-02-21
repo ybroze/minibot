@@ -7,6 +7,16 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Tracking variables for completion recap
+_step_dirs="pending"
+_step_scripts="pending"
+_step_shell="pending"
+_step_secrets="pending"
+_step_cli="pending"
+_step_openclaw="pending"
+_step_launchagent="pending"
+_step_hardening="pending"
+
 echo "=== Minibot Environment Installer ==="
 echo ""
 echo "This script will:"
@@ -29,6 +39,7 @@ fi
 echo ""
 echo "Step 1: Creating directory structure..."
 bash "$SCRIPT_DIR/setup-minibot-dirs.sh"
+_step_dirs="done"
 
 echo ""
 echo "Step 2: Copying scripts..."
@@ -45,6 +56,7 @@ echo ""
 echo "Step 2b: Setting file permissions..."
 chmod +x ~/minibot/bin/*.sh ~/minibot/scripts/*.sh
 chmod 700 ~/minibot/data
+_step_scripts="done"
 
 echo ""
 echo "Step 3: Setting up shell environment..."
@@ -60,20 +72,23 @@ if ! grep -q "source ~/minibot/zshrc-additions.sh" ~/.zshrc 2>/dev/null; then
 else
     echo "✓ ~/.zshrc already configured (additions file updated in place)"
 fi
+_step_shell="done"
 
 echo ""
 echo "Step 4: Setting up secrets in macOS Keychain..."
 _all_secrets_exist=true
-for _key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
+while IFS= read -r _key; do
     if ! ~/minibot/bin/minibot-secrets.sh get "$_key" &>/dev/null; then
         _all_secrets_exist=false
         break
     fi
-done
+done < <(~/minibot/bin/minibot-secrets.sh keys)
 if $_all_secrets_exist; then
     echo "✓ All required secrets already exist in keychain — skipping init."
+    _step_secrets="skipped (already present)"
 else
     ~/minibot/bin/minibot-secrets.sh init
+    _step_secrets="done"
 fi
 
 echo ""
@@ -82,18 +97,22 @@ BREW_PREFIX="$(brew --prefix 2>/dev/null || echo /opt/homebrew)"
 if [ -w "$BREW_PREFIX/bin" ]; then
     brew install libpq redis mongosh
     echo "✓ Installed psql, redis-cli, mongosh"
+    _step_cli="done"
 else
     if dseditgroup -o checkmember -m "$(whoami)" admin &>/dev/null; then
         echo "Admin privileges required for Homebrew packages."
         echo "Attempting with sudo..."
         if sudo -u "$(stat -f '%Su' "$BREW_PREFIX/bin")" brew install libpq redis mongosh; then
             echo "✓ Installed psql, redis-cli, mongosh"
+            _step_cli="done"
         else
             echo "Skipped — install manually as admin: brew install libpq redis mongosh"
+            _step_cli="skipped (install failed)"
         fi
     else
         echo "Skipped — standard user cannot install Homebrew packages."
         echo "Install as admin: brew install libpq redis mongosh"
+        _step_cli="skipped (standard user)"
     fi
 fi
 
@@ -106,17 +125,21 @@ if docker image inspect openclaw:local &>/dev/null; then
     read -r _rebuild
     if [ "$_rebuild" = "y" ] || [ "$_rebuild" = "Y" ]; then
         ~/minibot/scripts/build-openclaw.sh
+        _step_openclaw="done (rebuilt)"
     else
         echo "Skipped rebuild."
+        _step_openclaw="skipped (already exists)"
     fi
 else
     echo "(This clones the OpenClaw source and builds the image — may take a few minutes.)"
     ~/minibot/scripts/build-openclaw.sh
+    _step_openclaw="done"
 fi
 
 echo ""
 echo "Step 7: Installing LaunchAgent for 24/7 operation..."
 ~/minibot/scripts/install-launchagent.sh
+_step_launchagent="done"
 
 echo ""
 echo "Step 8: Account hardening (optional)..."
@@ -129,12 +152,33 @@ read -p "Harden this account for dedicated use? (yes/no): " harden
 if [ "$harden" = "yes" ]; then
     defaults write com.apple.commerce AutoUpdate -bool false
     echo "✓ Disabled App Store auto-updates"
+    _step_hardening="done"
 else
     echo "Skipped account hardening."
+    _step_hardening="skipped"
 fi
 
 echo ""
 echo "=== Installation Complete! ==="
+echo ""
+_recap() {
+    local label="$1" status="$2"
+    if [[ "$status" == done* ]]; then
+        echo "  ✓ $label"
+    elif [[ "$status" == skipped* ]]; then
+        echo "  - $label: $status"
+    else
+        echo "  ✗ $label: $status"
+    fi
+}
+_recap "Directory structure" "$_step_dirs"
+_recap "Scripts & permissions" "$_step_scripts"
+_recap "Shell environment" "$_step_shell"
+_recap "Keychain secrets" "$_step_secrets"
+_recap "CLI tools" "$_step_cli"
+_recap "OpenClaw image" "$_step_openclaw"
+_recap "LaunchAgent" "$_step_launchagent"
+_recap "Account hardening" "$_step_hardening"
 echo ""
 echo "Next steps:"
 echo "  1. Source your shell config: source ~/.zshrc"

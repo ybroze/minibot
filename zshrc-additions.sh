@@ -17,7 +17,9 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 
 # Load Keychain secrets into the environment so all docker compose
 # commands work without each script loading them individually.
-eval "$(~/minibot/bin/minibot-secrets.sh export 2>/dev/null)"
+if ! eval "$(~/minibot/bin/minibot-secrets.sh export 2>/dev/null)"; then
+    echo "[minibot] Warning: could not load secrets from keychain." >&2
+fi
 
 # Prompt indicator
 export PS1="%F{cyan}[minibot]%f %~ %# "

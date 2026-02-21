@@ -27,7 +27,7 @@ echo ""
 
 # --- Build image ------------------------------------------------------------
 echo "Building openclaw:local..."
-docker build -t openclaw:local -f "$VENDOR_DIR/Dockerfile" "$VENDOR_DIR"
+docker build --progress=plain -t openclaw:local -f "$VENDOR_DIR/Dockerfile" "$VENDOR_DIR"
 
 echo ""
 echo "✓ openclaw:local is ready."

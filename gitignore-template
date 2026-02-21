@@ -25,28 +25,5 @@ tags
 # OS
 .DS_Store
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-env/
-*.egg-info/
-
 # Vendor (OpenClaw source clone)
 vendor/
-
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Compiled files
-*.com
-*.class
-*.dll
-*.exe
-*.o

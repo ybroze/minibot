@@ -5,6 +5,12 @@
 
 set -euo pipefail
 
+if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
+    echo "Usage: $(basename "$0")"
+    echo "  Load secrets from macOS Keychain and start all Minibot services."
+    exit 0
+fi
+
 # Ensure restrictive file permissions even when run outside a login shell
 # (e.g., via LaunchAgent where zshrc-additions.sh is not sourced).
 umask 077
@@ -40,21 +46,21 @@ eval "$("$SCRIPT_DIR/minibot-secrets.sh" export)"
 
 # Verify required secrets are present
 missing=0
-for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
+while IFS= read -r key; do
     if [ -z "${!key:-}" ]; then
         echo "Error: $key not found in keychain." >&2
         missing=1
     fi
-done
+done < <("$SCRIPT_DIR/minibot-secrets.sh" keys)
 if [ "$missing" -eq 1 ]; then
-    echo "Run:  minibot-secrets.sh init" >&2
+    echo "Run:  mb-secrets init" >&2
     exit 1
 fi
 
 # --- Verify openclaw:local image exists ------------------------------------
 if ! docker image inspect openclaw:local &>/dev/null; then
     echo "Error: openclaw:local image not found." >&2
-    echo "Run:  ~/minibot/scripts/build-openclaw.sh" >&2
+    echo "Run:  mb-build" >&2
     exit 1
 fi
 

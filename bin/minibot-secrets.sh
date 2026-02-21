@@ -8,6 +8,7 @@
 #   minibot-secrets.sh delete <KEY>        Remove a secret
 #   minibot-secrets.sh list                List required Minibot secret keys
 #   minibot-secrets.sh export              Export all secrets as shell exports (for eval)
+#   minibot-secrets.sh keys               Print required secret key names, one per line
 #   minibot-secrets.sh generate <KEY|all>  Generate a random password and store it
 #   minibot-secrets.sh init                Interactive first-time setup of required secrets
 #
@@ -36,9 +37,9 @@ usage() {
     echo "  delete <KEY>        Remove a secret from the keychain"
     echo "  list                List required Minibot secret keys in the keychain"
     echo "  export              Print 'export KEY=value' lines for eval"
+    echo "  keys                Print required secret key names, one per line"
     echo "  generate <KEY|all>  Generate a random password and store it"
     echo "  init                Interactive first-time setup of all required secrets"
-    exit 1
 }
 
 # --- helpers ----------------------------------------------------------------
@@ -81,8 +82,9 @@ cmd_set() {
     local key="${1:-}"
     local value="${2:-}"
     if [ -z "$key" ]; then
-        echo "Error: KEY is required."
-        usage
+        echo "Error: KEY is required." >&2
+        usage >&2
+        exit 1
     fi
     if [ -z "$value" ]; then
         echo -n "Enter value for $key: "
@@ -103,8 +105,9 @@ cmd_set() {
 cmd_get() {
     local key="${1:-}"
     if [ -z "$key" ]; then
-        echo "Error: KEY is required."
-        usage
+        echo "Error: KEY is required." >&2
+        usage >&2
+        exit 1
     fi
     if ! _secret_exists "$key"; then
         echo "Error: $key not found in keychain." >&2
@@ -116,8 +119,9 @@ cmd_get() {
 cmd_delete() {
     local key="${1:-}"
     if [ -z "$key" ]; then
-        echo "Error: KEY is required."
-        usage
+        echo "Error: KEY is required." >&2
+        usage >&2
+        exit 1
     fi
     _delete_secret "$key"
 }
@@ -144,11 +148,18 @@ cmd_export() {
     done
 }
 
+cmd_keys() {
+    # Print required key names, one per line — used by other scripts to avoid
+    # hardcoding the list in multiple places.
+    printf '%s\n' "${REQUIRED_SECRETS[@]}"
+}
+
 cmd_generate() {
     local key="${1:-}"
     if [ -z "$key" ]; then
-        echo "Error: KEY or 'all' is required."
-        usage
+        echo "Error: KEY or 'all' is required." >&2
+        usage >&2
+        exit 1
     fi
 
     if [ "$key" = "all" ]; then
@@ -236,7 +247,13 @@ case "$command" in
     delete)   cmd_delete "$@" ;;
     list)     cmd_list ;;
     export)   cmd_export ;;
+    keys)     cmd_keys ;;
     generate) cmd_generate "$@" ;;
     init)     cmd_init ;;
-    *)        usage ;;
+    -h|--help|"") usage ;;
+    *)
+        echo "Unknown command: $command" >&2
+        usage >&2
+        exit 1
+        ;;
 esac

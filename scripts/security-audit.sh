@@ -19,7 +19,7 @@ echo ""
 # --- 1. Keychain secrets ---------------------------------------------------
 echo "Keychain Secrets:"
 
-for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
+while IFS= read -r key; do
     val=$(~/minibot/bin/minibot-secrets.sh get "$key" 2>/dev/null || true)
     if [ -z "$val" ]; then
         fail "$key is not set in the keychain"
@@ -28,7 +28,7 @@ for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASS
     else
         pass "$key is set (${#val} chars)"
     fi
-done
+done < <(~/minibot/bin/minibot-secrets.sh keys)
 echo ""
 
 # --- 2. Docker status ------------------------------------------------------

@@ -9,18 +9,21 @@ cd ~/minibot
 # Load all secrets once up front
 eval "$(~/minibot/bin/minibot-secrets.sh export)"
 
+FAILURES=0
+
 echo "=== Minibot Health Check ==="
 echo ""
 
 # Check keychain secrets
 echo "Keychain Secrets:"
-for key in POSTGRES_PASSWORD REDIS_PASSWORD MONGO_PASSWORD OPENCLAW_GATEWAY_PASSWORD; do
+while IFS= read -r key; do
     if [ -n "${!key:-}" ]; then
         echo "✓ $key is set"
     else
-        echo "✗ $key is missing (run: minibot-secrets.sh init)"
+        echo "✗ $key is missing (run: mb-secrets init)"
+        FAILURES=$((FAILURES + 1))
     fi
-done
+done < <(~/minibot/bin/minibot-secrets.sh keys)
 echo ""
 
 # Check Docker
@@ -30,6 +33,7 @@ if command -v docker &> /dev/null; then
     echo "✓ Docker installed"
 else
     echo "✗ Docker not found"
+    FAILURES=$((FAILURES + 1))
 fi
 echo ""
 
@@ -39,7 +43,8 @@ if docker image inspect openclaw:local &>/dev/null; then
     built_at=$(docker image inspect openclaw:local --format='{{.Created}}' 2>/dev/null || echo "unknown")
     echo "✓ openclaw:local exists (built: $built_at)"
 else
-    echo "✗ openclaw:local not found (run: scripts/build-openclaw.sh)"
+    echo "✗ openclaw:local not found (run: mb-build)"
+    FAILURES=$((FAILURES + 1))
 fi
 echo ""
 
@@ -54,6 +59,7 @@ if docker exec minibot-postgres pg_isready -U minibot &> /dev/null; then
     echo "✓ PostgreSQL is ready"
 else
     echo "✗ PostgreSQL is not responding"
+    FAILURES=$((FAILURES + 1))
 fi
 echo ""
 
@@ -65,6 +71,7 @@ elif docker exec minibot-redis redis-cli ping &> /dev/null; then
     echo "⚠ Redis is responding but WITHOUT authentication"
 else
     echo "✗ Redis is not responding"
+    FAILURES=$((FAILURES + 1))
 fi
 echo ""
 
@@ -76,6 +83,7 @@ elif docker exec minibot-mongo mongosh --quiet --eval "db.runCommand({ping:1})" 
     echo "⚠ MongoDB is responding but authentication status unclear"
 else
     echo "✗ MongoDB is not responding"
+    FAILURES=$((FAILURES + 1))
 fi
 echo ""
 
@@ -87,6 +95,7 @@ if docker exec minibot-openclaw node -e "process.exit(0)" &> /dev/null; then
     echo "  Image: $oc_image"
 else
     echo "✗ OpenClaw is not running"
+    FAILURES=$((FAILURES + 1))
 fi
 echo ""
 
@@ -135,3 +144,8 @@ fi
 echo ""
 
 echo "=== Health Check Complete ==="
+
+if [ "$FAILURES" -gt 0 ]; then
+    echo "$FAILURES critical check(s) failed."
+    exit 1
+fi

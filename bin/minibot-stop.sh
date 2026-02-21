@@ -4,6 +4,12 @@
 
 set -euo pipefail
 
+if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
+    echo "Usage: $(basename "$0")"
+    echo "  Stop all Minibot services."
+    exit 0
+fi
+
 cd "$(dirname "$0")/.."
 
 echo "Stopping Minibot services..."
