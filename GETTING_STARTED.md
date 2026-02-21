@@ -72,6 +72,23 @@ reach it from the Mac:
 | minibot-mongo | Document database (JSON-like) | `127.0.0.1:27017` |
 | minibot-openclaw | Agent gateway (HTTP/WebSocket) | `127.0.0.1:18789` |
 
+**Why three databases?** Each is good at different things:
+
+- **PostgreSQL** is a traditional relational database — structured tables
+  with rows and columns, queried with SQL. OpenClaw uses it as its primary
+  data store for users, sessions, configuration, and anything that benefits
+  from strong consistency and relationships between records.
+- **Redis** is an in-memory store — extremely fast, but not meant for large
+  or permanent data. It's used for caching, real-time message brokering
+  between components, and short-lived state like session tokens and rate
+  limiters. Data lives in RAM and is periodically flushed to disk.
+- **MongoDB** is a document database — it stores flexible JSON-like records
+  instead of rigid table rows. It's available for agents and plugins that
+  need to store unstructured or evolving data (logs, conversation history,
+  scraped content) where the schema may change over time. OpenClaw itself
+  doesn't use it directly, but it's on the network and ready for anything
+  that needs it.
+
 `127.0.0.1` means "this machine only." Nobody on your network can reach
 these ports — they're only accessible from the Mac itself (or through an SSH
 tunnel or Tailscale).
