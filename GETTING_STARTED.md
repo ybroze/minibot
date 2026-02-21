@@ -83,11 +83,10 @@ reach it from the Mac:
   between components, and short-lived state like session tokens and rate
   limiters. Data lives in RAM and is periodically flushed to disk.
 - **MongoDB** is a document database — it stores flexible JSON-like records
-  instead of rigid table rows. It's available for agents and plugins that
-  need to store unstructured or evolving data (logs, conversation history,
-  scraped content) where the schema may change over time. OpenClaw itself
-  doesn't use it directly, but it's on the network and ready for anything
-  that needs it.
+  instead of rigid table rows. It's used for unstructured or evolving data
+  (logs, conversation history, scraped content) where the schema may change
+  over time. Agents and plugins can use it for anything that doesn't fit
+  neatly into SQL tables.
 
 `127.0.0.1` means "this machine only." Nobody on your network can reach
 these ports — they're only accessible from the Mac itself (or through an SSH

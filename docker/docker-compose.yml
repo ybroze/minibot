@@ -59,7 +59,6 @@ services:
           memory: 256M
           cpus: '0.5'
 
-  # MongoDB is available for agents/plugins but not wired to OpenClaw directly.
   mongo:
     image: mongo:7
     container_name: minibot-mongo
@@ -102,9 +101,17 @@ services:
       POSTGRES_DB_URL: postgres://minibot:${POSTGRES_PASSWORD:-}@postgres:5432/minibot
       REDIS_URL: redis://:${REDIS_PASSWORD:-}@redis:6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      MONGO_URL: mongodb://minibot:${MONGO_PASSWORD:-}@mongo:27017/minibot?authSource=admin
       OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:-}
       # 87.5% of 4G container limit; leaves headroom for V8 internals
       NODE_OPTIONS: "--max-old-space-size=3584"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
     networks:
       - minibot-net
     restart: unless-stopped
