@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="minibot.webp" alt="Minibot" width="400">
+</p>
+
 # Minibot macOS Setup Scripts
 
 This repository contains all the scripts and configuration files needed to set
