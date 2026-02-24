@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="minibot.webp" alt="Minibot" width="1400">
+  <img src="minibot.webp" alt="Minibot">
 </p>
 
 # Minibot macOS Setup Scripts
