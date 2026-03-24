@@ -193,12 +193,27 @@ bash minibot/install.sh
 source ~/.zshrc
 ```
 
-The installer will prompt you for each required secret (`POSTGRES_PASSWORD`,
-`REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`). These are
-stored in the macOS Keychain — no plaintext `.env` files. OpenClaw manages its
-own internal secrets (API keys, bot tokens) separately. The installer also
-builds the `openclaw:local` Docker image from source — this takes a few minutes
-on first run.
+The installer will prompt you for each required secret. These are stored in
+the macOS Keychain — no plaintext `.env` files. OpenClaw manages its own
+internal secrets (API keys, bot tokens) separately. The installer also builds
+the `openclaw:local` Docker image from source — this takes a few minutes on
+first run.
+
+#### Two tiers of secrets
+
+Minibot manages secrets at two levels:
+
+| Tier | Secrets | Consumed by |
+|------|---------|-------------|
+| **Docker** | `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD` | Injected into containers via `docker compose`. Required for `mb-start`. |
+| **Host** | `RUSTDESK_PASSWORD` | Used by native macOS applications (RustDesk). Not required for Docker startup. |
+
+Both tiers are stored in the macOS Keychain and managed through
+`mb-secrets` (`init`, `list`, `set`, `get`). The distinction matters at
+startup: `mb-start` checks only the Docker-tier secrets before launching
+containers, so host-level secrets like `RUSTDESK_PASSWORD` won't block
+services if unset. The `docker-keys` subcommand lists Docker-tier secrets;
+`keys` lists all of them.
 
 ### 4b. Configure API Spending Limits
 
