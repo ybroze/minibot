@@ -41,7 +41,6 @@ cat > "$PLIST_PATH" << EOF
     <key>ProgramArguments</key>
     <array>
         <string>${RUSTDESK_BIN}</string>
-        <string>--service</string>
     </array>
 
     <key>RunAtLoad</key>

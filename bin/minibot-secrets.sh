@@ -8,7 +8,8 @@
 #   minibot-secrets.sh delete <KEY>        Remove a secret
 #   minibot-secrets.sh list                List required Minibot secret keys
 #   minibot-secrets.sh export              Export all secrets as shell exports (for eval)
-#   minibot-secrets.sh keys               Print required secret key names, one per line
+#   minibot-secrets.sh keys               Print all managed secret key names, one per line
+#   minibot-secrets.sh docker-keys        Print Docker-only secret key names
 #   minibot-secrets.sh generate <KEY|all>  Generate a random password and store it
 #   minibot-secrets.sh init                Interactive first-time setup of required secrets
 #
@@ -19,13 +20,19 @@ set -euo pipefail
 
 SERVICE_NAME="minibot"
 
-# All secrets that Minibot services require.
-# Add new keys here as the project grows.
-REQUIRED_SECRETS=(
+# Secrets consumed by Docker Compose services.
+# minibot-start.sh checks these before starting containers.
+DOCKER_SECRETS=(
     POSTGRES_PASSWORD
     REDIS_PASSWORD
     MONGO_PASSWORD
     OPENCLAW_GATEWAY_PASSWORD
+)
+
+# All secrets managed by Minibot (Docker + host-level).
+# Used by init, list, export, generate, and audit.
+REQUIRED_SECRETS=(
+    "${DOCKER_SECRETS[@]}"
     RUSTDESK_PASSWORD
 )
 
@@ -38,7 +45,8 @@ usage() {
     echo "  delete <KEY>        Remove a secret from the keychain"
     echo "  list                List required Minibot secret keys in the keychain"
     echo "  export              Print 'export KEY=value' lines for eval"
-    echo "  keys                Print required secret key names, one per line"
+    echo "  keys                Print all managed secret key names, one per line"
+    echo "  docker-keys         Print Docker-only secret key names"
     echo "  generate <KEY|all>  Generate a random password and store it"
     echo "  init                Interactive first-time setup of all required secrets"
 }
@@ -150,9 +158,15 @@ cmd_export() {
 }
 
 cmd_keys() {
-    # Print required key names, one per line — used by other scripts to avoid
-    # hardcoding the list in multiple places.
+    # Print all managed key names, one per line — used by other scripts to
+    # avoid hardcoding the list in multiple places.
     printf '%s\n' "${REQUIRED_SECRETS[@]}"
+}
+
+cmd_docker_keys() {
+    # Print Docker-service key names only — used by minibot-start.sh to check
+    # only the secrets that containers actually need.
+    printf '%s\n' "${DOCKER_SECRETS[@]}"
 }
 
 cmd_generate() {
@@ -248,8 +262,9 @@ case "$command" in
     delete)   cmd_delete "$@" ;;
     list)     cmd_list ;;
     export)   cmd_export ;;
-    keys)     cmd_keys ;;
-    generate) cmd_generate "$@" ;;
+    keys)        cmd_keys ;;
+    docker-keys) cmd_docker_keys ;;
+    generate)    cmd_generate "$@" ;;
     init)     cmd_init ;;
     -h|--help|"") usage ;;
     *)
