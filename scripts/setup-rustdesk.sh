@@ -100,7 +100,7 @@ echo "Configuring RustDesk for direct IP mode..."
 update_toml_key() {
     local file="$1" key="$2" value="$3"
     if [ -f "$file" ] && grep -q "^${key} " "$file" 2>/dev/null; then
-        sed -i '' "s|^${key} .*|${key} = '${value}'|" "$file"
+        sed -i '' "s#^${key} .*#${key} = '${value}'#" "$file"
     else
         echo "${key} = '${value}'" >> "$file"
     fi

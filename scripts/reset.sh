@@ -12,7 +12,7 @@ echo "  - Stop all services"
 echo "  - Delete all data (PostgreSQL, Redis, MongoDB, OpenClaw, logs)"
 echo "  - Remove all Docker containers and volumes"
 echo ""
-read -p "Are you ABSOLUTELY SURE? (type 'reset' to confirm): " confirm
+read -r -p "Are you ABSOLUTELY SURE? (type 'reset' to confirm): " confirm
 
 if [ "$confirm" != "reset" ]; then
     echo "Reset cancelled."
@@ -34,7 +34,7 @@ echo ""
 echo "✓ Environment reset complete."
 echo ""
 echo "Secrets are still stored in the macOS Keychain."
-read -p "Rotate secrets now? (y/N): " rotate
+read -r -p "Rotate secrets now? (y/N): " rotate
 if [ "$rotate" = "y" ] || [ "$rotate" = "Y" ]; then
     ~/minibot/bin/minibot-secrets.sh init
 fi

@@ -15,7 +15,7 @@ echo "  4. Install Docker Desktop, Tailscale, RustDesk, and CLI debug tools"
 echo "  5. Create the 'minibot' standard user account"
 echo "  6. Configure 24/7 operation (prevent sleep)"
 echo ""
-read -p "Continue? (yes/no): " confirm
+read -r -p "Continue? (yes/no): " confirm
 
 if [ "$confirm" != "yes" ]; then
     echo "Setup cancelled."
@@ -38,7 +38,7 @@ else
     xcode-select --install
     echo ""
     echo "A dialog has opened to install Xcode Command Line Tools."
-    read -p "Press Enter after the installation finishes... "
+    read -r -p "Press Enter after the installation finishes... "
     if xcode-select -p &>/dev/null; then
         echo "✓ Xcode Command Line Tools installed"
     else

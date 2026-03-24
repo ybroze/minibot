@@ -27,7 +27,7 @@ fi
 echo "Restoring from: $BACKUP_DIR"
 echo ""
 echo "WARNING: This will overwrite current data and configuration!"
-read -p "Continue? (yes/no): " confirm
+read -r -p "Continue? (yes/no): " confirm
 
 if [ "$confirm" != "yes" ]; then
     echo "Restore cancelled."

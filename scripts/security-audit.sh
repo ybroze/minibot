@@ -75,8 +75,8 @@ echo ""
 # --- 4b. MongoDB authentication ---------------------------------------------
 echo "MongoDB Authentication:"
 
-MONGO_PASS=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || true)
-if [ -n "$MONGO_PASS" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASS" --authenticationDatabase admin --eval "db.runCommand({ping:1})" &>/dev/null; then
+MONGO_PASSWORD=$(~/minibot/bin/minibot-secrets.sh get MONGO_PASSWORD 2>/dev/null || true)
+if [ -n "$MONGO_PASSWORD" ] && docker exec minibot-mongo mongosh --quiet -u minibot -p "$MONGO_PASSWORD" --authenticationDatabase admin --eval "db.runCommand({ping:1})" &>/dev/null; then
     pass "MongoDB accepts authenticated connections"
     # Test that unauthenticated access to user data is rejected
     if ! docker exec minibot-mongo mongosh --quiet --eval "db.getSiblingDB('admin').getUsers()" &>/dev/null; then

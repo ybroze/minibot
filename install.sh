@@ -29,7 +29,7 @@ echo "  6. Build the OpenClaw Docker image"
 echo "  7. Install LaunchAgent for 24/7 operation"
 echo "  8. (Optional) Harden this account for dedicated use"
 echo ""
-read -p "Continue? (yes/no): " confirm
+read -r -p "Continue? (yes/no): " confirm
 
 if [ "$confirm" != "yes" ]; then
     echo "Installation cancelled."
@@ -147,7 +147,7 @@ echo ""
 echo "This disables App Store auto-updates to minimize background noise"
 echo "on this dedicated account."
 echo ""
-read -p "Harden this account for dedicated use? (yes/no): " harden
+read -r -p "Harden this account for dedicated use? (yes/no): " harden
 
 if [ "$harden" = "yes" ]; then
     defaults write com.apple.commerce AutoUpdate -bool false
