@@ -149,7 +149,68 @@ else
 fi
 echo ""
 
-# --- 9. Version info -------------------------------------------------------
+# --- 9. RustDesk security --------------------------------------------------
+echo "RustDesk:"
+
+if [ -d "/Applications/RustDesk.app" ]; then
+    # Check permanent password strength (already covered by keychain audit above,
+    # but verify RustDesk-specific config here)
+    RUSTDESK_CONFIG_DIRS=(
+        "$HOME/Library/Preferences/com.carriez.RustDesk"
+        "$HOME/.config/rustdesk"
+    )
+    rd_config=""
+    for dir in "${RUSTDESK_CONFIG_DIRS[@]}"; do
+        if [ -f "$dir/RustDesk.toml" ]; then
+            rd_config="$dir/RustDesk.toml"
+            break
+        fi
+    done
+
+    if [ -n "$rd_config" ]; then
+        if grep -qi "verification-method.*=.*use-permanent-password" "$rd_config" 2>/dev/null; then
+            pass "RustDesk one-time passwords are disabled (permanent-only)"
+        else
+            warn "RustDesk may accept one-time passwords — should use permanent only"
+        fi
+        if grep -qi "enable-lan-discovery.*=.*N" "$rd_config" 2>/dev/null; then
+            pass "RustDesk LAN discovery is disabled"
+        else
+            warn "RustDesk LAN discovery may be enabled"
+        fi
+    else
+        warn "RustDesk config file not found — run setup-rustdesk.sh"
+    fi
+
+    rd2_config=""
+    for dir in "${RUSTDESK_CONFIG_DIRS[@]}"; do
+        if [ -f "$dir/RustDesk2.toml" ]; then
+            rd2_config="$dir/RustDesk2.toml"
+            break
+        fi
+    done
+
+    if [ -n "$rd2_config" ]; then
+        if grep -qi "direct-server.*=.*Y" "$rd2_config" 2>/dev/null; then
+            pass "RustDesk is in direct IP mode (no relay server)"
+        else
+            warn "RustDesk may not be in direct IP mode — check config"
+        fi
+    else
+        warn "RustDesk2.toml not found — run setup-rustdesk.sh"
+    fi
+
+    if pgrep -x "RustDesk" &>/dev/null || pgrep -f "rustdesk" &>/dev/null; then
+        pass "RustDesk process is running"
+    else
+        warn "RustDesk is not running"
+    fi
+else
+    pass "RustDesk not installed (check skipped)"
+fi
+echo ""
+
+# --- 10. Version info ------------------------------------------------------
 echo "Component Versions:"
 
 echo "  Docker:          $(docker --version 2>/dev/null || echo 'not installed')"
@@ -166,6 +227,7 @@ echo "  MongoDB:         $mongo_image"
 
 oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  OpenClaw:        $oc_image"
+echo "  RustDesk:        $(/Applications/RustDesk.app/Contents/MacOS/RustDesk --version 2>/dev/null || echo 'not installed')"
 echo ""
 
 # --- Summary ----------------------------------------------------------------

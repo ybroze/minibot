@@ -43,6 +43,7 @@ mb-status         # docker compose ps
 mb-secrets        # Manage keychain secrets
 mb-health         # Run health check
 mb-audit          # Run security audit
+mb-rustdesk-setup # Configure RustDesk for remote access
 
 # Direct script invocation
 ~/minibot/bin/minibot-start.sh
@@ -58,6 +59,6 @@ mb-audit          # Run security audit
 
 - All scripts use `set -euo pipefail`
 - Keychain operations use `security find-generic-password` / `security add-generic-password` with service name `minibot`
-- Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`
+- Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`, `RUSTDESK_PASSWORD`
 - OpenClaw manages its own internal secrets (API keys, bot tokens) separately
 - **Credential rotation caveat:** PostgreSQL and MongoDB only read password env vars on first init — see `docs/maintenance.md` for the correct rotation procedure

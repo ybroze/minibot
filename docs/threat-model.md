@@ -118,6 +118,31 @@ the recovery key (or a firmware exploit) can still compromise the machine.
 
 ---
 
+## Threat 7: Remote Desktop Compromise
+
+**What:** An attacker gains remote desktop access via RustDesk using a
+stolen or brute-forced password.
+
+**Minibot's posture:**
+- RustDesk is configured for direct IP mode only (no relay server that
+  could be compromised or intercepted).
+- Connections are only possible via Tailscale IP, meaning the attacker
+  must first be on the tailnet (authenticated via Tailscale).
+- The permanent password is stored in the macOS Keychain (not in a
+  plaintext config file).
+- One-time passwords are disabled, so only the permanent password works.
+- LAN discovery is disabled, preventing the machine from advertising
+  itself on the local network.
+
+**Residual risk:** If an attacker compromises a Tailscale node and obtains
+the RustDesk password, they get full desktop access as the logged-in user.
+This is mitigated by Tailscale's own access controls and the password
+strength requirement (12+ characters, checked by security-audit.sh).
+RustDesk does not support 2FA in direct IP mode, so the permanent password
+is the sole authentication factor beyond Tailscale network membership.
+
+---
+
 ## Review Cadence
 
 Review this threat model whenever you:

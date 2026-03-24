@@ -19,8 +19,13 @@ the secrets without each script loading them individually.
 | `REDIS_PASSWORD`           | Redis      | Authentication password (`--requirepass`)         |
 | `MONGO_PASSWORD`           | MongoDB    | Root authentication password (`minibot` user)    |
 | `OPENCLAW_GATEWAY_PASSWORD`| OpenClaw   | Gateway authentication password                  |
+| `RUSTDESK_PASSWORD`        | RustDesk   | Permanent password for remote desktop access      |
 
 OpenClaw manages its own internal secrets (API keys, bot tokens) separately — they are not stored in the macOS Keychain. The gateway password, however, is Keychain-managed like the other infrastructure secrets.
+
+**Note:** Unlike Docker service passwords, `RUSTDESK_PASSWORD` is consumed by a
+native macOS application. After setting or updating it in the Keychain, run
+`~/minibot/scripts/setup-rustdesk.sh` to apply it to RustDesk's configuration.
 
 ## Managing Secrets
 

@@ -11,7 +11,7 @@ echo "This script will (as your admin user):"
 echo "  1. Enable the macOS firewall"
 echo "  2. Install Xcode Command Line Tools"
 echo "  3. Install Homebrew"
-echo "  4. Install Docker Desktop, Tailscale, and CLI debug tools"
+echo "  4. Install Docker Desktop, Tailscale, RustDesk, and CLI debug tools"
 echo "  5. Create the 'minibot' standard user account"
 echo "  6. Configure 24/7 operation (prevent sleep)"
 echo ""
@@ -69,13 +69,14 @@ else
     echo "✓ ~/.zprofile already has Homebrew PATH"
 fi
 
-# ── Step 4: Install Docker Desktop, Tailscale, CLI tools ────────────────────
+# ── Step 4: Install Docker Desktop, Tailscale, RustDesk, CLI tools ──────────
 echo ""
-echo "Step 4: Installing Docker Desktop, Tailscale, and CLI tools..."
+echo "Step 4: Installing Docker Desktop, Tailscale, RustDesk, and CLI tools..."
 brew install --cask docker
 brew install --cask tailscale
+brew install --cask rustdesk
 brew install libpq redis mongosh
-echo "✓ Docker Desktop, Tailscale, and CLI tools installed"
+echo "✓ Docker Desktop, Tailscale, RustDesk, and CLI tools installed"
 
 # ── Step 5: Create the minibot user ─────────────────────────────────────────
 echo ""
@@ -92,7 +93,11 @@ fi
 echo ""
 echo "Step 6: Configuring 24/7 operation (preventing sleep)..."
 sudo pmset -a sleep 0 displaysleep 0 disksleep 0
-echo "✓ Sleep disabled (sleep=0, displaysleep=0, disksleep=0)"
+sudo pmset -a autorestart 1
+sudo pmset -a womp 1
+sudo pmset -a powernap 0
+sudo pmset -a proximitywake 0
+echo "✓ Sleep disabled, auto-restart on power failure enabled, Wake-on-LAN enabled"
 
 # ── Done ─────────────────────────────────────────────────────────────────────
 echo ""
@@ -108,5 +113,9 @@ echo "  • Enable Advanced Data Protection: System Settings > Apple ID >"
 echo "    iCloud > Advanced Data Protection"
 echo "  • In Docker Desktop, enable 'Start Docker Desktop when you sign in'"
 echo "    (do this for both the admin user and later for the minibot user)"
+echo "  • Grant RustDesk permissions (required for remote desktop):"
+echo "    System Settings > Privacy & Security > Accessibility > enable RustDesk"
+echo "    System Settings > Privacy & Security > Screen Recording > enable RustDesk"
+echo "    (You may need to launch RustDesk once first: open -a RustDesk)"
 echo ""
 echo "Next: Log in as the 'minibot' user and run install.sh"
