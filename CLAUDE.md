@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, MongoDB 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~1900 lines of bash) plus configuration and documentation.
+Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, MongoDB 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~1600 lines of bash) plus configuration and documentation.
 
 Target platform: macOS (Sequoia / recent versions), intended to run under a dedicated `minibot` standard user account.
 

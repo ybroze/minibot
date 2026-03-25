@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-cd ~/minibot
+COMPOSE_FILE="$HOME/minibot/docker/docker-compose.yml"
 
 # Load all secrets once up front
 eval "$(~/minibot/bin/minibot-secrets.sh export)"
@@ -50,7 +50,7 @@ echo ""
 
 # Check running containers
 echo "Running Containers:"
-docker compose -f docker/docker-compose.yml ps || echo "  (could not query containers)"
+docker compose -f "$COMPOSE_FILE" ps || echo "  (could not query containers)"
 echo ""
 
 # Check PostgreSQL

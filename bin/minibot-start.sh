@@ -16,7 +16,8 @@ fi
 umask 077
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR/.."
+MINIBOT_DIR="$SCRIPT_DIR/.."
+COMPOSE_FILE="$MINIBOT_DIR/docker/docker-compose.yml"
 
 # --- Wait for Docker to be available ----------------------------------------
 DOCKER_TIMEOUT=90
@@ -66,7 +67,7 @@ fi
 
 # --- Start services --------------------------------------------------------
 echo "Starting Minibot services..."
-docker compose -f docker/docker-compose.yml up -d
+docker compose -f "$COMPOSE_FILE" up -d
 
 echo "✓ Services started."
 echo ""

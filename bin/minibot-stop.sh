@@ -10,9 +10,9 @@ if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
     exit 0
 fi
 
-cd "$(dirname "$0")/.."
+COMPOSE_FILE="$(cd "$(dirname "$0")/.." && pwd)/docker/docker-compose.yml"
 
 echo "Stopping Minibot services..."
-docker compose -f docker/docker-compose.yml down
+docker compose -f "$COMPOSE_FILE" down
 
 echo "✓ Services stopped."

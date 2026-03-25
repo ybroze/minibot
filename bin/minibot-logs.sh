@@ -11,7 +11,7 @@ if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
     exit 0
 fi
 
-cd "$(dirname "$0")/.."
+COMPOSE_FILE="$(cd "$(dirname "$0")/.." && pwd)/docker/docker-compose.yml"
 
 # Follow logs for all services (or specific service if provided)
-docker compose -f docker/docker-compose.yml logs --tail 100 -f "$@"
+docker compose -f "$COMPOSE_FILE" logs --tail 100 -f "$@"
