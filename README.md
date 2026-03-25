@@ -137,24 +137,35 @@ macOS + Docker Desktop use ~4-5 GB, leaving 5-6 GB headroom.
 
 ### 8. Enable 24/7 Operation
 
-The installer already set up the LaunchAgent. Verify:
+The installer sets up the services LaunchAgent. Install the RustDesk and
+caffeinate LaunchAgents as well, then configure RustDesk:
+
+```bash
+~/minibot/scripts/setup-rustdesk.sh                  # Configure RustDesk for direct IP via Tailscale
+~/minibot/scripts/install-launchagent-rustdesk.sh     # Auto-start RustDesk, restart on crash
+~/minibot/scripts/install-launchagent-caffeinate.sh   # Prevent sleep (belt-and-suspenders with pmset)
+```
+
+Verify all three are loaded:
 
 ```bash
 launchctl list | grep minibot
+# Should show: com.minibot.gateway, com.minibot.rustdesk, com.minibot.caffeinate
 ```
 
 **With FileVault (recommended):** Auto-login is disabled by macOS. After each
 reboot you must unlock the disk via SSH pre-boot prompt (admin password), then
-start the `minibot` session via SSH or Screen Sharing. Once the session starts,
-the LaunchAgent fires and services come up automatically.
+start the `minibot` session via SSH or Screen Sharing (or RustDesk, once
+connected to the tailnet). Once the session starts, all three LaunchAgents
+fire automatically.
 
 **Without FileVault:** Auto-login is available (System Settings > Users &
 Groups > Automatic login > `minibot`). The machine recovers fully
 unattended after reboot.
 
-Sleep prevention is handled by `admin-setup.sh` (`pmset` settings) plus an
-optional `caffeinate` LaunchAgent. See `docs/remote-access.md` for the full
-headless setup including RustDesk.
+Sleep prevention is handled by `admin-setup.sh` (`pmset` settings) plus the
+caffeinate LaunchAgent. See `docs/remote-access.md` for RustDesk connection
+details and troubleshooting.
 
 Test: `sudo reboot`, then verify with `mb-status`.
 
