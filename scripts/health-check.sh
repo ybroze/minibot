@@ -116,8 +116,6 @@ mongo_image=$(docker inspect minibot-mongo --format='{{.Config.Image}}' 2>/dev/n
 echo "  MongoDB:        $mongo_image"
 oc_image=$(docker inspect minibot-openclaw --format='{{.Config.Image}}' 2>/dev/null || echo "not running")
 echo "  OpenClaw:       $oc_image"
-rustdesk_version=$(/Applications/RustDesk.app/Contents/MacOS/RustDesk --version 2>/dev/null || echo "not installed")
-echo "  RustDesk:       $rustdesk_version"
 echo ""
 
 # Check LaunchAgent logs (container logs are managed by Docker's json-file driver)
@@ -142,26 +140,6 @@ if [ -f "$PLIST_PATH" ]; then
     fi
 else
     echo "  LaunchAgent not installed (optional — run install-launchagent.sh for 24/7 operation)"
-fi
-echo ""
-
-# Check RustDesk
-echo "RustDesk (Remote Access):"
-if [ -d "/Applications/RustDesk.app" ]; then
-    echo "✓ RustDesk is installed"
-    if pgrep -x "RustDesk" &>/dev/null || pgrep -f "rustdesk" &>/dev/null; then
-        echo "✓ RustDesk process is running"
-    else
-        echo "✗ RustDesk is not running"
-        FAILURES=$((FAILURES + 1))
-    fi
-    if launchctl list 2>/dev/null | grep -q "com.minibot.rustdesk"; then
-        echo "✓ RustDesk LaunchAgent is loaded"
-    else
-        echo "⚠ RustDesk LaunchAgent is not loaded (run: ~/minibot/scripts/install-launchagent-rustdesk.sh)"
-    fi
-else
-    echo "  RustDesk not installed (optional — for remote desktop access)"
 fi
 echo ""
 

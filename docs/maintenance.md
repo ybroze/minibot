@@ -71,9 +71,6 @@ and restart.
    mb-secrets set MONGO_PASSWORD       # enter NEW_MONGO_PASSWORD
    mb-secrets set OPENCLAW_GATEWAY_PASSWORD
 
-   # RustDesk (simple — just update Keychain and re-apply):
-   mb-secrets set RUSTDESK_PASSWORD
-   ~/minibot/scripts/setup-rustdesk.sh
    ```
 
 4. **Reload secrets and restart:**
@@ -102,10 +99,8 @@ mb-secrets set POSTGRES_PASSWORD
 mb-secrets set REDIS_PASSWORD
 mb-secrets set MONGO_PASSWORD
 mb-secrets set OPENCLAW_GATEWAY_PASSWORD
-mb-secrets set RUSTDESK_PASSWORD
 source ~/.zshrc
 mb-start
-~/minibot/scripts/setup-rustdesk.sh
 ```
 
 When rotating an API key for an external provider, it's also a good time to

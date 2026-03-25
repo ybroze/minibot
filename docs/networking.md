@@ -104,12 +104,6 @@ Remote access to the Minibot machine is handled exclusively through:
    ssh -L 5432:127.0.0.1:5432 -L 27017:127.0.0.1:27017 -L 18789:127.0.0.1:18789 minibot@<machine-ip>
    ```
 
-3. **RustDesk** (remote desktop) — provides graphical remote access via
-   direct IP over Tailscale. No relay or rendezvous server is used; the
-   connecting client enters the Tailscale IP directly. The permanent
-   password is stored in the macOS Keychain alongside other minibot secrets.
-   See [remote-access.md](remote-access.md) for setup details.
-
 Neither method requires changing any port bindings or firewall rules.
 
 ---

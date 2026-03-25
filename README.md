@@ -35,9 +35,9 @@ git clone https://github.com/ybroze/minibot.git
 bash minibot/scripts/admin-setup.sh
 ```
 
-This installs Xcode CLI Tools, Homebrew, Docker Desktop, Tailscale, RustDesk,
-CLI debug tools, creates the `minibot` user, and configures energy settings
-for 24/7 headless operation. Each step is idempotent.
+This installs Xcode CLI Tools, Homebrew, Docker Desktop, Tailscale, CLI debug
+tools, creates the `minibot` user, and configures energy settings for 24/7
+headless operation. Each step is idempotent.
 
 <details>
 <summary>Manual alternative</summary>
@@ -47,7 +47,7 @@ xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
-brew install --cask docker tailscale rustdesk
+brew install --cask docker tailscale
 brew install libpq redis mongosh
 ```
 
@@ -59,8 +59,6 @@ After installing, complete the GUI-only steps:
   "Start Docker Desktop when you sign in" (this is per-user — repeat as
   `minibot` in step 4).
 - Open Tailscale, log in, approve the system extension and VPN prompts.
-- Grant RustDesk permissions: System Settings > Privacy & Security >
-  Accessibility and Screen Recording > enable RustDesk.
 
 ### 3. Set Up Tailscale
 
@@ -96,17 +94,10 @@ The installer creates directories, copies scripts, configures the shell,
 prompts for secrets (stored in the macOS Keychain), builds the `openclaw:local`
 Docker image from source, and installs the LaunchAgent.
 
-#### Two tiers of secrets
-
-| Tier | Secrets | Consumed by |
-|------|---------|-------------|
-| **Docker** | `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD` | Injected into containers via `docker compose`. Required for `mb-start`. |
-| **Host** | `RUSTDESK_PASSWORD` | Used by native macOS applications (RustDesk). Not required for Docker startup. |
-
-Both tiers live in the macOS Keychain and are managed through `mb-secrets`.
-`mb-start` checks only Docker-tier secrets, so host-level secrets won't block
-services if unset. OpenClaw manages its own internal secrets (API keys, bot
-tokens) separately.
+All secrets (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`,
+`OPENCLAW_GATEWAY_PASSWORD`) live in the macOS Keychain and are managed through
+`mb-secrets`. OpenClaw manages its own internal secrets (API keys, bot tokens)
+separately.
 
 ### 6. Configure API Spending Limits
 
@@ -137,13 +128,12 @@ macOS + Docker Desktop use ~4-5 GB, leaving 5-6 GB headroom.
 
 ### 8. Enable 24/7 Operation
 
-The installer automatically sets up three LaunchAgents:
+The installer automatically sets up two LaunchAgents:
 
 - **com.minibot.gateway** — starts Docker services on login
 - **com.minibot.caffeinate** — prevents system sleep
-- **com.minibot.rustdesk** — starts RustDesk for remote desktop (if installed and password is set)
 
-Verify all are loaded:
+Verify both are loaded:
 
 ```bash
 launchctl list | grep minibot
@@ -151,7 +141,7 @@ launchctl list | grep minibot
 
 **With FileVault (recommended):** Auto-login is disabled by macOS. After each
 reboot you must unlock the disk via SSH pre-boot prompt (admin password), then
-start the `minibot` session via SSH, Screen Sharing, or RustDesk. Once the
+start the `minibot` session via SSH or Screen Sharing. Once the
 session starts, all LaunchAgents fire automatically.
 
 **Without FileVault:** Auto-login is available (System Settings > Users &
@@ -159,8 +149,7 @@ Groups > Automatic login > `minibot`). The machine recovers fully
 unattended after reboot.
 
 Sleep prevention is handled by `admin-setup.sh` (`pmset` settings) plus the
-caffeinate LaunchAgent. See `docs/remote-access.md` for RustDesk connection
-details and troubleshooting.
+caffeinate LaunchAgent.
 
 Test: `sudo reboot`, then verify with `mb-status`.
 
@@ -180,8 +169,6 @@ Available after `source ~/.zshrc`:
 | `mb-secrets <cmd>` | Manage Keychain secrets (`init`, `list`, `set`, `get`) |
 | `mb-health` | Run health check |
 | `mb-audit` | Run security audit |
-| `mb-rustdesk-setup` | Configure RustDesk for remote access |
-
 ## Directory Structure
 
 ```
@@ -206,7 +193,6 @@ Available after `source ~/.zshrc`:
 | Threat model | `docs/threat-model.md` |
 | Secrets management | `docs/secrets.md` |
 | Networking & ports | `docs/networking.md` |
-| Remote desktop access | `docs/remote-access.md` |
 | Maintenance & rotation | `docs/maintenance.md` |
 | Emergency procedures | `docs/emergency.md` |
 | Containerization security | `docs/security.md` |

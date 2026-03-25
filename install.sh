@@ -15,7 +15,6 @@ _step_secrets="pending"
 _step_cli="pending"
 _step_openclaw="pending"
 _step_launchagent="pending"
-_step_rustdesk="pending"
 _step_caffeinate="pending"
 _step_hardening="pending"
 
@@ -29,8 +28,7 @@ echo "  4. Store secrets in the macOS Keychain"
 echo "  5. Install CLI debugging tools (may require admin privileges)"
 echo "  6. Build the OpenClaw Docker image"
 echo "  7. Install LaunchAgents for 24/7 operation (services, caffeinate)"
-echo "  8. Configure RustDesk for remote desktop access"
-echo "  9. (Optional) Harden this account for dedicated use"
+echo "  8. (Optional) Harden this account for dedicated use"
 echo ""
 read -r -p "Continue? (yes/no): " confirm
 
@@ -147,24 +145,7 @@ _step_launchagent="done"
 _step_caffeinate="done"
 
 echo ""
-echo "Step 8: Configuring RustDesk for remote desktop..."
-if [ -d "/Applications/RustDesk.app" ]; then
-    if ~/minibot/bin/minibot-secrets.sh get RUSTDESK_PASSWORD &>/dev/null; then
-        ~/minibot/scripts/setup-rustdesk.sh
-        ~/minibot/scripts/install-launchagent-rustdesk.sh
-        _step_rustdesk="done"
-    else
-        echo "⚠ RUSTDESK_PASSWORD not set — skipping RustDesk setup."
-        echo "  Run later: mb-secrets set RUSTDESK_PASSWORD && mb-rustdesk-setup"
-        _step_rustdesk="skipped (no password)"
-    fi
-else
-    echo "  RustDesk not installed — skipping. Install with: brew install --cask rustdesk"
-    _step_rustdesk="skipped (not installed)"
-fi
-
-echo ""
-echo "Step 9: Account hardening (optional)..."
+echo "Step 8: Account hardening (optional)..."
 echo ""
 echo "This disables App Store auto-updates to minimize background noise"
 echo "on this dedicated account."
@@ -201,7 +182,6 @@ _recap "CLI tools" "$_step_cli"
 _recap "OpenClaw image" "$_step_openclaw"
 _recap "LaunchAgents" "$_step_launchagent"
 _recap "Caffeinate" "$_step_caffeinate"
-_recap "RustDesk" "$_step_rustdesk"
 _recap "Account hardening" "$_step_hardening"
 echo ""
 echo "Next steps:"

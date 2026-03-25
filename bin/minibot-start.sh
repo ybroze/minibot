@@ -51,7 +51,7 @@ while IFS= read -r key; do
         echo "Error: $key not found in keychain." >&2
         missing=1
     fi
-done < <("$SCRIPT_DIR/minibot-secrets.sh" docker-keys)
+done < <("$SCRIPT_DIR/minibot-secrets.sh" keys)
 if [ "$missing" -eq 1 ]; then
     echo "Run:  mb-secrets init" >&2
     exit 1

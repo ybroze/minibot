@@ -438,7 +438,6 @@ and Docker overhead (`docker system df`). Clean up with
 | `mb-secrets list` | Show stored secrets |
 | `mb-secrets get KEY` | Print a secret value |
 | `mb-build` | Rebuild OpenClaw from source |
-| `mb-rustdesk-setup` | Configure RustDesk for remote access |
 | `docker exec -it CONTAINER sh` | Open a shell inside a container |
 | `docker logs CONTAINER` | View a container's logs |
 
@@ -457,6 +456,5 @@ All `bin/` scripts accept `--help`.
 | Filesystem security | `docs/filesystem.md` |
 | Maintenance schedule | `docs/maintenance.md` |
 | Emergency procedures | `docs/emergency.md` |
-| Remote desktop access | `docs/remote-access.md` |
 
 See `docs/README.md` for a recommended reading order.
