@@ -60,11 +60,16 @@ After installing, complete the GUI-only steps:
   `minibot` in step 4).
 - Open Tailscale, log in, approve the system extension and VPN prompts.
 
-### 3. Set Up Tailscale
+### 3. Set Up Remote Access
 
-Install Tailscale on any device you want remote access from and log in with
-the same account. Verify with `tailscale status` — all devices should appear
-with `100.x.x.x` addresses.
+**Tailscale** provides the network layer. Install it on any device you want
+remote access from and log in with the same account. Verify with
+`tailscale status` — all devices should appear with `100.x.x.x` addresses.
+
+**Screen Sharing** provides graphical remote desktop over Tailscale. Enable it
+on the minibot machine: System Settings > General > Sharing > Screen Sharing >
+On. From another Mac on your tailnet, connect via Finder > Go > Connect to
+Server > `vnc://<tailscale-ip>`, or open Screen Sharing.app directly.
 
 ### 4. Create and Configure the `minibot` User
 
