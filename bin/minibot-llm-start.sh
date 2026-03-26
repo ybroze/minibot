@@ -16,7 +16,7 @@ umask 077
 MINIBOT_DIR="$HOME/minibot"
 LLAMA_SERVER="/opt/homebrew/bin/llama-server"
 MODEL_DIR="$MINIBOT_DIR/data/models"
-MODEL_FILE="$MODEL_DIR/mistral-7b-instruct-v0.3.Q4_K_M.gguf"
+MODEL_FILE="$MODEL_DIR/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
 SANDBOX_PROFILE="$MINIBOT_DIR/etc/llama-sandbox.sb"
 PID_FILE="$MINIBOT_DIR/data/llm/llama.pid"
 LOG_DIR="$MINIBOT_DIR/data/logs/system"

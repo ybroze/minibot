@@ -8,8 +8,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MINIBOT_DIR="$HOME/minibot"
 MODEL_DIR="$MINIBOT_DIR/data/models"
-MODEL_FILE="$MODEL_DIR/mistral-7b-instruct-v0.3.Q4_K_M.gguf"
-MODEL_URL="https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.3-GGUF/resolve/main/mistral-7b-instruct-v0.3.Q4_K_M.gguf"
+MODEL_FILE="$MODEL_DIR/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
+MODEL_URL="https://huggingface.co/bartowski/Mistral-7B-Instruct-v0.3-GGUF/resolve/main/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
 # Expected size: ~4.4 GB (approximate — used for sanity check, not exact match)
 MODEL_MIN_SIZE_MB=4000
 
