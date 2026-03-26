@@ -1,6 +1,6 @@
 #!/bin/bash
 # install-llama-cpp.sh
-# Install llama.cpp via Homebrew and download the Mistral 7B Q4_K_M model.
+# Install llama.cpp via Homebrew and download the Llama 3.1 8B Q4_K_M model.
 # Idempotent — skips steps that are already complete.
 
 set -euo pipefail
@@ -8,10 +8,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MINIBOT_DIR="$HOME/minibot"
 MODEL_DIR="$MINIBOT_DIR/data/models"
-MODEL_FILE="$MODEL_DIR/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
-MODEL_URL="https://huggingface.co/bartowski/Mistral-7B-Instruct-v0.3-GGUF/resolve/main/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
-# Expected size: ~4.4 GB (approximate — used for sanity check, not exact match)
-MODEL_MIN_SIZE_MB=4000
+MODEL_FILE="$MODEL_DIR/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+MODEL_URL="https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+# Expected size: ~4.6 GB (approximate — used for sanity check, not exact match)
+MODEL_MIN_SIZE_MB=4400
 
 # ── Step 1: Install llama.cpp via Homebrew ───────────────────────────────────
 
@@ -73,10 +73,10 @@ if [ -f "$MODEL_FILE" ]; then
     fi
 else
     echo ""
-    echo "Downloading Mistral 7B Instruct v0.3 (Q4_K_M quantization)..."
+    echo "Downloading Llama 3.1 8B Instruct (Q4_K_M quantization)..."
     echo "  URL: $MODEL_URL"
     echo "  Destination: $MODEL_FILE"
-    echo "  Size: ~4.4 GB — this will take a while."
+    echo "  Size: ~4.6 GB — this will take a while."
     echo ""
 
     # Resumable download (-C -) in case of interruption

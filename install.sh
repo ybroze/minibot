@@ -29,7 +29,7 @@ echo "  3. Set up your shell environment"
 echo "  4. Store secrets in the macOS Keychain"
 echo "  5. Install CLI debugging tools (may require admin privileges)"
 echo "  6. Build the OpenClaw Docker image"
-echo "  7. Install llama.cpp and download the Mistral 7B model"
+echo "  7. Install llama.cpp and download the Llama 3.1 8B model"
 echo "  8. Install LaunchAgents for 24/7 operation (services, caffeinate, llama)"
 echo "  9. (Optional) Harden this account for dedicated use"
 echo ""
@@ -146,7 +146,7 @@ else
 fi
 
 echo ""
-echo "Step 7: Installing llama.cpp and Mistral 7B model..."
+echo "Step 7: Installing llama.cpp and Llama 3.1 8B model..."
 echo "(This downloads ~4.4 GB — may take a while on slow connections.)"
 ~/minibot/scripts/install-llama-cpp.sh
 _step_llm="done"

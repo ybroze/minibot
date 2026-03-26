@@ -97,8 +97,8 @@ source ~/.zshrc
 
 The installer creates directories, copies scripts, configures the shell,
 prompts for secrets (stored in the macOS Keychain), builds the `openclaw:local`
-Docker image from source, installs llama.cpp with the Mistral 7B model
-(~4.4 GB download), and installs LaunchAgents.
+Docker image from source, installs llama.cpp with the Llama 3.1 8B model
+(~4.6 GB download), and installs LaunchAgents.
 
 All secrets (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`,
 `OPENCLAW_GATEWAY_PASSWORD`) live in the macOS Keychain and are managed through
@@ -128,11 +128,11 @@ mb-logs         # Follow live logs
 | Redis      | minibot-redis      | 256 MB | 0.5  | Cache/message broker |
 | MongoDB    | minibot-mongo      | 1 GB   | 1.0  | WiredTiger cache |
 | OpenClaw   | minibot-openclaw   | 4 GB   | 2.0  | Node.js heap 3.5 GB |
-| llama.cpp  | native (sandboxed) | ~4.5 GB | all | Mistral 7B Q4, Metal GPU |
-| **Total**  |                    | **~11 GB** | | |
+| llama.cpp  | native (sandboxed) | ~4.9 GB | all | Llama 3.1 8B Q4, Metal GPU |
+| **Total**  |                    | **~11.5 GB** | | |
 
 macOS + Remote Desktop use ~3-4 GB on a headless machine (no GUI session),
-leaving ~2-3 GB headroom. The LLM process uses Metal GPU acceleration and
+leaving ~1.5-2.5 GB headroom. The LLM process uses Metal GPU acceleration and
 runs inside a macOS `sandbox-exec` profile with no filesystem access.
 
 ### 8. Enable 24/7 Operation

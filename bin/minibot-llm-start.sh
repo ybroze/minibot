@@ -7,7 +7,7 @@ set -euo pipefail
 
 if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
     echo "Usage: $(basename "$0")"
-    echo "  Start the sandboxed llama.cpp server (Mistral 7B, localhost:8012)."
+    echo "  Start the sandboxed llama.cpp server (Llama 3.1 8B, localhost:8012)."
     exit 0
 fi
 
@@ -16,7 +16,7 @@ umask 077
 MINIBOT_DIR="$HOME/minibot"
 LLAMA_SERVER="/opt/homebrew/bin/llama-server"
 MODEL_DIR="$MINIBOT_DIR/data/models"
-MODEL_FILE="$MODEL_DIR/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
+MODEL_FILE="$MODEL_DIR/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
 SANDBOX_PROFILE="$MINIBOT_DIR/etc/llama-sandbox.sb"
 PID_FILE="$MINIBOT_DIR/data/llm/llama.pid"
 LOG_DIR="$MINIBOT_DIR/data/logs/system"
@@ -62,7 +62,7 @@ fi
 
 mkdir -p "$(dirname "$PID_FILE")" "$LOG_DIR"
 
-echo "Starting llama.cpp server (Mistral 7B Q4_K_M)..."
+echo "Starting llama.cpp server (Llama 3.1 8B Q4_K_M)..."
 echo "  Host: $HOST:$PORT"
 echo "  Context: $CTX_SIZE tokens"
 echo "  Sandbox: $SANDBOX_PROFILE"

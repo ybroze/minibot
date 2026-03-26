@@ -173,7 +173,7 @@ kernel level:
   filesystem or network access limits what an attacker can do through this
   channel.
 
-- **Model file read-only:** The model is a ~4.4 GB binary blob (GGUF format).
+- **Model file read-only:** The model is a ~4.6 GB binary blob (GGUF format).
   The sandbox allows reading only the `data/models/` directory. The model file
   is also set to `chmod 444` (read-only at the Unix level) as a secondary
   control.

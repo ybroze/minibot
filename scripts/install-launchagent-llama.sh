@@ -9,7 +9,7 @@ PLIST_NAME="com.minibot.llama"
 PLIST_PATH="$HOME/Library/LaunchAgents/${PLIST_NAME}.plist"
 LOG_DIR="$HOME/minibot/data/logs/system"
 MODEL_DIR="$HOME/minibot/data/models"
-MODEL_FILE="$MODEL_DIR/Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"
+MODEL_FILE="$MODEL_DIR/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
 SANDBOX_PROFILE="$HOME/minibot/etc/llama-sandbox.sb"
 
 if [ ! -f "$MODEL_FILE" ]; then

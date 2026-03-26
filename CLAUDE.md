@@ -12,7 +12,7 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 **Secrets flow:** `macOS Keychain → zshrc-additions.sh (exports env vars on login) → shell environment → docker compose → containers`
 
-**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only. A native llama.cpp server (`127.0.0.1:8012`) runs Mistral 7B with Metal GPU acceleration inside a macOS `sandbox-exec` profile (no filesystem access).
+**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only. A native llama.cpp server (`127.0.0.1:8012`) runs Llama 3.1 8B with Metal GPU acceleration inside a macOS `sandbox-exec` profile (no filesystem access).
 
 **Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, `sandbox-exec` for the LLM process, and a deny-by-default agent tool policy.
 

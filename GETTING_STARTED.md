@@ -53,7 +53,7 @@ Your Mac (macOS)
 │   ├── minibot-mongo      MongoDB 7 document database
 │   └── minibot-openclaw   OpenClaw agent gateway
 │
-├── llama.cpp server       Mistral 7B local LLM (native, sandboxed)
+├── llama.cpp server       Llama 3.1 8B local LLM (native, sandboxed)
 │
 ├── ~/minibot/data/        Persistent data (mounted into containers)
 │   ├── postgres/
