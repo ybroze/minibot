@@ -22,7 +22,7 @@ preemptively. The cost of a false alarm is minutes; the cost of leaving
 compromised credentials active can be severe.
 
 > **Important:** PostgreSQL and MongoDB store passwords internally — updating
-> the Keychain alone won't change them. See `docs/maintenance.md` for the
+> the Keychain alone won't change them. See `docs/MAINTENANCE.MD` for the
 > full rotation procedure. In an emergency, the simplest approach is a clean
 > wipe:
 
@@ -41,7 +41,7 @@ source ~/.zshrc
 ```
 
 If you need to preserve database data, follow the in-place rotation steps
-in `docs/maintenance.md` instead.
+in `docs/MAINTENANCE.MD` instead.
 
 Also rotate any OpenClaw-managed secrets (API keys, bot tokens) through
 OpenClaw's own configuration.

@@ -97,7 +97,8 @@ source ~/.zshrc
 
 The installer creates directories, copies scripts, configures the shell,
 prompts for secrets (stored in the macOS Keychain), builds the `openclaw:local`
-Docker image from source, and installs the LaunchAgent.
+Docker image from source, installs llama.cpp with the Mistral 7B model
+(~4.4 GB download), and installs LaunchAgents.
 
 All secrets (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`,
 `OPENCLAW_GATEWAY_PASSWORD`) live in the macOS Keychain and are managed through
@@ -119,24 +120,28 @@ mb-status       # Check container status
 mb-logs         # Follow live logs
 ```
 
-#### Container Resource Limits (16 GB Mac Mini)
+#### Resource Limits (16 GB Mac Mini)
 
-| Service    | Container          | Memory | CPUs | Notes |
+| Service    | Container/Process  | Memory | CPUs | Notes |
 |------------|--------------------|--------|------|-------|
 | PostgreSQL | minibot-postgres   | 1 GB   | 1.0  | Query caching, shared buffers |
 | Redis      | minibot-redis      | 256 MB | 0.5  | Cache/message broker |
 | MongoDB    | minibot-mongo      | 1 GB   | 1.0  | WiredTiger cache |
 | OpenClaw   | minibot-openclaw   | 4 GB   | 2.0  | Node.js heap 3.5 GB |
-| **Total**  |                    | **6.25 GB** | **3.5** | |
+| llama.cpp  | native (sandboxed) | ~4.5 GB | all | Mistral 7B Q4, Metal GPU |
+| **Total**  |                    | **~11 GB** | | |
 
-macOS + Docker Desktop use ~4-5 GB, leaving 5-6 GB headroom.
+macOS + Remote Desktop use ~3-4 GB on a headless machine (no GUI session),
+leaving ~2-3 GB headroom. The LLM process uses Metal GPU acceleration and
+runs inside a macOS `sandbox-exec` profile with no filesystem access.
 
 ### 8. Enable 24/7 Operation
 
-The installer automatically sets up two LaunchAgents:
+The installer automatically sets up three LaunchAgents:
 
 - **com.minibot.gateway** — starts Docker services on login
 - **com.minibot.caffeinate** — prevents system sleep
+- **com.minibot.llama** — runs the sandboxed llama.cpp server (auto-restarts on crash)
 
 Verify both are loaded:
 
@@ -174,15 +179,21 @@ Available after `source ~/.zshrc`:
 | `mb-secrets <cmd>` | Manage Keychain secrets (`init`, `list`, `set`, `get`) |
 | `mb-health` | Run health check |
 | `mb-audit` | Run security audit |
+| `mb-llm-start` | Start the sandboxed llama.cpp server |
+| `mb-llm-stop` | Stop the llama.cpp server |
+| `mb-llm-status` | Check llama.cpp health (port 8012) |
 ## Directory Structure
 
 ```
 ~/minibot/
-├── bin/                    # Operational scripts (start, stop, logs, secrets)
+├── bin/                    # Operational scripts (start, stop, logs, secrets, llm)
 ├── data/                   # Persistent data (700 permissions)
 │   ├── postgres/, redis/, mongo/, openclaw/
+│   ├── models/             # GGUF model files (~4.4 GB each)
+│   ├── llm/                # PID file for llama.cpp
 │   └── logs/system/        # LaunchAgent logs
 ├── docker/                 # docker-compose.yml
+├── etc/                    # Config files (sandbox profiles)
 ├── scripts/                # Maintenance (backup, restore, health-check,
 │                           #   security-audit, reset, LaunchAgents, etc.)
 ├── vendor/openclaw/        # OpenClaw source (created by mb-build)
@@ -195,13 +206,13 @@ Available after `source ~/.zshrc`:
 | Topic | File |
 |-------|------|
 | Getting started | `GETTING_STARTED.md` |
-| Threat model | `docs/threat-model.md` |
-| Secrets management | `docs/secrets.md` |
-| Networking & ports | `docs/networking.md` |
-| Maintenance & rotation | `docs/maintenance.md` |
-| Emergency procedures | `docs/emergency.md` |
-| Containerization security | `docs/security.md` |
-| Filesystem security | `docs/filesystem.md` |
+| Threat model | `docs/THREAT-MODEL.MD` |
+| Secrets management | `docs/SECRETS.MD` |
+| Networking & ports | `docs/NETWORKING.MD` |
+| Maintenance & rotation | `docs/MAINTENANCE.MD` |
+| Emergency procedures | `docs/EMERGENCY.MD` |
+| Containerization security | `docs/SECURITY.MD` |
+| Filesystem security | `docs/FILESYSTEM.MD` |
 
 ## Troubleshooting
 

@@ -14,8 +14,10 @@ _step_shell="pending"
 _step_secrets="pending"
 _step_cli="pending"
 _step_openclaw="pending"
+_step_llm="pending"
 _step_launchagent="pending"
 _step_caffeinate="pending"
+_step_llama_agent="pending"
 _step_hardening="pending"
 
 echo "=== Minibot Environment Installer ==="
@@ -27,8 +29,9 @@ echo "  3. Set up your shell environment"
 echo "  4. Store secrets in the macOS Keychain"
 echo "  5. Install CLI debugging tools (may require admin privileges)"
 echo "  6. Build the OpenClaw Docker image"
-echo "  7. Install LaunchAgents for 24/7 operation (services, caffeinate)"
-echo "  8. (Optional) Harden this account for dedicated use"
+echo "  7. Install llama.cpp and download the Mistral 7B model"
+echo "  8. Install LaunchAgents for 24/7 operation (services, caffeinate, llama)"
+echo "  9. (Optional) Harden this account for dedicated use"
 echo ""
 read -r -p "Continue? (yes/no): " confirm
 
@@ -138,14 +141,22 @@ else
 fi
 
 echo ""
-echo "Step 7: Installing LaunchAgents for 24/7 operation..."
-~/minibot/scripts/install-launchagent.sh
-~/minibot/scripts/install-launchagent-caffeinate.sh
-_step_launchagent="done"
-_step_caffeinate="done"
+echo "Step 7: Installing llama.cpp and Mistral 7B model..."
+echo "(This downloads ~4.4 GB — may take a while on slow connections.)"
+~/minibot/scripts/install-llama-cpp.sh
+_step_llm="done"
 
 echo ""
-echo "Step 8: Account hardening (optional)..."
+echo "Step 8: Installing LaunchAgents for 24/7 operation..."
+~/minibot/scripts/install-launchagent.sh
+~/minibot/scripts/install-launchagent-caffeinate.sh
+~/minibot/scripts/install-launchagent-llama.sh
+_step_launchagent="done"
+_step_caffeinate="done"
+_step_llama_agent="done"
+
+echo ""
+echo "Step 9: Account hardening (optional)..."
 echo ""
 echo "This disables App Store auto-updates to minimize background noise"
 echo "on this dedicated account."
@@ -180,8 +191,10 @@ _recap "Shell environment" "$_step_shell"
 _recap "Keychain secrets" "$_step_secrets"
 _recap "CLI tools" "$_step_cli"
 _recap "OpenClaw image" "$_step_openclaw"
+_recap "llama.cpp + model" "$_step_llm"
 _recap "LaunchAgents" "$_step_launchagent"
 _recap "Caffeinate" "$_step_caffeinate"
+_recap "llama.cpp LaunchAgent" "$_step_llama_agent"
 _recap "Account hardening" "$_step_hardening"
 echo ""
 echo "Next steps:"

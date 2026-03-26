@@ -1,0 +1,44 @@
+; llama-sandbox.sb
+; macOS sandbox profile for llama.cpp server.
+; Deny-by-default: only the model file, binary, system libraries, Metal GPU,
+; and localhost:8012 networking are permitted. No filesystem writes, no home
+; directory browsing, no subprocess spawning.
+;
+; Usage: sandbox-exec -f /path/to/llama-sandbox.sb llama-server [flags]
+
+(version 1)
+(deny default)
+
+;; ── Binary execution ────────────────────────────────────────────────────────
+(allow process-exec (literal "/opt/homebrew/bin/llama-server"))
+
+;; ── Read-only: model file ───────────────────────────────────────────────────
+;; The model directory is read-only; only GGUF files live here.
+(allow file-read* (subpath (param "MODEL_DIR")))
+
+;; ── Read-only: Homebrew libraries and system frameworks ─────────────────────
+(allow file-read* (subpath "/opt/homebrew"))
+(allow file-read* (subpath "/usr/lib"))
+(allow file-read* (subpath "/System/Library"))
+(allow file-read* (subpath "/Library/Apple"))
+(allow file-read* (literal "/dev/null"))
+(allow file-read* (literal "/dev/urandom"))
+(allow file-read* (literal "/private/var/db/timezone/tz/2024b.1.0/icutz/icutz44l.dat"))
+
+;; ── Metal GPU access ────────────────────────────────────────────────────────
+;; Metal requires IOKit for GPU device access, sysctl for hardware queries,
+;; and mach IPC for the GPU driver and shader compilation services.
+(allow iokit-open)
+(allow sysctl-read)
+(allow mach-lookup)
+
+;; ── Networking: localhost only ───────────────────────────────────────────────
+;; Bind the HTTP server on 127.0.0.1:8012 and accept incoming connections.
+(allow network-bind    (local ip "localhost:8012"))
+(allow network-inbound (local ip "localhost:8012"))
+(allow network*        (local ip "localhost:8012"))
+
+;; ── Minimal process housekeeping ────────────────────────────────────────────
+(allow signal (target self))
+(allow process-info-pidinfo (target self))
+(allow process-info-codesignature (target self))

@@ -64,5 +64,5 @@ authentication to unlock.
   On a single-user dedicated machine this is low risk.
 
 - **Rotation:** Rotate secrets quarterly or immediately if you suspect
-  compromise. See `docs/maintenance.md` for the rotation procedure and
-  `docs/emergency.md` for the emergency response process.
+  compromise. See `docs/MAINTENANCE.MD` for the rotation procedure and
+  `docs/EMERGENCY.MD` for the emergency response process.
