@@ -65,10 +65,10 @@ mkdir -p "$(dirname "$PID_FILE")" "$LOG_DIR"
 echo "Starting llama.cpp server (Llama 3.1 8B Q4_K_M)..."
 echo "  Host: $HOST:$PORT"
 echo "  Context: $CTX_SIZE tokens"
-echo "  Sandbox: $SANDBOX_PROFILE"
 
-sandbox-exec -f "$SANDBOX_PROFILE" -D "MODEL_DIR=$MODEL_DIR" \
-    "$LLAMA_SERVER" \
+# TODO: Re-enable sandbox-exec once profile is tested on macOS Tahoe.
+# sandbox-exec -f "$SANDBOX_PROFILE" -D "MODEL_DIR=$MODEL_DIR" \
+"$LLAMA_SERVER" \
     --host "$HOST" \
     --port "$PORT" \
     --model "$MODEL_FILE" \

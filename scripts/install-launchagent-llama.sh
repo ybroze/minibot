@@ -41,13 +41,9 @@ cat > "$PLIST_PATH" << EOF
     <key>Label</key>
     <string>${PLIST_NAME}</string>
 
+    <!-- TODO: Re-enable sandbox-exec once profile is tested on macOS Tahoe -->
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/sandbox-exec</string>
-        <string>-f</string>
-        <string>${SANDBOX_PROFILE}</string>
-        <string>-D</string>
-        <string>MODEL_DIR=${MODEL_DIR}</string>
         <string>/opt/homebrew/bin/llama-server</string>
         <string>--host</string>
         <string>127.0.0.1</string>
