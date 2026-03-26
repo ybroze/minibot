@@ -10,7 +10,9 @@
 (deny default)
 
 ;; ── Binary execution ────────────────────────────────────────────────────────
-(allow process-exec (literal "/opt/homebrew/bin/llama-server"))
+;; Use subpath because Homebrew symlinks bin/llama-server into Cellar/.
+;; process-exec* (with wildcard) is needed for sandbox-exec's initial execvp.
+(allow process-exec* (subpath "/opt/homebrew"))
 
 ;; ── Read-only: model file ───────────────────────────────────────────────────
 ;; The model directory is read-only; only GGUF files live here.
