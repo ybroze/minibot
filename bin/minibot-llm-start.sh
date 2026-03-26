@@ -1,6 +1,6 @@
 #!/bin/bash
 # minibot-llm-start.sh
-# Start Ollama via brew services and ensure the model is pulled.
+# Start Ollama and ensure the model is pulled.
 # The server binds to 127.0.0.1:11434 and exposes an OpenAI-compatible API.
 
 set -euo pipefail
@@ -11,23 +11,28 @@ if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
     exit 0
 fi
 
+umask 077
+
 MODEL="llama3.1:8b"
+LOG_DIR="$HOME/minibot/data/logs/system"
 
 # ── Preflight ─────────────────────────────────────────────────────────────────
 
 if ! command -v ollama &>/dev/null; then
     echo "Error: ollama not found." >&2
-    echo "Install with: brew install ollama" >&2
+    echo "Install with: brew install ollama (as admin)" >&2
     exit 1
 fi
 
-# ── Start the service ─────────────────────────────────────────────────────────
+mkdir -p "$LOG_DIR"
+
+# ── Start the server ─────────────────────────────────────────────────────────
 
 if curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
     echo "Ollama is already running."
 else
     echo "Starting Ollama..."
-    brew services start ollama
+    ollama serve >> "$LOG_DIR/ollama-stdout.log" 2>> "$LOG_DIR/ollama-stderr.log" &
 
     echo -n "  Waiting for server"
     for i in $(seq 1 30); do
@@ -42,7 +47,7 @@ else
     if ! curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
         echo ""
         echo "Error: Ollama did not start within 30s." >&2
-        echo "Check: brew services info ollama" >&2
+        echo "Check logs: tail $LOG_DIR/ollama-stderr.log" >&2
         exit 1
     fi
 fi
