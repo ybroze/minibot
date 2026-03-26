@@ -50,15 +50,14 @@ mkdir -p "$MINIBOT_DIR/etc"
 
 # ── Step 3: Copy sandbox profile ─────────────────────────────────────────────
 
-SANDBOX_SRC="$SCRIPT_DIR/../etc/llama-sandbox.sb"
 SANDBOX_DST="$MINIBOT_DIR/etc/llama-sandbox.sb"
 
-if [ -f "$SANDBOX_SRC" ]; then
-    cp "$SANDBOX_SRC" "$SANDBOX_DST"
-    echo "✓ Sandbox profile installed: $SANDBOX_DST"
+if [ -f "$SANDBOX_DST" ]; then
+    echo "✓ Sandbox profile already installed: $SANDBOX_DST"
 else
-    echo "Warning: Sandbox profile not found at $SANDBOX_SRC" >&2
-    echo "  The llama.cpp server will not be sandboxed until this is resolved." >&2
+    echo "Error: Sandbox profile not found at $SANDBOX_DST" >&2
+    echo "  install.sh should have copied etc/llama-sandbox.sb in step 2." >&2
+    exit 1
 fi
 
 # ── Step 4: Download model ───────────────────────────────────────────────────

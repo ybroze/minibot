@@ -147,7 +147,7 @@ fi
 
 echo ""
 echo "Step 7: Installing llama.cpp and Llama 3.1 8B model..."
-echo "(This downloads ~4.4 GB — may take a while on slow connections.)"
+echo "(This downloads ~4.6 GB — may take a while on slow connections.)"
 ~/minibot/scripts/install-llama-cpp.sh
 _step_llm="done"
 
