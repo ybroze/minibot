@@ -47,7 +47,7 @@ mb-health         # Run health check
 mb-audit          # Run security audit
 mb-llm-start      # Start Ollama and load model
 mb-llm-stop       # Stop Ollama
-mb-llm-status     # Check Ollama health (port 11434)
+mb-llm-status     # Check Ollama service status
 
 # Direct script invocation
 ~/minibot/bin/minibot-start.sh

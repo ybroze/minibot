@@ -137,13 +137,14 @@ binding to localhost only.
 
 ### 8. Enable 24/7 Operation
 
-The installer automatically sets up three LaunchAgents:
+The installer automatically sets up two LaunchAgents:
 
 - **com.minibot.gateway** — starts Docker services on login
 - **com.minibot.caffeinate** — prevents system sleep
-- **com.minibot.ollama** — runs the Ollama server (auto-restarts on crash)
 
-Verify both are loaded:
+Ollama is managed separately via `brew services` (see `mb-llm-start`).
+
+Verify LaunchAgents are loaded:
 
 ```bash
 launchctl list | grep minibot
@@ -181,7 +182,7 @@ Available after `source ~/.zshrc`:
 | `mb-audit` | Run security audit |
 | `mb-llm-start` | Start Ollama and load the model |
 | `mb-llm-stop` | Stop Ollama |
-| `mb-llm-status` | Check Ollama health (port 11434) |
+| `mb-llm-status` | Check Ollama service status |
 ## Directory Structure
 
 ```

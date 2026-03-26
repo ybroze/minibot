@@ -444,7 +444,7 @@ and Docker overhead (`docker system df`). Clean up with
 | `mb-build` | Rebuild OpenClaw from source |
 | `mb-llm-start` | Start Ollama and load the model |
 | `mb-llm-stop` | Stop Ollama |
-| `mb-llm-status` | Check Ollama health (port 11434) |
+| `mb-llm-status` | Check Ollama service status |
 | `docker exec -it CONTAINER sh` | Open a shell inside a container |
 | `docker logs CONTAINER` | View a container's logs |
 

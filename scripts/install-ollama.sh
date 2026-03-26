@@ -36,20 +36,14 @@ else
     fi
 fi
 
-# ── Step 2: Start Ollama temporarily to pull the model ───────────────────────
+# ── Step 2: Start Ollama via brew services ───────────────────────────────────
 
-OLLAMA_RUNNING=false
 if curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
-    OLLAMA_RUNNING=true
-    echo "✓ Ollama server is already running."
+    echo "✓ Ollama is already running."
 else
-    echo "Starting Ollama server temporarily for model download..."
-    mkdir -p "$HOME/minibot/data/logs/system"
-    ollama serve >> "$HOME/minibot/data/logs/system/ollama-stdout.log" \
-                 2>> "$HOME/minibot/data/logs/system/ollama-stderr.log" &
-    OLLAMA_PID=$!
+    echo "Starting Ollama via brew services..."
+    brew services start ollama
 
-    # Wait for server to be ready
     for i in $(seq 1 30); do
         if curl -s --max-time 1 http://127.0.0.1:11434/ &>/dev/null; then
             break
@@ -58,11 +52,11 @@ else
     done
 
     if ! curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
-        echo "Error: Ollama server did not start." >&2
-        echo "Check logs: tail ~/minibot/data/logs/system/ollama-stderr.log" >&2
-        kill "$OLLAMA_PID" 2>/dev/null || true
+        echo "Error: Ollama did not start." >&2
+        echo "Check: brew services info ollama" >&2
         exit 1
     fi
+    echo "✓ Ollama started."
 fi
 
 # ── Step 3: Pull the model ───────────────────────────────────────────────────
@@ -78,12 +72,6 @@ else
     echo "✓ Model $MODEL pulled."
 fi
 
-# Stop the temporary server if we started it
-if ! $OLLAMA_RUNNING && [ -n "${OLLAMA_PID:-}" ]; then
-    kill "$OLLAMA_PID" 2>/dev/null || true
-    echo "  (temporary Ollama server stopped)"
-fi
-
 echo ""
 echo "✓ Ollama setup complete."
-echo "  Start the server with: mb-llm-start"
+echo "  Service managed by: brew services start/stop ollama"

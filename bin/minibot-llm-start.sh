@@ -1,6 +1,6 @@
 #!/bin/bash
 # minibot-llm-start.sh
-# Start Ollama and ensure the model is loaded.
+# Start Ollama via brew services and ensure the model is pulled.
 # The server binds to 127.0.0.1:11434 and exposes an OpenAI-compatible API.
 
 set -euo pipefail
@@ -11,11 +11,9 @@ if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
     exit 0
 fi
 
-umask 077
-
 MODEL="llama3.1:8b"
 
-# ── Preflight checks ─────────────────────────────────────────────────────────
+# ── Preflight ─────────────────────────────────────────────────────────────────
 
 if ! command -v ollama &>/dev/null; then
     echo "Error: ollama not found." >&2
@@ -23,16 +21,14 @@ if ! command -v ollama &>/dev/null; then
     exit 1
 fi
 
-# ── Check if already running ─────────────────────────────────────────────────
+# ── Start the service ─────────────────────────────────────────────────────────
 
 if curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
     echo "Ollama is already running."
 else
-    echo "Starting Ollama server..."
-    ollama serve >> "$HOME/minibot/data/logs/system/ollama-stdout.log" \
-                 2>> "$HOME/minibot/data/logs/system/ollama-stderr.log" &
+    echo "Starting Ollama..."
+    brew services start ollama
 
-    # Wait for the server to become ready
     echo -n "  Waiting for server"
     for i in $(seq 1 30); do
         if curl -s --max-time 1 http://127.0.0.1:11434/ &>/dev/null; then
@@ -45,8 +41,8 @@ else
 
     if ! curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
         echo ""
-        echo "Error: Ollama server did not start within 30s." >&2
-        echo "Check logs: tail ~/minibot/data/logs/system/ollama-stderr.log" >&2
+        echo "Error: Ollama did not start within 30s." >&2
+        echo "Check: brew services info ollama" >&2
         exit 1
     fi
 fi
@@ -65,6 +61,6 @@ echo ""
 echo "✓ Ollama is running with $MODEL."
 echo ""
 echo "API endpoint:  http://127.0.0.1:11434/v1/chat/completions"
-echo "Health check:  curl http://127.0.0.1:11434/"
+echo "Health check:  mb-llm-status"
 echo "Chat:          ollama run $MODEL"
 echo "Stop:          mb-llm-stop"
