@@ -62,15 +62,19 @@ fi
 
 # ── Step 4: Download model ───────────────────────────────────────────────────
 
+# Check for existing file — validate size, delete if corrupt/incomplete
 if [ -f "$MODEL_FILE" ]; then
-    echo "✓ Model already exists: $MODEL_FILE"
     file_size_mb=$(( $(stat -f%z "$MODEL_FILE") / 1048576 ))
-    echo "  Size: ${file_size_mb} MB"
-    if [ "$file_size_mb" -lt "$MODEL_MIN_SIZE_MB" ]; then
-        echo "Warning: Model file is smaller than expected (${MODEL_MIN_SIZE_MB} MB)." >&2
-        echo "  It may be incomplete. Delete it and re-run to re-download." >&2
+    if [ "$file_size_mb" -ge "$MODEL_MIN_SIZE_MB" ]; then
+        echo "✓ Model already exists: $MODEL_FILE (${file_size_mb} MB)"
+    else
+        echo "Existing model file is too small (${file_size_mb} MB, expected ≥${MODEL_MIN_SIZE_MB} MB)."
+        echo "  Deleting and re-downloading."
+        rm -f "$MODEL_FILE"
     fi
-else
+fi
+
+if [ ! -f "$MODEL_FILE" ]; then
     echo ""
     echo "Downloading Llama 3.1 8B Instruct (Q4_K_M quantization)..."
     echo "  URL: $MODEL_URL"
@@ -78,18 +82,20 @@ else
     echo "  Size: ~4.6 GB — this will take a while."
     echo ""
 
-    # Resumable download (-C -) in case of interruption
-    if curl -L -C - --progress-bar -o "$MODEL_FILE" "$MODEL_URL"; then
+    # --fail: return non-zero on HTTP errors (e.g., 404)
+    # -L: follow redirects (HuggingFace uses 302)
+    # -C -: resume interrupted downloads
+    if curl --fail -L -C - -o "$MODEL_FILE" "$MODEL_URL"; then
         file_size_mb=$(( $(stat -f%z "$MODEL_FILE") / 1048576 ))
-        echo "✓ Model downloaded: ${file_size_mb} MB"
         if [ "$file_size_mb" -lt "$MODEL_MIN_SIZE_MB" ]; then
-            echo "Warning: Download may be incomplete (expected ≥${MODEL_MIN_SIZE_MB} MB)." >&2
-            echo "  Delete the file and re-run to retry." >&2
+            echo "Error: Download appears incomplete (${file_size_mb} MB, expected ≥${MODEL_MIN_SIZE_MB} MB)." >&2
+            rm -f "$MODEL_FILE"
+            exit 1
         fi
+        echo "✓ Model downloaded: ${file_size_mb} MB"
     else
-        echo "Error: Model download failed." >&2
-        echo "  Partial file may exist at: $MODEL_FILE" >&2
-        echo "  Re-run this script to resume the download." >&2
+        echo "Error: Model download failed (curl exit code $?)." >&2
+        rm -f "$MODEL_FILE"
         exit 1
     fi
 fi
