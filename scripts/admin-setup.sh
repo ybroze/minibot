@@ -74,7 +74,7 @@ echo ""
 echo "Step 4: Installing Docker Desktop, Tailscale, and CLI tools..."
 brew install --cask docker
 brew install --cask tailscale
-brew install libpq redis mongosh llama.cpp
+brew install libpq redis mongosh ollama
 echo "✓ Docker Desktop, Tailscale, and CLI tools installed"
 
 # ── Step 5: Create the minibot user ─────────────────────────────────────────

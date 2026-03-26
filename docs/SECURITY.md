@@ -33,11 +33,9 @@ LaunchAgent) is not justified by the marginal security difference.
 - **Unsolicited inbound network attacks** — the macOS firewall blocks
   inbound connections, all ports are localhost-only, and remote access is via
   Tailscale or SSH tunnel. See [NETWORKING.md](NETWORKING.md).
-- **Local LLM exploitation** — the native llama.cpp server runs inside a
-  macOS `sandbox-exec` profile with deny-by-default filesystem and network
-  access. Even if the inference engine is compromised, the process cannot read
-  files, write to disk, spawn subprocesses, or make outbound connections. See
-  [THREAT-MODEL.md](THREAT-MODEL.md) (Threat 7) for the full analysis.
+- **Local LLM isolation** — Ollama runs natively on localhost only
+  (`127.0.0.1:11434`). It is not exposed to the network. Docker containers
+  can reach it via `host.docker.internal:11434` but external machines cannot.
 
 ## What this setup is weaker against
 
@@ -47,10 +45,9 @@ LaunchAgent) is not justified by the marginal security difference.
 - **Physical access** — mitigated by FileVault full-disk encryption but not
   perfect (recovery key compromise, firmware exploits).
 - **Malicious code running as the minibot user** — a compromised process
-  (other than the sandboxed llama.cpp server) has access to the network, disk,
-  Docker socket, and Tailscale keys. The `umask 077` and `700` permissions
-  limit exposure to other users but not to unsandboxed processes running as
-  `minibot`.
+  has access to the network, disk, Docker socket, and Tailscale keys. The
+  `umask 077` and `700` permissions limit exposure to other users but not to
+  processes running as `minibot`.
 - **Docker inspect exposure** — anyone who can run `docker inspect` on the
   host can read container environment variables, including interpolated
   secrets. This applies equally to Docker and Podman.

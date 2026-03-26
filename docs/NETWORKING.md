@@ -32,14 +32,12 @@ only from the host machine — not from the local network or the internet.
 | Redis      | minibot-redis      | `127.0.0.1:6379`      | Cache / message broker |
 | MongoDB    | minibot-mongo      | `127.0.0.1:27017`     | Document database      |
 | OpenClaw   | minibot-openclaw   | `127.0.0.1:18789`     | Gateway (WebSocket)    |
-| llama.cpp  | native (sandboxed) | `127.0.0.1:8012`      | Local LLM (OpenAI API) |
+| Ollama     | native             | `127.0.0.1:11434`     | Local LLM (OpenAI API) |
 
 Docker port bindings are enforced in `docker/docker-compose.yml`. The
 `security-audit.sh` script verifies that no port binding in the compose file
-omits the `127.0.0.1` prefix. The llama.cpp server is a native macOS process
-(not in Docker) whose network access is restricted by a `sandbox-exec` profile
-that only permits binding to `127.0.0.1:8012` — all outbound connections are
-denied at the kernel level.
+omits the `127.0.0.1` prefix. Ollama is a native macOS process (not in Docker)
+that binds to `127.0.0.1:11434` by default (localhost only).
 
 **Important:** Never change a port binding to `0.0.0.0` or remove the
 `127.0.0.1` prefix. Doing so would expose that service to your entire

@@ -14,8 +14,8 @@ If that fails or you don't trust the scripts:
 ```bash
 docker kill minibot-postgres minibot-redis minibot-mongo minibot-openclaw 2>/dev/null
 docker compose -f ~/minibot/docker/docker-compose.yml down 2>/dev/null
-# Stop the llama.cpp server (native process, not in Docker)
-kill "$(cat ~/minibot/data/llm/llama.pid 2>/dev/null)" 2>/dev/null
+# Stop Ollama (native process, not in Docker)
+pkill -f "ollama serve" 2>/dev/null
 ```
 
 ### Step 2: Rotate All Secrets

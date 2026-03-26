@@ -1,25 +1,17 @@
 #!/bin/bash
 # install-launchagent-llama.sh
-# Install a macOS LaunchAgent that runs the llama.cpp server inside a sandbox.
-# The server binds to 127.0.0.1:8012 and auto-restarts on crash (KeepAlive).
+# Install a macOS LaunchAgent that runs Ollama on login.
+# The server binds to 127.0.0.1:11434 and auto-restarts on crash (KeepAlive).
 
 set -euo pipefail
 
-PLIST_NAME="com.minibot.llama"
+PLIST_NAME="com.minibot.ollama"
 PLIST_PATH="$HOME/Library/LaunchAgents/${PLIST_NAME}.plist"
 LOG_DIR="$HOME/minibot/data/logs/system"
-MODEL_DIR="$HOME/minibot/data/models"
-MODEL_FILE="$MODEL_DIR/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
-SANDBOX_PROFILE="$HOME/minibot/etc/llama-sandbox.sb"
 
-if [ ! -f "$MODEL_FILE" ]; then
-    echo "Error: Model file not found: $MODEL_FILE" >&2
-    echo "Run install-llama-cpp.sh first." >&2
-    exit 1
-fi
-
-if [ ! -f "$SANDBOX_PROFILE" ]; then
-    echo "Error: Sandbox profile not found: $SANDBOX_PROFILE" >&2
+if ! command -v ollama &>/dev/null; then
+    echo "Error: ollama not found." >&2
+    echo "Run install-ollama.sh first." >&2
     exit 1
 fi
 
@@ -32,6 +24,16 @@ if launchctl list "$PLIST_NAME" &>/dev/null; then
     ALREADY_LOADED=true
 fi
 
+# Unload old llama.cpp LaunchAgent if present
+OLD_PLIST="com.minibot.llama"
+if launchctl list "$OLD_PLIST" &>/dev/null; then
+    echo "Removing old llama.cpp LaunchAgent..."
+    launchctl bootout "gui/$GUI_UID/$OLD_PLIST" 2>/dev/null || true
+fi
+rm -f "$HOME/Library/LaunchAgents/${OLD_PLIST}.plist"
+
+OLLAMA_PATH=$(which ollama)
+
 cat > "$PLIST_PATH" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -41,18 +43,10 @@ cat > "$PLIST_PATH" << EOF
     <key>Label</key>
     <string>${PLIST_NAME}</string>
 
-    <!-- TODO: Re-enable sandbox-exec once profile is tested on macOS Tahoe -->
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/llama-server</string>
-        <string>--host</string>
-        <string>127.0.0.1</string>
-        <string>--port</string>
-        <string>8012</string>
-        <string>--model</string>
-        <string>${MODEL_FILE}</string>
-        <string>--ctx-size</string>
-        <string>4096</string>
+        <string>${OLLAMA_PATH}</string>
+        <string>serve</string>
     </array>
 
     <key>RunAtLoad</key>
@@ -62,10 +56,10 @@ cat > "$PLIST_PATH" << EOF
     <true/>
 
     <key>StandardOutPath</key>
-    <string>${LOG_DIR}/llama-stdout.log</string>
+    <string>${LOG_DIR}/ollama-stdout.log</string>
 
     <key>StandardErrorPath</key>
-    <string>${LOG_DIR}/llama-stderr.log</string>
+    <string>${LOG_DIR}/ollama-stderr.log</string>
 
     <key>EnvironmentVariables</key>
     <dict>
@@ -84,8 +78,8 @@ else
     launchctl bootstrap "gui/$GUI_UID" "$PLIST_PATH"
 fi
 
-echo "✓ llama.cpp LaunchAgent installed at: $PLIST_PATH"
-echo "  Server will start automatically on login (127.0.0.1:8012)."
+echo "✓ Ollama LaunchAgent installed at: $PLIST_PATH"
+echo "  Server will start automatically on login (127.0.0.1:11434)."
 echo "  Auto-restarts on crash (KeepAlive)."
 echo ""
 echo "To check status:  launchctl list | grep minibot"

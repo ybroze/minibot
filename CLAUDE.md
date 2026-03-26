@@ -12,15 +12,15 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 
 **Secrets flow:** `macOS Keychain → zshrc-additions.sh (exports env vars on login) → shell environment → docker compose → containers`
 
-**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only. A native llama.cpp server (`127.0.0.1:8012`) runs Llama 3.1 8B with Metal GPU acceleration inside a macOS `sandbox-exec` profile (no filesystem access).
+**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only. Ollama (`127.0.0.1:11434`) runs Llama 3.1 8B natively with Metal GPU acceleration.
 
-**Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, `sandbox-exec` for the LLM process, and a deny-by-default agent tool policy.
+**Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
 
 **Operational lifecycle:**
 - `bin/minibot-start.sh` — loads secrets from Keychain, verifies all are present, runs `docker compose up -d`
 - `bin/minibot-stop.sh` — `docker compose down`
-- `bin/minibot-llm-start.sh` — starts sandboxed llama.cpp server
-- `bin/minibot-llm-stop.sh` — stops llama.cpp server
+- `bin/minibot-llm-start.sh` — starts Ollama and loads the model
+- `bin/minibot-llm-stop.sh` — stops Ollama
 - `bin/minibot-secrets.sh` — Keychain CRUD (init, set, get, list, delete)
 - `scripts/admin-setup.sh` — one-time machine setup (run as admin before `install.sh`)
 - `scripts/` — backup, restore, health-check, security-audit, reset, LaunchAgent management
@@ -28,7 +28,6 @@ Target platform: macOS (Sequoia / recent versions), intended to run under a dedi
 ## Key Directories
 
 - `bin/` — User-facing operational scripts (start, stop, logs, secrets, llm)
-- `etc/` — Configuration files (sandbox profiles)
 - `scripts/` — Maintenance scripts (admin-setup, backup, restore, health-check, security-audit, reset, LaunchAgent)
 - `docker/` — `docker-compose.yml` and `.env.example`
 - `docs/` — Threat model, emergency procedures, maintenance guide, secrets, networking, security posture, filesystem security
@@ -46,9 +45,9 @@ mb-status         # docker compose ps
 mb-secrets        # Manage keychain secrets
 mb-health         # Run health check
 mb-audit          # Run security audit
-mb-llm-start      # Start sandboxed llama.cpp server
-mb-llm-stop       # Stop llama.cpp server
-mb-llm-status     # Check llama.cpp health (port 8012)
+mb-llm-start      # Start Ollama and load model
+mb-llm-stop       # Stop Ollama
+mb-llm-status     # Check Ollama health (port 11434)
 
 # Direct script invocation
 ~/minibot/bin/minibot-start.sh

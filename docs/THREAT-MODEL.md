@@ -118,86 +118,45 @@ the recovery key (or a firmware exploit) can still compromise the machine.
 
 ---
 
-## Threat 7: Local LLM Compromise (llama.cpp)
+## Threat 7: Local LLM Compromise (Ollama)
 
-**What:** The llama.cpp server process is exploited — via a crafted API request,
-a malicious model file, or a vulnerability in the inference engine — and the
-attacker attempts to read files, exfiltrate data, or pivot to other services on
-the host.
+**What:** The Ollama server process is exploited — via a crafted API request,
+a malicious model, or a vulnerability in the inference engine — and the attacker
+attempts to read files, exfiltrate data, or pivot to other services on the host.
 
-**Why this matters:** Unlike the Docker containers, the LLM runs as a native
-macOS process under the `minibot` user. Without additional isolation, it would
-have full access to the user's home directory, the Keychain, the Docker socket,
-and all localhost services. A compromised LLM process could read secrets, modify
-scripts, or interact with databases — effectively owning the entire minibot
-environment.
+**Why this matters:** Unlike the Docker containers, Ollama runs as a native
+macOS process under the `minibot` user. It has full access to the user's home
+directory, the Keychain, the Docker socket, and all localhost services. A
+compromised Ollama process could read secrets, modify scripts, or interact with
+databases.
 
-**Minibot's posture:** The llama.cpp server runs inside a macOS `sandbox-exec`
-profile (`etc/llama-sandbox.sb`) that enforces a deny-by-default policy at the
-kernel level:
-
-| Capability | Policy | Rationale |
-|------------|--------|-----------|
-| Filesystem (general) | **Deny** | No access to `~/`, `~/minibot/`, config files, scripts, or data directories |
-| Model file | **Read-only** | The GGUF model in `data/models/` is the only readable user file |
-| Homebrew & system libs | **Read-only** | Required for the binary and its dynamic libraries |
-| Filesystem writes | **Deny** | Cannot create, modify, or delete any file anywhere |
-| Network bind | **Allow localhost:8012** | The HTTP server must bind to serve requests |
-| Network outbound | **Deny** | Cannot initiate connections to databases, the internet, or other services |
-| Metal GPU (IOKit) | **Allow** | Required for Apple Silicon GPU acceleration |
-| Mach IPC | **Allow** | Required for Metal framework communication with the GPU driver |
-| Subprocess spawning | **Deny** | Cannot fork or exec other processes |
-| Signals | **Self only** | Can only signal itself (graceful shutdown) |
-
-**Rationale for each decision:**
-
-- **No filesystem writes:** The LLM has no legitimate reason to write files.
-  Denying writes prevents persistence (backdoors, modified scripts) even if
-  the process is fully compromised.
-
-- **No home directory access:** Prevents reading `~/.zshrc` (which contains
-  the keychain export), `~/minibot/bin/` (scripts), `~/minibot/data/` (database
-  volumes), and any other user files. The process cannot discover what else
-  exists on the system.
-
-- **No outbound network:** The server only needs to *accept* connections, not
-  make them. Blocking outbound prevents data exfiltration to external servers
-  and blocks lateral movement to PostgreSQL (5432), Redis (6379), MongoDB
-  (27017), or OpenClaw (18789) on localhost.
-
-- **Metal/Mach IPC allowed:** This is the broadest permission in the profile.
-  Metal requires IOKit for GPU device access and Mach IPC for shader
-  compilation and driver communication. `mach-lookup` is not scoped to specific
-  services because Metal's internal service names are undocumented and vary
-  across macOS versions. This is an acceptable trade-off: Mach IPC without
-  filesystem or network access limits what an attacker can do through this
-  channel.
-
-- **Model file read-only:** The model is a ~4.6 GB binary blob (GGUF format).
-  The sandbox allows reading only the `data/models/` directory. The model file
-  is also set to `chmod 444` (read-only at the Unix level) as a secondary
-  control.
+**Minibot's posture:**
+- Ollama binds to `127.0.0.1:11434` (localhost only) — not reachable from the
+  network.
+- The `minibot` user account is dedicated and isolated from other user accounts.
+- The macOS firewall blocks inbound connections.
+- Docker containers can reach Ollama via `host.docker.internal:11434`, but
+  external machines cannot.
 
 **Residual risk:**
-- The `mach-lookup` permission is broad. A sophisticated attacker with code
-  execution inside the sandbox could potentially interact with other Mach
-  services. In practice, without filesystem or network access, the attack
-  surface is limited to IPC with system services that don't require
-  authentication.
-- The `sandbox-exec` mechanism is deprecated by Apple (no replacement yet) and
-  may not be available in future macOS versions. Monitor Apple's security
-  framework roadmap.
-- A malicious or trojaned GGUF model file could exploit a parsing vulnerability
-  in llama.cpp. The sandbox limits the blast radius, but the process does have
-  Metal GPU access. Only use models from trusted sources (e.g., well-known
-  HuggingFace uploaders).
+- Ollama runs unsandboxed as the `minibot` user. A compromised Ollama process
+  has the same access as any other process running as that user — it can read
+  secrets from the environment, access the Docker socket, and read/write files.
+  This is the same risk profile as any other native process (Threat 4 applies).
+- A malicious model file could exploit a parsing vulnerability in the inference
+  engine (llama.cpp under the hood). Only use models from the official Ollama
+  registry or trusted sources.
+- Ollama's API has no built-in authentication. Any process on localhost can
+  make requests. This is acceptable on a dedicated single-user machine but
+  would be a concern on a shared system.
 
-**Recovery:** If the llama.cpp process is compromised:
-1. `mb-llm-stop` (or `kill` the PID from `data/llm/llama.pid`)
-2. The sandbox means no secrets or files were accessible — no credential
-   rotation needed unless the compromise vector was *outside* the sandbox
-3. Inspect `data/logs/system/llama-stderr.log` for anomalies
-4. Consider replacing the model file if its integrity is in question
+**Recovery:** If the Ollama process is compromised:
+1. `mb-llm-stop` (or `pkill -f "ollama serve"`)
+2. Assume all secrets in the minibot user's environment were accessible —
+   rotate credentials if compromise is confirmed
+3. Inspect `data/logs/system/ollama-stderr.log` for anomalies
+4. Run `ollama rm llama3.1:8b && ollama pull llama3.1:8b` to replace the model
+   if its integrity is in question
 
 ---
 
@@ -208,5 +167,4 @@ Review this threat model whenever you:
 - Expose a new service or port
 - Change the network configuration
 - Add a new secret or credential
-- Change the LLM model or sandbox profile
-- Update macOS (sandbox-exec behavior may change)
+- Change the LLM model or Ollama configuration

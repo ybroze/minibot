@@ -41,7 +41,7 @@ Key concepts:
 ## What You Have Running
 
 After `mb-start`, four containers are running inside Docker, plus a native
-llama.cpp server for local LLM inference:
+Ollama server for local LLM inference:
 
 ```
 Your Mac (macOS)
@@ -53,14 +53,13 @@ Your Mac (macOS)
 │   ├── minibot-mongo      MongoDB 7 document database
 │   └── minibot-openclaw   OpenClaw agent gateway
 │
-├── llama.cpp server       Llama 3.1 8B local LLM (native, sandboxed)
+├── Ollama server          Llama 3.1 8B local LLM (native, Metal GPU)
 │
 ├── ~/minibot/data/        Persistent data (mounted into containers)
 │   ├── postgres/
 │   ├── redis/
 │   ├── mongo/
-│   ├── openclaw/
-│   └── models/            GGUF model files
+│   └── openclaw/
 │
 └── macOS Keychain          Stores all passwords (not on disk)
 ```
@@ -75,7 +74,7 @@ reach it from the Mac:
 | minibot-redis | In-memory key-value store | `127.0.0.1:6379` |
 | minibot-mongo | Document database (JSON-like) | `127.0.0.1:27017` |
 | minibot-openclaw | Agent gateway (HTTP/WebSocket) | `127.0.0.1:18789` |
-| llama.cpp | Local LLM (OpenAI-compatible API) | `127.0.0.1:8012` |
+| Ollama | Local LLM (OpenAI-compatible API) | `127.0.0.1:11434` |
 
 **Why three databases?** Each is good at different things:
 
@@ -443,9 +442,9 @@ and Docker overhead (`docker system df`). Clean up with
 | `mb-secrets list` | Show stored secrets |
 | `mb-secrets get KEY` | Print a secret value |
 | `mb-build` | Rebuild OpenClaw from source |
-| `mb-llm-start` | Start the sandboxed llama.cpp server |
-| `mb-llm-stop` | Stop the llama.cpp server |
-| `mb-llm-status` | Check llama.cpp health (port 8012) |
+| `mb-llm-start` | Start Ollama and load the model |
+| `mb-llm-stop` | Stop Ollama |
+| `mb-llm-status` | Check Ollama health (port 11434) |
 | `docker exec -it CONTAINER sh` | Open a shell inside a container |
 | `docker logs CONTAINER` | View a container's logs |
 

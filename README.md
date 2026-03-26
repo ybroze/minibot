@@ -97,8 +97,8 @@ source ~/.zshrc
 
 The installer creates directories, copies scripts, configures the shell,
 prompts for secrets (stored in the macOS Keychain), builds the `openclaw:local`
-Docker image from source, installs llama.cpp with the Llama 3.1 8B model
-(~4.6 GB download), and installs LaunchAgents.
+Docker image from source, installs Ollama with the Llama 3.1 8B model
+(~4.9 GB download), and installs LaunchAgents.
 
 All secrets (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`,
 `OPENCLAW_GATEWAY_PASSWORD`) live in the macOS Keychain and are managed through
@@ -128,12 +128,12 @@ mb-logs         # Follow live logs
 | Redis      | minibot-redis      | 256 MB | 0.5  | Cache/message broker |
 | MongoDB    | minibot-mongo      | 1 GB   | 1.0  | WiredTiger cache |
 | OpenClaw   | minibot-openclaw   | 4 GB   | 2.0  | Node.js heap 3.5 GB |
-| llama.cpp  | native (sandboxed) | ~4.9 GB | all | Llama 3.1 8B Q4, Metal GPU |
+| Ollama     | native             | ~4.9 GB | all | Llama 3.1 8B Q4, Metal GPU |
 | **Total**  |                    | **~11.5 GB** | | |
 
 macOS + Remote Desktop use ~3-4 GB on a headless machine (no GUI session),
-leaving ~1.5-2.5 GB headroom. The LLM process uses Metal GPU acceleration and
-runs inside a macOS `sandbox-exec` profile with no filesystem access.
+leaving ~1.5-2.5 GB headroom. Ollama runs natively with Metal GPU acceleration,
+binding to localhost only.
 
 ### 8. Enable 24/7 Operation
 
@@ -141,7 +141,7 @@ The installer automatically sets up three LaunchAgents:
 
 - **com.minibot.gateway** — starts Docker services on login
 - **com.minibot.caffeinate** — prevents system sleep
-- **com.minibot.llama** — runs the sandboxed llama.cpp server (auto-restarts on crash)
+- **com.minibot.ollama** — runs the Ollama server (auto-restarts on crash)
 
 Verify both are loaded:
 
@@ -179,9 +179,9 @@ Available after `source ~/.zshrc`:
 | `mb-secrets <cmd>` | Manage Keychain secrets (`init`, `list`, `set`, `get`) |
 | `mb-health` | Run health check |
 | `mb-audit` | Run security audit |
-| `mb-llm-start` | Start the sandboxed llama.cpp server |
-| `mb-llm-stop` | Stop the llama.cpp server |
-| `mb-llm-status` | Check llama.cpp health (port 8012) |
+| `mb-llm-start` | Start Ollama and load the model |
+| `mb-llm-stop` | Stop Ollama |
+| `mb-llm-status` | Check Ollama health (port 11434) |
 ## Directory Structure
 
 ```
@@ -189,11 +189,8 @@ Available after `source ~/.zshrc`:
 ├── bin/                    # Operational scripts (start, stop, logs, secrets, llm)
 ├── data/                   # Persistent data (700 permissions)
 │   ├── postgres/, redis/, mongo/, openclaw/
-│   ├── models/             # GGUF model files (~4.4 GB each)
-│   ├── llm/                # PID file for llama.cpp
 │   └── logs/system/        # LaunchAgent logs
 ├── docker/                 # docker-compose.yml
-├── etc/                    # Config files (sandbox profiles)
 ├── scripts/                # Maintenance (backup, restore, health-check,
 │                           #   security-audit, reset, LaunchAgents, etc.)
 ├── vendor/openclaw/        # OpenClaw source (created by mb-build)

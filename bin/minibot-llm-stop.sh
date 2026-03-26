@@ -1,45 +1,30 @@
 #!/bin/bash
 # minibot-llm-stop.sh
-# Stop the llama.cpp server.
+# Stop the Ollama server.
 
 set -euo pipefail
 
 if [[ "${1:-}" =~ ^(-h|--help)$ ]]; then
     echo "Usage: $(basename "$0")"
-    echo "  Stop the llama.cpp server."
+    echo "  Stop the Ollama server."
     exit 0
 fi
 
-PID_FILE="$HOME/minibot/data/llm/llama.pid"
-SHUTDOWN_TIMEOUT=10
-
-if [ ! -f "$PID_FILE" ]; then
-    echo "llama.cpp server is not running (no PID file)."
+if ! curl -s --max-time 2 http://127.0.0.1:11434/ &>/dev/null; then
+    echo "Ollama is not running."
     exit 0
 fi
 
-pid=$(cat "$PID_FILE")
+echo "Stopping Ollama..."
+pkill -f "ollama serve" 2>/dev/null || true
 
-if ! kill -0 "$pid" 2>/dev/null; then
-    echo "llama.cpp server is not running (stale PID $pid). Cleaning up."
-    rm -f "$PID_FILE"
-    exit 0
-fi
-
-echo "Stopping llama.cpp server (PID $pid)..."
-kill "$pid"
-
-# Wait for graceful shutdown
-elapsed=0
-while kill -0 "$pid" 2>/dev/null; do
-    if [ "$elapsed" -ge "$SHUTDOWN_TIMEOUT" ]; then
-        echo "Server did not stop within ${SHUTDOWN_TIMEOUT}s. Sending SIGKILL."
-        kill -9 "$pid" 2>/dev/null || true
-        break
+# Wait for shutdown
+for i in $(seq 1 10); do
+    if ! curl -s --max-time 1 http://127.0.0.1:11434/ &>/dev/null; then
+        echo "✓ Ollama stopped."
+        exit 0
     fi
     sleep 1
-    elapsed=$((elapsed + 1))
 done
 
-rm -f "$PID_FILE"
-echo "✓ llama.cpp server stopped."
+echo "Warning: Ollama may still be running." >&2

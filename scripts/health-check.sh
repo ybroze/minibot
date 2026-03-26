@@ -99,24 +99,19 @@ else
 fi
 echo ""
 
-# Check llama.cpp
-echo "llama.cpp (Local LLM):"
-LLM_PID_FILE="$HOME/minibot/data/llm/llama.pid"
-if [ -f "$LLM_PID_FILE" ] && kill -0 "$(cat "$LLM_PID_FILE")" 2>/dev/null; then
-    llm_pid=$(cat "$LLM_PID_FILE")
-    echo "✓ llama.cpp server is running (PID $llm_pid)"
-    if curl -s --max-time 5 http://127.0.0.1:8012/health | grep -q "ok\|status" 2>/dev/null; then
-        echo "✓ API is responding on port 8012"
+# Check Ollama
+echo "Ollama (Local LLM):"
+if curl -s --max-time 5 http://127.0.0.1:11434/ &>/dev/null; then
+    echo "✓ Ollama is running on port 11434"
+    model_count=$(ollama list 2>/dev/null | tail -n +2 | wc -l | tr -d ' ')
+    echo "  Models available: $model_count"
+    if ollama list 2>/dev/null | grep -q "llama3.1:8b"; then
+        echo "  ✓ llama3.1:8b is loaded"
     else
-        echo "⚠ Process running but API not responding on port 8012"
+        echo "  ⚠ llama3.1:8b not found (run: ollama pull llama3.1:8b)"
     fi
 else
-    # Also check via LaunchAgent (no PID file when managed by launchd)
-    if curl -s --max-time 5 http://127.0.0.1:8012/health | grep -q "ok\|status" 2>/dev/null; then
-        echo "✓ llama.cpp API is responding on port 8012 (managed by launchd)"
-    else
-        echo "- llama.cpp is not running"
-    fi
+    echo "- Ollama is not running"
 fi
 echo ""
 
