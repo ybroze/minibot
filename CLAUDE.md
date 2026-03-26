@@ -6,21 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Minibot is a macOS-focused infrastructure project that provides a secure, isolated environment for running AI agents. It uses Docker Compose to orchestrate PostgreSQL 15, Redis 7, MongoDB 7, and OpenClaw (agent gateway/orchestrator) as services, with secrets managed via the macOS Keychain (not `.env` files). The entire codebase is shell scripts (~2000 lines of bash) plus configuration and documentation.
 
-Target platform: macOS (Sequoia / recent versions), intended to run under a dedicated `minibot` standard user account.
+Target platform: macOS (Tahoe / recent versions), intended to run under a dedicated `minibot` standard user account. A separate `ollama` user runs the local LLM in isolation.
 
 ## Architecture
 
 **Secrets flow:** `macOS Keychain → zshrc-additions.sh (exports env vars on login) → shell environment → docker compose → containers`
 
-**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only. Ollama (`127.0.0.1:11434`) runs Llama 3.1 8B natively with Metal GPU acceleration.
+**Services:** PostgreSQL (`127.0.0.1:5432`), Redis (`127.0.0.1:6379`), MongoDB (`127.0.0.1:27017`), and OpenClaw (`127.0.0.1:18789` gateway) on a Docker bridge network (`minibot-net`). All are localhost-only. Ollama (`127.0.0.1:11434`) runs Llama 3.1 8B natively with Metal GPU acceleration under a separate `ollama` user account for isolation.
 
-**Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, and a deny-by-default agent tool policy.
+**Security model:** Defense-in-depth with `umask 077`, directory permissions `700`, Keychain-based secrets, Docker resource limits, user-level isolation for the LLM process, and a deny-by-default agent tool policy.
+
+**User accounts:** Two standard (non-admin) user accounts:
+- `minibot` — runs Docker containers, manages secrets, owns all agent infrastructure
+- `ollama` — runs only the Ollama LLM server; has no access to secrets, Docker, or minibot's data
 
 **Operational lifecycle:**
 - `bin/minibot-start.sh` — loads secrets from Keychain, verifies all are present, runs `docker compose up -d`
 - `bin/minibot-stop.sh` — `docker compose down`
-- `bin/minibot-llm-start.sh` — starts Ollama and loads the model
-- `bin/minibot-llm-stop.sh` — stops Ollama
+- `bin/minibot-llm-start.sh` — checks Ollama status (managed by `ollama` user)
+- `scripts/install-ollama-user.sh` — setup script run as the `ollama` user
 - `bin/minibot-secrets.sh` — Keychain CRUD (init, set, get, list, delete)
 - `scripts/admin-setup.sh` — one-time machine setup (run as admin before `install.sh`)
 - `scripts/` — backup, restore, health-check, security-audit, reset, LaunchAgent management
@@ -45,9 +49,8 @@ mb-status         # docker compose ps
 mb-secrets        # Manage keychain secrets
 mb-health         # Run health check
 mb-audit          # Run security audit
-mb-llm-start      # Start Ollama and load model
-mb-llm-stop       # Stop Ollama
-mb-llm-status     # Check Ollama service status
+mb-llm-status     # Check Ollama status (managed by 'ollama' user)
+mb-llm-info       # Show Ollama management info
 
 # Direct script invocation
 ~/minibot/bin/minibot-start.sh

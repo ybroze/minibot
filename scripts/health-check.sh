@@ -99,19 +99,17 @@ else
 fi
 echo ""
 
-# Check Ollama
-echo "Ollama (Local LLM):"
+# Check Ollama (runs as separate 'ollama' user)
+echo "Ollama (Local LLM — managed by 'ollama' user):"
 if curl -s --max-time 5 http://127.0.0.1:11434/ &>/dev/null; then
     echo "✓ Ollama is running on port 11434"
-    model_count=$(ollama list 2>/dev/null | tail -n +2 | wc -l | tr -d ' ')
-    echo "  Models available: $model_count"
-    if ollama list 2>/dev/null | grep -q "llama3.1:8b"; then
-        echo "  ✓ llama3.1:8b is loaded"
+    if curl -s --max-time 5 http://127.0.0.1:11434/api/tags 2>/dev/null | grep -q "llama3.1"; then
+        echo "  ✓ llama3.1:8b is available"
     else
-        echo "  ⚠ llama3.1:8b not found (run: ollama pull llama3.1:8b)"
+        echo "  ⚠ llama3.1:8b not found (log in as 'ollama' and run: ollama pull llama3.1:8b)"
     fi
 else
-    echo "- Ollama is not running"
+    echo "- Ollama is not running (log in as 'ollama' user to start)"
 fi
 echo ""
 

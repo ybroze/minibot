@@ -97,8 +97,8 @@ source ~/.zshrc
 
 The installer creates directories, copies scripts, configures the shell,
 prompts for secrets (stored in the macOS Keychain), builds the `openclaw:local`
-Docker image from source, installs Ollama with the Llama 3.1 8B model
-(~4.9 GB download), and installs LaunchAgents.
+Docker image from source, verifies Ollama is running (managed by the separate
+`ollama` user), and installs LaunchAgents.
 
 All secrets (`POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`,
 `OPENCLAW_GATEWAY_PASSWORD`) live in the macOS Keychain and are managed through
@@ -137,13 +137,15 @@ binding to localhost only.
 
 ### 8. Enable 24/7 Operation
 
-The installer automatically sets up three LaunchAgents:
+The installer sets up two LaunchAgents for the `minibot` user:
 
 - **com.minibot.gateway** — starts Docker services on login
 - **com.minibot.caffeinate** — prevents system sleep
-- **com.minibot.ollama** — runs Ollama for local LLM inference (auto-restarts on crash)
 
-Verify all are loaded:
+Ollama runs under the separate `ollama` user with its own LaunchAgent
+(`com.ollama.serve`), installed by `scripts/install-ollama-user.sh`.
+
+Verify minibot LaunchAgents are loaded:
 
 ```bash
 launchctl list | grep minibot
@@ -179,9 +181,8 @@ Available after `source ~/.zshrc`:
 | `mb-secrets <cmd>` | Manage Keychain secrets (`init`, `list`, `set`, `get`) |
 | `mb-health` | Run health check |
 | `mb-audit` | Run security audit |
-| `mb-llm-start` | Start Ollama and load the model |
-| `mb-llm-stop` | Stop Ollama |
-| `mb-llm-status` | Check Ollama service status |
+| `mb-llm-status` | Check Ollama status (managed by `ollama` user) |
+| `mb-llm-info` | Show Ollama management info |
 ## Directory Structure
 
 ```

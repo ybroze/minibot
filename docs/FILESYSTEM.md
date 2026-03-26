@@ -13,8 +13,10 @@ For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
 - **`data/`** is set to `700` during install.
 - **`security-audit.sh`** checks for permission drift and an incorrect umask.
 
-Ollama stores its model files in `~/.ollama/models/`, which is outside the
-`data/` directory. These files inherit the `umask 077` default.
+Ollama runs under the separate `ollama` user account. Its model files are
+stored in the `ollama` user's home directory (`~ollama/.ollama/models/`), which
+is inaccessible to the `minibot` user (and vice versa). This user-level
+isolation is the primary security boundary for the LLM process.
 
 **Known limitation — log file ownership:** Files created inside Docker volumes
 may be owned by root or by the container's internal user, not the minibot host

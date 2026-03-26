@@ -46,23 +46,22 @@ Ollama server for local LLM inference:
 ```
 Your Mac (macOS)
 │
-├── Docker Desktop (hidden Linux VM)
-│   │
-│   ├── minibot-postgres   PostgreSQL 15 database
-│   ├── minibot-redis      Redis 7 cache / message broker
-│   ├── minibot-mongo      MongoDB 7 document database
-│   └── minibot-openclaw   OpenClaw agent gateway
+├── 'minibot' user
+│   ├── Docker Desktop (hidden Linux VM)
+│   │   ├── minibot-postgres   PostgreSQL 15 database
+│   │   ├── minibot-redis      Redis 7 cache / message broker
+│   │   ├── minibot-mongo      MongoDB 7 document database
+│   │   └── minibot-openclaw   OpenClaw agent gateway
+│   ├── ~/minibot/data/        Persistent data (mounted into containers)
+│   └── macOS Keychain         Stores all passwords (not on disk)
 │
-├── Ollama server          Llama 3.1 8B local LLM (native, Metal GPU)
-│
-├── ~/minibot/data/        Persistent data (mounted into containers)
-│   ├── postgres/
-│   ├── redis/
-│   ├── mongo/
-│   └── openclaw/
-│
-└── macOS Keychain          Stores all passwords (not on disk)
+└── 'ollama' user (isolated)
+    └── Ollama server          Llama 3.1 8B local LLM (Metal GPU)
+        └── ~/.ollama/models/  Model storage
 ```
+
+The `ollama` user has no access to the minibot user's secrets, Docker socket,
+or data directories. It only runs the LLM server on `localhost:11434`.
 
 The containers talk to each other over an internal Docker network called
 `minibot-net`. Each service also exposes a port on `127.0.0.1` so you can
@@ -442,9 +441,8 @@ and Docker overhead (`docker system df`). Clean up with
 | `mb-secrets list` | Show stored secrets |
 | `mb-secrets get KEY` | Print a secret value |
 | `mb-build` | Rebuild OpenClaw from source |
-| `mb-llm-start` | Start Ollama and load the model |
-| `mb-llm-stop` | Stop Ollama |
-| `mb-llm-status` | Check Ollama service status |
+| `mb-llm-status` | Check Ollama status (managed by `ollama` user) |
+| `mb-llm-info` | Show Ollama management info |
 | `docker exec -it CONTAINER sh` | Open a shell inside a container |
 | `docker logs CONTAINER` | View a container's logs |
 

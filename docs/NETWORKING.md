@@ -32,7 +32,7 @@ only from the host machine — not from the local network or the internet.
 | Redis      | minibot-redis      | `127.0.0.1:6379`      | Cache / message broker |
 | MongoDB    | minibot-mongo      | `127.0.0.1:27017`     | Document database      |
 | OpenClaw   | minibot-openclaw   | `127.0.0.1:18789`     | Gateway (WebSocket)    |
-| Ollama     | native             | `127.0.0.1:11434`     | Local LLM (OpenAI API) |
+| Ollama     | native (`ollama` user) | `127.0.0.1:11434`  | Local LLM (OpenAI API) |
 
 Docker port bindings are enforced in `docker/docker-compose.yml`. The
 `security-audit.sh` script verifies that no port binding in the compose file

@@ -33,9 +33,11 @@ LaunchAgent) is not justified by the marginal security difference.
 - **Unsolicited inbound network attacks** — the macOS firewall blocks
   inbound connections, all ports are localhost-only, and remote access is via
   Tailscale or SSH tunnel. See [NETWORKING.md](NETWORKING.md).
-- **Local LLM isolation** — Ollama runs natively on localhost only
-  (`127.0.0.1:11434`). It is not exposed to the network. Docker containers
-  can reach it via `host.docker.internal:11434` but external machines cannot.
+- **Local LLM isolation** — Ollama runs under a dedicated `ollama` user
+  account that has no access to secrets, Docker, or minibot's data. Even if
+  the inference engine is compromised, the attacker is confined to a user with
+  nothing valuable. The API is localhost-only (`127.0.0.1:11434`).
+  See [THREAT-MODEL.md](THREAT-MODEL.md) (Threat 7) for the full analysis.
 
 ## What this setup is weaker against
 

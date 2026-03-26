@@ -1,7 +1,7 @@
 #!/bin/bash
 # admin-setup.sh
 # One-time machine setup for Minibot — run as an admin user before the
-# minibot user exists. Installs dependencies and creates the minibot account.
+# minibot and ollama users exist. Installs dependencies and creates accounts.
 
 set -euo pipefail
 
@@ -11,9 +11,10 @@ echo "This script will (as your admin user):"
 echo "  1. Enable the macOS firewall"
 echo "  2. Install Xcode Command Line Tools"
 echo "  3. Install Homebrew"
-echo "  4. Install Docker Desktop, Tailscale, and CLI debug tools"
+echo "  4. Install Docker Desktop, Tailscale, Ollama, and CLI debug tools"
 echo "  5. Create the 'minibot' standard user account"
-echo "  6. Configure 24/7 operation (prevent sleep)"
+echo "  6. Create the 'ollama' standard user account (isolated LLM runner)"
+echo "  7. Configure 24/7 operation (prevent sleep)"
 echo ""
 read -r -p "Continue? (yes/no): " confirm
 
@@ -69,13 +70,13 @@ else
     echo "✓ ~/.zprofile already has Homebrew PATH"
 fi
 
-# ── Step 4: Install Docker Desktop, Tailscale, CLI tools ────────────────────
+# ── Step 4: Install Docker Desktop, Tailscale, Ollama, CLI tools ────────────
 echo ""
-echo "Step 4: Installing Docker Desktop, Tailscale, and CLI tools..."
+echo "Step 4: Installing Docker Desktop, Tailscale, Ollama, and CLI tools..."
 brew install --cask docker
 brew install --cask tailscale
 brew install libpq redis mongosh ollama
-echo "✓ Docker Desktop, Tailscale, and CLI tools installed"
+echo "✓ Docker Desktop, Tailscale, Ollama, and CLI tools installed"
 
 # ── Step 5: Create the minibot user ─────────────────────────────────────────
 echo ""
@@ -88,9 +89,20 @@ else
     echo "✓ User 'minibot' created (standard account)"
 fi
 
-# ── Step 6: Configure 24/7 operation ────────────────────────────────────────
+# ── Step 6: Create the ollama user ──────────────────────────────────────────
 echo ""
-echo "Step 6: Configuring 24/7 operation (preventing sleep)..."
+echo "Step 6: Creating 'ollama' standard user account (isolated LLM runner)..."
+if id ollama &>/dev/null; then
+    echo "✓ User 'ollama' already exists"
+else
+    echo "You will be prompted to set a password for the ollama user."
+    sudo sysadminctl -addUser ollama -fullName "Ollama LLM" -password -
+    echo "✓ User 'ollama' created (standard account)"
+fi
+
+# ── Step 7: Configure 24/7 operation ────────────────────────────────────────
+echo ""
+echo "Step 7: Configuring 24/7 operation (preventing sleep)..."
 sudo pmset -a sleep 0 displaysleep 0 disksleep 0
 sudo pmset -a autorestart 1
 sudo pmset -a womp 1
@@ -113,4 +125,6 @@ echo "    iCloud > Advanced Data Protection"
 echo "  • In Docker Desktop, enable 'Start Docker Desktop when you sign in'"
 echo "    (do this for both the admin user and later for the minibot user)"
 echo ""
-echo "Next: Log in as the 'minibot' user and run install.sh"
+echo "Next steps:"
+echo "  1. Log in as 'ollama' and run: bash ~/Downloads/minibot/scripts/install-ollama-user.sh"
+echo "  2. Log in as 'minibot' and run: bash ~/Downloads/minibot/install.sh"

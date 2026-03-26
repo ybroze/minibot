@@ -5,9 +5,11 @@ defend against. Understanding these helps explain why the setup is configured
 the way it is.
 
 **Environment:** Dedicated Mac Mini (Apple M4, 16 GB RAM) running macOS Tahoe,
-headless operation under a standard `minibot` user account. Four Docker
+headless operation. Two standard user accounts: `minibot` (Docker containers,
+secrets, agent infrastructure) and `ollama` (isolated LLM runner). Four Docker
 containers (PostgreSQL, Redis, MongoDB, OpenClaw) plus a native Ollama server
-(Llama 3.1 8B, Metal GPU). Remote access via Tailscale and Screen Sharing.
+(Llama 3.1 8B, Metal GPU) under the `ollama` user. Remote access via Tailscale
+and Screen Sharing.
 
 ---
 
@@ -188,48 +190,51 @@ physical access is physical access.
 a malicious model, or a vulnerability in the inference engine — and the attacker
 attempts to read files, exfiltrate data, or pivot to other services on the host.
 
-**Why this matters:** Ollama runs as an unsandboxed native macOS process under
-the `minibot` user. Unlike Docker containers, it is not isolated from the host.
-A compromised Ollama process has full access to:
-- The user's home directory (`~/minibot/`, scripts, config)
-- Shell environment variables (including Keychain-exported secrets)
-- The Docker socket (effectively root-equivalent)
-- All localhost services (PostgreSQL, Redis, MongoDB, OpenClaw)
-- The Tailscale network interface
-- The macOS filesystem (limited by standard user permissions)
+**Minibot's posture — user-level isolation:** Ollama runs under a dedicated
+`ollama` standard user account that is completely separate from the `minibot`
+user. This provides strong Unix permission boundaries:
 
-**Minibot's posture:**
+| Resource | `ollama` user access | `minibot` user access |
+|----------|---------------------|----------------------|
+| Minibot secrets (Keychain) | **No** | Yes |
+| Docker socket | **No** | Yes |
+| `~/minibot/` (scripts, data, config) | **No** | Yes |
+| Database volumes (Postgres, Mongo, Redis) | **No** | Yes |
+| Ollama model files (`~/.ollama/`) | Yes | **No** |
+| Ollama API (localhost:11434) | Yes | Yes (read-only) |
+| Other user accounts' data | **No** | **No** |
+
+A compromised Ollama process is confined to the `ollama` user, which has:
+- No secrets in its environment
+- No Docker socket access
+- No access to minibot's home directory, scripts, or data
+- No `sudo` privileges (standard account)
+- Only its own home directory, Ollama model files, and the Ollama binary
+
+**Additional mitigations:**
 - Ollama binds to `127.0.0.1:11434` — not reachable from outside the machine.
-- The `minibot` account is a standard (non-admin) user — no `sudo`, no system
-  modification, no access to other user accounts' data.
 - The macOS firewall blocks unsolicited inbound connections.
-- Ollama is managed by a LaunchAgent (`com.minibot.ollama`) with KeepAlive,
-  so it restarts automatically if killed.
-
-**Why not sandboxed:** macOS `sandbox-exec` (the only native process sandboxing
-tool) is deprecated and broken on macOS Tahoe — deny-default profiles cause
-`execvp()` failures even with broad allow rules. There is no viable alternative
-for sandboxing a native macOS CLI process without wrapping it in a full VM.
-Running Ollama in Docker would sacrifice Metal GPU acceleration.
+- Ollama is managed by a LaunchAgent (`com.ollama.serve`) with KeepAlive.
+- The `minibot` user cannot start or stop Ollama (clean separation).
 
 **Residual risk:**
-- Ollama is the single most privileged unsandboxed process in the minibot
-  environment. A full compromise of Ollama is equivalent to a full compromise
-  of the `minibot` user account.
 - Ollama's API has no authentication. Any process on localhost (including all
-  Docker containers via `host.docker.internal`) can make requests.
+  Docker containers via `host.docker.internal`) can make requests. This is by
+  design but means a compromised container can use the LLM freely.
+- A compromised `ollama` user can still read world-readable files, access
+  `/tmp`, and make outbound network connections. It cannot read minibot's data
+  (protected by `700` permissions and per-user Keychain isolation).
 - Model parsing vulnerabilities in llama.cpp could be triggered by a malicious
   GGUF file. Only use models from the official Ollama registry.
 
 **Recovery:** If the Ollama process is compromised:
-1. Stop immediately: `mb-llm-stop` (or `pkill -f "ollama serve"`)
-2. Stop all other services: `mb-stop`
-3. Assume all secrets in the `minibot` user's environment were accessible.
-   Rotate all credentials — see `docs/EMERGENCY.md`.
-4. Inspect `data/logs/system/ollama-stderr.log` for anomalies.
-5. Replace the model: `ollama rm llama3.1:8b && ollama pull llama3.1:8b`
-6. If compromise is confirmed beyond Ollama, consider a full machine wipe
-   and reinstall from scratch.
+1. Log in as `ollama` and stop: `pkill -f "ollama serve"`
+2. The `minibot` user's secrets were **not** accessible — no credential
+   rotation needed unless the compromise vector was outside the `ollama` user.
+3. Inspect logs: `tail ~ollama/ollama-data/logs/ollama-stderr.log`
+4. Replace the model: `ollama rm llama3.1:8b && ollama pull llama3.1:8b`
+5. If the compromise extended beyond the `ollama` user (e.g., kernel exploit),
+   treat as a full machine compromise — see `docs/EMERGENCY.md`.
 
 ---
 
@@ -252,7 +257,7 @@ means a compromised container has a communication channel to a host process.
   logs prompts, the data lands on the host filesystem.
 - **Ollama exploit:** A crafted API request triggers a vulnerability in
   Ollama's HTTP handler or inference engine, leading to code execution on the
-  host as the `minibot` user.
+  host as the `ollama` user (isolated — no access to secrets or Docker).
 - **Resource exhaustion:** A container floods Ollama with large-context requests,
   causing memory pressure that degrades or crashes other services.
 
@@ -261,8 +266,9 @@ means a compromised container has a communication channel to a host process.
   flood traffic.
 - Ollama's attack surface is limited to its HTTP API — there is no shell
   access, file upload, or arbitrary command execution exposed through the API.
-- The `minibot` user is a standard account, so even host-level code execution
-  cannot escalate to root.
+- Ollama runs as the `ollama` user, not `minibot` — even if exploited, the
+  attacker has no access to secrets, Docker, or minibot's data. The `ollama`
+  user is a standard account with no `sudo` privileges.
 
 **Residual risk:** The Ollama API bridge is an accepted trade-off. The attack
 surface is real but narrow — it requires either an Ollama vulnerability or a
