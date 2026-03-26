@@ -51,6 +51,11 @@ cp -r "$SCRIPT_DIR/bin"/* ~/minibot/bin/
 cp -r "$SCRIPT_DIR/docker"/* ~/minibot/docker/
 cp -r "$SCRIPT_DIR/scripts"/* ~/minibot/scripts/
 
+# Copy configuration files (sandbox profiles, etc.)
+if [ -d "$SCRIPT_DIR/etc" ]; then
+    cp -r "$SCRIPT_DIR/etc"/* ~/minibot/etc/
+fi
+
 # Copy documentation
 if [ -d "$SCRIPT_DIR/docs" ]; then
     cp -r "$SCRIPT_DIR/docs"/* ~/minibot/docs/ 2>/dev/null || true
