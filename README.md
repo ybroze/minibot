@@ -215,7 +215,7 @@ Available after `source ~/.zshrc` in the `minibot` user's shell:
 | `mb-health` | Run health check |
 | `mb-audit` | Run security audit |
 | `mb-llm-status` | Check Ollama status (runs under `ollama` user) |
-| `mb-llm-info` | Show Ollama management info |
+| `mb-llm-stop` | Ollama stop info (managed by `ollama` user) |
 
 ## Directory Structure
 

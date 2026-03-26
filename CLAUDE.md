@@ -50,7 +50,7 @@ mb-secrets        # Manage keychain secrets
 mb-health         # Run health check
 mb-audit          # Run security audit
 mb-llm-status     # Check Ollama status (managed by 'ollama' user)
-mb-llm-info       # Show Ollama management info
+mb-llm-stop       # Ollama stop info (managed by `ollama` user)
 
 # Direct script invocation
 ~/minibot/bin/minibot-start.sh

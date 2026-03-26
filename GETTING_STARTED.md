@@ -442,7 +442,7 @@ and Docker overhead (`docker system df`). Clean up with
 | `mb-secrets get KEY` | Print a secret value |
 | `mb-build` | Rebuild OpenClaw from source |
 | `mb-llm-status` | Check Ollama status (managed by `ollama` user) |
-| `mb-llm-info` | Show Ollama management info |
+| `mb-llm-stop` | Ollama stop info (managed by `ollama` user) |
 | `docker exec -it CONTAINER sh` | Open a shell inside a container |
 | `docker logs CONTAINER` | View a container's logs |
 

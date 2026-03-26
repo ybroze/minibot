@@ -7,6 +7,11 @@
 
 set -euo pipefail
 
+# Ensure Homebrew is in PATH (fresh user login may not have it)
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MODEL="llama3.1:8b"
 LOG_DIR="$HOME/ollama-data/logs"
@@ -52,7 +57,7 @@ echo "Step 3: Installing Ollama LaunchAgent..."
 
 PLIST_NAME="com.ollama.serve"
 PLIST_PATH="$HOME/Library/LaunchAgents/${PLIST_NAME}.plist"
-OLLAMA_PATH=$(command -v ollama)
+OLLAMA_PATH=$(command -v ollama || echo "/opt/homebrew/bin/ollama")
 
 GUI_UID=$(id -u)
 ALREADY_LOADED=false
