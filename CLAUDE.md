@@ -66,4 +66,4 @@ mb-llm-status     # Check llama.cpp health (port 8012)
 - Keychain operations use `security find-generic-password` / `security add-generic-password` with service name `minibot`
 - Required secrets: `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `MONGO_PASSWORD`, `OPENCLAW_GATEWAY_PASSWORD`
 - OpenClaw manages its own internal secrets (API keys, bot tokens) separately
-- **Credential rotation caveat:** PostgreSQL and MongoDB only read password env vars on first init — see `docs/MAINTENANCE.MD` for the correct rotation procedure
+- **Credential rotation caveat:** PostgreSQL and MongoDB only read password env vars on first init — see `docs/MAINTENANCE.md` for the correct rotation procedure

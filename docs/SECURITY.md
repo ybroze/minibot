@@ -32,7 +32,12 @@ LaunchAgent) is not justified by the marginal security difference.
   exhaustion; provider-side spending caps prevent unbounded API bills.
 - **Unsolicited inbound network attacks** — the macOS firewall blocks
   inbound connections, all ports are localhost-only, and remote access is via
-  Tailscale or SSH tunnel. See [networking.md](networking.md).
+  Tailscale or SSH tunnel. See [NETWORKING.md](NETWORKING.md).
+- **Local LLM exploitation** — the native llama.cpp server runs inside a
+  macOS `sandbox-exec` profile with deny-by-default filesystem and network
+  access. Even if the inference engine is compromised, the process cannot read
+  files, write to disk, spawn subprocesses, or make outbound connections. See
+  [THREAT-MODEL.md](THREAT-MODEL.md) (Threat 7) for the full analysis.
 
 ## What this setup is weaker against
 
@@ -41,17 +46,18 @@ LaunchAgent) is not justified by the marginal security difference.
   main limitation of VM-based container runtimes on macOS.
 - **Physical access** — mitigated by FileVault full-disk encryption but not
   perfect (recovery key compromise, firmware exploits).
-- **Malicious code running as the minibot user** — a compromised process has
-  access to the network, disk, Docker socket, and Tailscale keys. The
-  `umask 077` and `700` permissions limit exposure to other users but not to
-  processes running as `minibot`.
+- **Malicious code running as the minibot user** — a compromised process
+  (other than the sandboxed llama.cpp server) has access to the network, disk,
+  Docker socket, and Tailscale keys. The `umask 077` and `700` permissions
+  limit exposure to other users but not to unsandboxed processes running as
+  `minibot`.
 - **Docker inspect exposure** — anyone who can run `docker inspect` on the
   host can read container environment variables, including interpolated
   secrets. This applies equally to Docker and Podman.
 
 ## Related documentation
 
-- [threat-model.md](threat-model.md) — per-threat analysis with mitigations
+- [THREAT-MODEL.md](THREAT-MODEL.md) — per-threat analysis with mitigations
   and residual risks
-- [networking.md](networking.md) — multi-layer network security approach
-- [secrets.md](secrets.md) — how credentials are stored and managed
+- [NETWORKING.md](NETWORKING.md) — multi-layer network security approach
+- [SECRETS.md](SECRETS.md) — how credentials are stored and managed

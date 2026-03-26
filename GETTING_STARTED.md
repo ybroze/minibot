@@ -1,8 +1,8 @@
 # Getting Started with Minibot
 
-You've finished the installation in `README.md`. You have four services
-running. This guide explains what you're looking at and how to interact
-with it.
+You've finished the installation in `README.md`. You have four containerized
+services plus a native LLM server running. This guide explains what you're
+looking at and how to interact with it.
 
 ---
 
@@ -40,7 +40,8 @@ Key concepts:
 
 ## What You Have Running
 
-After `mb-start`, four containers are running inside Docker:
+After `mb-start`, four containers are running inside Docker, plus a native
+llama.cpp server for local LLM inference:
 
 ```
 Your Mac (macOS)
@@ -52,25 +53,29 @@ Your Mac (macOS)
 │   ├── minibot-mongo      MongoDB 7 document database
 │   └── minibot-openclaw   OpenClaw agent gateway
 │
+├── llama.cpp server       Mistral 7B local LLM (native, sandboxed)
+│
 ├── ~/minibot/data/        Persistent data (mounted into containers)
 │   ├── postgres/
 │   ├── redis/
 │   ├── mongo/
-│   └── openclaw/
+│   ├── openclaw/
+│   └── models/            GGUF model files
 │
 └── macOS Keychain          Stores all passwords (not on disk)
 ```
 
 The containers talk to each other over an internal Docker network called
-`minibot-net`. Each container also exposes a port on `127.0.0.1` so you can
+`minibot-net`. Each service also exposes a port on `127.0.0.1` so you can
 reach it from the Mac:
 
-| Container | What it is | Port on your Mac |
-|-----------|------------|------------------|
+| Service | What it is | Port on your Mac |
+|---------|------------|------------------|
 | minibot-postgres | Relational database (SQL) | `127.0.0.1:5432` |
 | minibot-redis | In-memory key-value store | `127.0.0.1:6379` |
 | minibot-mongo | Document database (JSON-like) | `127.0.0.1:27017` |
 | minibot-openclaw | Agent gateway (HTTP/WebSocket) | `127.0.0.1:18789` |
+| llama.cpp | Local LLM (OpenAI-compatible API) | `127.0.0.1:8012` |
 
 **Why three databases?** Each is good at different things:
 
@@ -331,7 +336,7 @@ mb-stop && mb-start
 
 **Caveat:** PostgreSQL and MongoDB store their passwords internally on first
 startup. Updating the Keychain alone won't change them. See
-`docs/maintenance.md` for the full rotation procedure.
+`docs/MAINTENANCE.md` for the full rotation procedure.
 
 ---
 
@@ -438,6 +443,9 @@ and Docker overhead (`docker system df`). Clean up with
 | `mb-secrets list` | Show stored secrets |
 | `mb-secrets get KEY` | Print a secret value |
 | `mb-build` | Rebuild OpenClaw from source |
+| `mb-llm-start` | Start the sandboxed llama.cpp server |
+| `mb-llm-stop` | Stop the llama.cpp server |
+| `mb-llm-status` | Check llama.cpp health (port 8012) |
 | `docker exec -it CONTAINER sh` | Open a shell inside a container |
 | `docker logs CONTAINER` | View a container's logs |
 
@@ -449,12 +457,12 @@ All `bin/` scripts accept `--help`.
 
 | Topic | File |
 |-------|------|
-| Threat model | `docs/threat-model.md` |
-| Security posture | `docs/security.md` |
-| Secrets management | `docs/secrets.md` |
-| Networking | `docs/networking.md` |
-| Filesystem security | `docs/filesystem.md` |
-| Maintenance schedule | `docs/maintenance.md` |
-| Emergency procedures | `docs/emergency.md` |
+| Threat model | `docs/THREAT-MODEL.md` |
+| Security posture | `docs/SECURITY.md` |
+| Secrets management | `docs/SECRETS.md` |
+| Networking | `docs/NETWORKING.md` |
+| Filesystem security | `docs/FILESYSTEM.md` |
+| Maintenance schedule | `docs/MAINTENANCE.md` |
+| Emergency procedures | `docs/EMERGENCY.md` |
 
 See `docs/README.md` for a recommended reading order.

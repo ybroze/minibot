@@ -206,13 +206,13 @@ Available after `source ~/.zshrc`:
 | Topic | File |
 |-------|------|
 | Getting started | `GETTING_STARTED.md` |
-| Threat model | `docs/THREAT-MODEL.MD` |
-| Secrets management | `docs/SECRETS.MD` |
-| Networking & ports | `docs/NETWORKING.MD` |
-| Maintenance & rotation | `docs/MAINTENANCE.MD` |
-| Emergency procedures | `docs/EMERGENCY.MD` |
-| Containerization security | `docs/SECURITY.MD` |
-| Filesystem security | `docs/FILESYSTEM.MD` |
+| Threat model | `docs/THREAT-MODEL.md` |
+| Secrets management | `docs/SECRETS.md` |
+| Networking & ports | `docs/NETWORKING.md` |
+| Maintenance & rotation | `docs/MAINTENANCE.md` |
+| Emergency procedures | `docs/EMERGENCY.md` |
+| Containerization security | `docs/SECURITY.md` |
+| Filesystem security | `docs/FILESYSTEM.md` |
 
 ## Troubleshooting
 

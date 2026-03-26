@@ -6,6 +6,7 @@
 
 ```bash
 ~/minibot/bin/minibot-stop.sh
+~/minibot/bin/minibot-llm-stop.sh
 ```
 
 If that fails or you don't trust the scripts:
@@ -13,6 +14,8 @@ If that fails or you don't trust the scripts:
 ```bash
 docker kill minibot-postgres minibot-redis minibot-mongo minibot-openclaw 2>/dev/null
 docker compose -f ~/minibot/docker/docker-compose.yml down 2>/dev/null
+# Stop the llama.cpp server (native process, not in Docker)
+kill "$(cat ~/minibot/data/llm/llama.pid 2>/dev/null)" 2>/dev/null
 ```
 
 ### Step 2: Rotate All Secrets
@@ -22,7 +25,7 @@ preemptively. The cost of a false alarm is minutes; the cost of leaving
 compromised credentials active can be severe.
 
 > **Important:** PostgreSQL and MongoDB store passwords internally — updating
-> the Keychain alone won't change them. See `docs/MAINTENANCE.MD` for the
+> the Keychain alone won't change them. See `docs/MAINTENANCE.md` for the
 > full rotation procedure. In an emergency, the simplest approach is a clean
 > wipe:
 
@@ -41,7 +44,7 @@ source ~/.zshrc
 ```
 
 If you need to preserve database data, follow the in-place rotation steps
-in `docs/MAINTENANCE.MD` instead.
+in `docs/MAINTENANCE.md` instead.
 
 Also rotate any OpenClaw-managed secrets (API keys, bot tokens) through
 OpenClaw's own configuration.

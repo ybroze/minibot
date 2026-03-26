@@ -2,7 +2,7 @@
 
 Minibot uses a multi-layer approach to network security. No service is ever
 exposed to the public internet. For the full threat analysis, see
-[threat-model.md](threat-model.md) (especially Threat 2: Network Exposure).
+[THREAT-MODEL.md](THREAT-MODEL.md) (especially Threat 2: Network Exposure).
 
 ---
 
@@ -26,16 +26,20 @@ The `security-audit.sh` script checks this automatically.
 All Docker container ports are bound to `127.0.0.1`, making them accessible
 only from the host machine — not from the local network or the internet.
 
-| Service    | Container          | Host Binding           | Purpose                |
+| Service    | Container/Process  | Host Binding           | Purpose                |
 |------------|--------------------|------------------------|------------------------|
 | PostgreSQL | minibot-postgres   | `127.0.0.1:5432`      | Database               |
 | Redis      | minibot-redis      | `127.0.0.1:6379`      | Cache / message broker |
 | MongoDB    | minibot-mongo      | `127.0.0.1:27017`     | Document database      |
 | OpenClaw   | minibot-openclaw   | `127.0.0.1:18789`     | Gateway (WebSocket)    |
+| llama.cpp  | native (sandboxed) | `127.0.0.1:8012`      | Local LLM (OpenAI API) |
 
-This is enforced in `docker/docker-compose.yml`. The `security-audit.sh`
-script verifies that no port binding in the compose file omits the
-`127.0.0.1` prefix.
+Docker port bindings are enforced in `docker/docker-compose.yml`. The
+`security-audit.sh` script verifies that no port binding in the compose file
+omits the `127.0.0.1` prefix. The llama.cpp server is a native macOS process
+(not in Docker) whose network access is restricted by a `sandbox-exec` profile
+that only permits binding to `127.0.0.1:8012` — all outbound connections are
+denied at the kernel level.
 
 **Important:** Never change a port binding to `0.0.0.0` or remove the
 `127.0.0.1` prefix. Doing so would expose that service to your entire
@@ -45,7 +49,7 @@ network.
 
 ## Layer 3: Docker Bridge Network
 
-All four services communicate over an internal Docker bridge network
+The four containerized services communicate over an internal Docker bridge network
 (`minibot-net`). Within this network, containers can reach each other by
 service name (e.g., `postgres`, `redis`, `mongo`) without any traffic leaving
 the Docker host.
@@ -71,7 +75,7 @@ Even if a service is reachable, it requires credentials:
 - **OpenClaw** — requires `OPENCLAW_GATEWAY_PASSWORD` for gateway access,
   managed via the macOS Keychain alongside other infrastructure secrets.
 
-See [secrets.md](secrets.md) for how credentials are managed.
+See [SECRETS.md](SECRETS.md) for how credentials are managed.
 
 ---
 

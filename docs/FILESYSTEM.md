@@ -11,6 +11,11 @@ For the files that *are* on disk, minibot takes a belt-and-suspenders approach:
   file the minibot user creates is owner-only (`rwx------`) by default. This
   prevents loose permissions from being created in the first place.
 - **`data/`** is set to `700` during install.
+- **`data/models/`** stores GGUF model files. The model file is set to
+  `chmod 444` (read-only) after download.
+- **`data/llm/`** stores the PID file for the llama.cpp server.
+- **`etc/`** stores configuration files, including the `sandbox-exec` profile
+  (`llama-sandbox.sb`) that restricts the llama.cpp server's filesystem access.
 - **`security-audit.sh`** checks for permission drift and an incorrect umask.
 
 **Known limitation — log file ownership:** Files created inside Docker volumes
@@ -19,3 +24,12 @@ user. The `data/` directory is `700`, which prevents other host users from
 reading the logs, but the files inside may have looser permissions than
 expected. The `security-audit.sh` script checks the parent `data/` directory
 permissions but does not recursively audit file ownership inside volumes.
+
+**Sandbox-enforced filesystem isolation:** The llama.cpp server runs inside a
+macOS `sandbox-exec` profile (`etc/llama-sandbox.sb`) that denies all
+filesystem access by default. The process can only read the model file in
+`data/models/`, Homebrew libraries, and system frameworks. It cannot read the
+home directory, scripts, data directories, or any other user files. It cannot
+write anywhere. This is enforced at the kernel level, independent of Unix
+permissions. See [THREAT-MODEL.md](THREAT-MODEL.md) (Threat 7) for the full
+rationale.

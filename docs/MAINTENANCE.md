@@ -31,7 +31,7 @@ cache.
 ### Quarterly: Rotate Credentials
 
 Rotate secrets every 3 months (or immediately if you suspect compromise).
-See `docs/EMERGENCY.MD` for the emergency rotation process.
+See `docs/EMERGENCY.md` for the emergency rotation process.
 
 > **Important:** PostgreSQL and MongoDB only read their password environment
 > variables on **first initialization** (when the data directory is empty).
